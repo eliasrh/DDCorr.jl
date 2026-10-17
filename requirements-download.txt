@@ -1,0 +1,3 @@
+# Optional: only the archive-to-SAC examples need Python packages.
+# Tested with Python 3.12; Julia correlation itself does not import Python.
+obspy==1.5.1

@@ -1,0 +1,29 @@
+{
+  "date_utc": "2026-10-17",
+  "example": "examples/download/iceland_events.csv",
+  "stations": [
+    "Z7.DYJN",
+    "Z7.DYJS",
+    "Z7.HRIM"
+  ],
+  "channels": [
+    "HHE",
+    "HHN",
+    "HHZ"
+  ],
+  "events": 4,
+  "sac_traces": 36,
+  "skipped": 0,
+  "selected_archive_bytes": 850237,
+  "repeat_network_calls": 0,
+  "repeat_new_bytes": 0,
+  "max_absolute_header_time_roundtrip_error_s": 0.0,
+  "obspy_version": "1.5.1",
+  "pick_mode": "predicted; homogeneous6.0/3.5km/s; not published/observed picks",
+  "waveform_download_status": "live archive requests succeeded, then exact-request cache replay succeeded with urllib disabled",
+  "source_data": "Agustsdottir2019 S1 user-supplied published catalogue four-row extract",
+  "notes": "This checks data preparation, not earthquake relocation validity.",
+  "default_accepted_observations": 0,
+  "default_trace_preparation_SNR_failures": 19,
+  "default_surviving_low_cc_candidates": 10
+}

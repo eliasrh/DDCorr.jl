@@ -1,0 +1,8 @@
+# Advanced values paired with mining_optimized.toml.
+[preprocess]
+noise_window_s = [-12.0, -2.0]
+[phase.S]
+filter_padding_s = 20.0
+sidelobe_exclusion_s = 0.20
+[runtime]
+resume = false

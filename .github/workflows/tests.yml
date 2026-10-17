@@ -1,0 +1,25 @@
+name: Numerical and interface tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'
+      - uses: julia-actions/cache@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+      - run: julia --project=. --threads=2 test/runtests.jl
+      - run: python -m pip install -r requirements-download.txt
+      - run: python -m unittest discover -s scripts -p 'test_*.py'
+      - run: python scripts/make_synthetic.py --output examples/synthetic
+      - run: julia --project=. --threads=2 bin/ddcorr.jl DDCorr.toml --inspect
+      - run: julia --project=. --threads=2 bin/ddcorr.jl DDCorr.toml --no-plots
+      - name: Check timing against independent synthetic truth
+        run: |
+          ddcorr_run=$(ls -dt results/*/ | head -n 1)
+          python scripts/check_synthetic.py --truth-dir examples/synthetic --run-dir "$ddcorr_run" --max-error-s 0.01 --require-noise-isolated

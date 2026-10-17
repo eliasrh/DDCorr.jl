@@ -1,0 +1,18 @@
+{
+  "date_utc": "2026-10-17",
+  "events": 6,
+  "sac_traces": 54,
+  "skipped": 0,
+  "selected_archive_bytes": 1304893,
+  "repeat_network_calls": 0,
+  "repeat_new_bytes": 0,
+  "pick_mode": "Predicted homogeneous 6.0/3.5 km/s travel times; not observed picks",
+  "selection_rule": "Three closest 3D published catalogue pairs, 12:00\u201313:00 UTC, origin separation >30 s; no waveform selection",
+  "accepted_observations": 12,
+  "P_observations": 8,
+  "S_observations": 4,
+  "min_cc": 0.7114618220318366,
+  "max_cc": 0.9321984686370727,
+  "processing": "Unchanged 2\u201314 Hz, 50 Hz sample rate, 0.5 s max lag, minCC 0.70, minSNR 1.5 public settings",
+  "notes": "A software/data exercise; not independent proof that phase predictions or differential times are scientifically correct."
+}

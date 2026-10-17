@@ -1,0 +1,7 @@
+event_id,origin_utc,latitude,longitude,depth_km,magnitude,source
+S1_009910,2014-08-23T12:09:08.900Z,64.7666,-16.9307,5.785,1.780,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009910
+S1_009921,2014-08-23T12:13:55.760Z,64.7834,-16.9038,7.106,2.220,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009921
+S1_009927,2014-08-23T12:16:01.040Z,64.7839,-16.9036,7.096,1.580,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009927
+S1_009928,2014-08-23T12:16:50.710Z,64.7820,-16.9060,7.061,2.230,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009928
+S1_009941,2014-08-23T12:27:27.990Z,64.7815,-16.9058,7.037,1.630,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009941
+S1_009948,2014-08-23T12:44:47.270Z,64.7663,-16.9308,5.803,1.570,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009948

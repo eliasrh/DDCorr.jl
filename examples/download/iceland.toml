@@ -1,0 +1,54 @@
+# Real waveform teaching example: P/S headers are explicit homogeneous-model predictions.
+# Inspect phase windows before interpreting measurements scientifically.
+# DDCorr: the settings to explore in class. Times are seconds, bands are Hz.
+# Paths below are relative to this TOML. Override input with --sac-dir PATH.
+# Download first: see examples/download/README.md
+# Then: julia --project=. --threads=auto bin/ddcorr.jl examples/download/iceland.toml --inspect
+#       julia --project=. --threads=auto bin/ddcorr.jl examples/download/iceland.toml
+
+[input]
+sac_dir = "../../work/iceland/sac" # one immediate subdirectory per event
+p_pick_header = "a" # A contains P arrival relative to the SAC reference time
+s_pick_header = "t0" # T0 contains S arrival; change if your archive differs
+
+[output]
+directory = "../../results/iceland" # a new timestamped run directory preserves older results
+
+[P]
+band_hz = [2.0, 14.0] # retain frequencies where similar P arrivals are clear
+window_s = [-0.5, 2.0] # relative to the P pick; include onset and short coda
+max_lag_s = 0.5 # search +/- this correction around the picks
+min_cc = 0.70 # signed coefficient r threshold, not the exported r^2 weight
+sample_rate_hz = 50.0 # resample with an anti-alias filter; native rate must be >= this
+min_snr = 1.5 # signal RMS / noise RMS measured before P, after filtering
+
+[S]
+band_hz = [2.0, 14.0] # same band is a starting point, not a universal optimum
+window_s = [-0.5, 3.0] # relative to the S pick
+max_lag_s = 0.5
+min_cc = 0.70
+sample_rate_hz = 50.0
+min_snr = 1.5
+
+[plots]
+enabled = true
+summary = true # coefficients, lags, station support and graph connectivity
+examples = true # waveforms before/after alignment and full lag curve
+filters = true # actual filter response and representative waveform spectra
+closure = true # station/phase triangle closure, an internal-consistency check
+max_examples = 12
+# Empty = deterministic weak/middle/strong accepted pairs across station+phase.
+# Nonempty = output IDs from event_id_map.csv, e.g. [[1, 2], [2, 3]].
+# Only accepted observations are shown; selection/unavailable pairs are logged.
+event_pairs = []
+
+[matrices]
+enabled = true # sparse accepted entries by station/phase; no N-by-N allocation
+dense = false # optional CSV matrices; missing means unmeasured/rejected, not zero
+max_dense_events = 500
+max_dense_cells = 2000000 # total dense cells across station/phase groups
+
+# Optional: copy src/defaults.toml, adjust a few advanced values, then uncomment.
+# Every advanced default is documented; effective_config.toml records the merge.
+# [advanced]
+# file = "my_advanced.toml"

@@ -1,0 +1,27 @@
+# Exact processing settings from the user’s 2026-10-08 optimized mining run.
+# Archive-specific: not a general recommendation. Relative input is a placeholder.
+[input]
+sac_dir = "sac"
+p_pick_header = "a"
+s_pick_header = "t0"
+[output]
+directory = "results/mining_optimized"
+
+[P]
+band_hz = [2.0, 10.0]
+window_s = [-0.5, 3.0]
+max_lag_s = 1.5
+min_cc = 0.3003331483536241
+sample_rate_hz = 50.0
+min_snr = 1.5
+
+[S]
+band_hz = [0.4, 2.0]
+window_s = [-1.0, 7.0]
+max_lag_s = 3.0
+min_cc = 0.6446704584514479
+sample_rate_hz = 20.0
+min_snr = 1.5
+
+[advanced]
+file = "mining_optimized_advanced.toml"

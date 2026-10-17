@@ -1,0 +1,27 @@
+{
+  "source": "User-owned local MiningCorrelations.jl, inspected 2026-10-17",
+  "source_files": {
+    "sac.jl": {
+      "sha256": "de07ee38e27d0442e8d0794119091a2e2eba8686234b1e224e02aa99e1de3934",
+      "same_as_prior_pipeline_snapshot": true
+    },
+    "signal.jl": {
+      "sha256": "c56bf022b404e4ee592a8d9b7d775209edd9c5e18e319cb21ad2c6a3c13132a8",
+      "same_as_prior_pipeline_snapshot": true
+    },
+    "pipeline.jl": {
+      "sha256": "cf58e2259b1f13544b3a08d94eccb55f169c4a29f4ce29159d9f95088df2006b",
+      "same_as_prior_pipeline_snapshot": true
+    },
+    "report.jl": {
+      "sha256": "f3e8ee93c9a712f412a1e27de9d2c673ae7b5bb8833aeb233df1af911ac59171",
+      "same_as_prior_pipeline_snapshot": true
+    },
+    "closure.jl": {
+      "sha256": "b2556329f7340a543a5a06a0e023935d02c5097c960c82bb27841b140acccfd8",
+      "same_as_prior_pipeline_snapshot": true
+    }
+  },
+  "optimized_config_sha256": "a852b787991c929b6631a6d87ff552797ffbef3c466885abd15954c5c5f0c94e",
+  "changes": "Pedagogic split config, strict SAC preflight, per-run sequential IDs, content-hash caches, resource guards, generic diagnostics, matrix export; core DSP/FFT algorithm retained. No upstream files modified."
+}

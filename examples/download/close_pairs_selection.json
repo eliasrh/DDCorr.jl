@@ -1,0 +1,29 @@
+{
+  "catalogue": "Agustsdottir2019 DataSetS1",
+  "interval_utc": [
+    "2014-08-23T12:00:00Z",
+    "2014-08-23T13:00:00Z"
+  ],
+  "eligible_events": 53,
+  "rule": "Choose the three smallest 3D distances among catalogue pairs whose origin separation exceeds 30 s; no waveform or correlation criteria. Distances use 111.2 km/degree and cos(64.77 degrees) for longitude, plus depth in km.",
+  "ranked_pairs": [
+    {
+      "distance_km": 0.0382015257309769,
+      "original_id_i": "Agustsdottir2019_S1_row_009910",
+      "original_id_j": "Agustsdottir2019_S1_row_009948",
+      "origin_separation_s": 2138.37
+    },
+    {
+      "distance_km": 0.057282003045055006,
+      "original_id_i": "Agustsdottir2019_S1_row_009921",
+      "original_id_j": "Agustsdottir2019_S1_row_009927",
+      "origin_separation_s": 125.28
+    },
+    {
+      "distance_km": 0.06129623049465355,
+      "original_id_i": "Agustsdottir2019_S1_row_009928",
+      "original_id_j": "Agustsdottir2019_S1_row_009941",
+      "origin_separation_s": 637.28
+    }
+  ]
+}

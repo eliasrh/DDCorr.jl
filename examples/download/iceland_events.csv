@@ -1,0 +1,5 @@
+event_id,origin_utc,latitude,longitude,depth_km,magnitude,source
+S1_009900,2014-08-23T12:00:29.860Z,64.7791,-16.9128,7.034,1.460,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009900
+S1_009901,2014-08-23T12:01:24.840Z,64.7753,-16.9117,7.000,1.400,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009901
+S1_009902,2014-08-23T12:02:10.460Z,64.7828,-16.9039,6.816,1.580,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009902
+S1_009904,2014-08-23T12:02:57.030Z,64.7730,-16.9253,6.612,2.130,Agustsdottir et al. 2019 Data Set S1; Agustsdottir2019_S1_row_009904
