@@ -1,0 +1,215 @@
+{
+  "created_utc": "2026-10-17",
+  "repository": "https://github.com/eliasrh/DDCorr.jl",
+  "slide_count": 60,
+  "source_files": [
+    {
+      "path": "src/signal.jl",
+      "sha256": "516b1497c411befb121e3605f714e166ca81a60ef32a351af71b23f48d8c0e7e"
+    },
+    {
+      "path": "src/pipeline.jl",
+      "sha256": "ab5e04cc016367e94a4be3103f7235c1af9acfc64826b9b07acfb68bdbc1514b"
+    },
+    {
+      "path": "src/sac.jl",
+      "sha256": "9a98fbd215d660696af2275c884efd498d0843413943bdaffa887cf33838483b"
+    },
+    {
+      "path": "src/configuration.jl",
+      "sha256": "a3fa0c58a837407748db051a2e193ab439df38cd1789c7bc20043c5996b84954"
+    },
+    {
+      "path": "src/defaults.toml",
+      "sha256": "f50c6a4eeb0c4a6706714f74d3c2bdd1f9599f41aeef0bcbbe9d652f898a0018"
+    },
+    {
+      "path": "src/matrices.jl",
+      "sha256": "fc5e3d6af006d44783eb32d5c4b7dfa4f8dbbada3bda63b18deca1c504f7affd"
+    },
+    {
+      "path": "DDCorr.toml",
+      "sha256": "0a15c46ef6f757b533841434652ef260d091d60b6e3a6aaafd6b2e6bc9a0a1d2"
+    },
+    {
+      "path": "bin/ddcorr.jl",
+      "sha256": "086ca8a7895fb401bb6dd6a549915b67c0221f73936b1678ee9ce676de1e176e"
+    },
+    {
+      "path": "scripts/make_synthetic.py",
+      "sha256": "6bcdeb34bc5f2fd3985de72c9f3f42db48143d9d339a87468a4c1f84d604baf2"
+    },
+    {
+      "path": "scripts/download_sac.py",
+      "sha256": "580331f01ffdcf75767d0504b6a9c18cd8d70300dc992fcf4f635e712554194f"
+    },
+    {
+      "path": "examples/download/iceland_close_pairs.csv",
+      "sha256": "d26592092d623782161ecbe8163cae54499f46e1a23f1ab47681d11d0eb86e0a"
+    },
+    {
+      "path": "examples/download/iceland_close_pairs.toml",
+      "sha256": "337846e226d96be8d28f4f5bfd40c201e2540f89fe5b5d7198842b716df76dac"
+    },
+    {
+      "path": "teaching/assets/synthetic_alignment.png",
+      "sha256": "0b060783a26f769acea3c5a656a98689517716fb15cd45c9517af67ff9228ad2"
+    },
+    {
+      "path": "teaching/source/content.mjs",
+      "sha256": "a33d4e927e7900a7c991cde14b3d0f82b843aaebab020e2340c1a7f4583064e2"
+    },
+    {
+      "path": "teaching/source/build.mjs",
+      "sha256": "a7d631e79bff1c29e67131fccebaa7477f3ca96a7d5ac529f86368cce536377a"
+    }
+  ],
+  "code_excerpts": [
+    {
+      "slide": 23,
+      "file": "src/signal.jl",
+      "ranges": [
+        [
+          2,
+          8
+        ]
+      ],
+      "label": "src/signal.jl:2\u20138"
+    },
+    {
+      "slide": 25,
+      "file": "src/signal.jl",
+      "ranges": [
+        [
+          10,
+          17
+        ]
+      ],
+      "label": "src/signal.jl:10\u201317"
+    },
+    {
+      "slide": 27,
+      "file": "src/signal.jl",
+      "ranges": [
+        [
+          23,
+          23
+        ],
+        [
+          30,
+          30
+        ]
+      ],
+      "label": "src/signal.jl:23\u201323, 30\u201330"
+    },
+    {
+      "slide": 30,
+      "file": "src/signal.jl",
+      "ranges": [
+        [
+          31,
+          36
+        ]
+      ],
+      "label": "src/signal.jl:31\u201336"
+    },
+    {
+      "slide": 32,
+      "file": "src/signal.jl",
+      "ranges": [
+        [
+          87,
+          89
+        ],
+        [
+          93,
+          94
+        ]
+      ],
+      "label": "src/signal.jl:87\u201389, 93\u201394"
+    },
+    {
+      "slide": 36,
+      "file": "src/signal.jl",
+      "ranges": [
+        [
+          130,
+          135
+        ]
+      ],
+      "label": "src/signal.jl:130\u2013135"
+    },
+    {
+      "slide": 37,
+      "file": "src/signal.jl",
+      "ranges": [
+        [
+          72,
+          74
+        ],
+        [
+          126,
+          127
+        ]
+      ],
+      "label": "src/signal.jl:72\u201374, 126\u2013127"
+    },
+    {
+      "slide": 40,
+      "file": "src/signal.jl",
+      "ranges": [
+        [
+          150,
+          154
+        ]
+      ],
+      "label": "src/signal.jl:150\u2013154"
+    },
+    {
+      "slide": 41,
+      "file": "src/pipeline.jl",
+      "ranges": [
+        [
+          98,
+          101
+        ],
+        [
+          102,
+          102
+        ]
+      ],
+      "label": "src/pipeline.jl:98\u2013101, 102\u2013102"
+    }
+  ],
+  "figure": {
+    "path": "teaching/assets/synthetic_alignment.png",
+    "origin": "Actual default synthetic DDCorr output: example_01_XX.S01_P.png",
+    "original_event_ids": [
+      "44",
+      "8"
+    ],
+    "output_event_ids": [
+      4,
+      5
+    ],
+    "station": "XX.S01",
+    "phase": "P",
+    "lag_s_rounded": 0.0899,
+    "dt_s_rounded": 0.0541,
+    "truth_dt_s": 0.054
+  },
+  "illustration_policy": "Other chart data are constructed scientific illustrations, embedded as editable native PowerPoint series.",
+  "deck": {
+    "path": "teaching/DDCorr_minicourse.pptx",
+    "sha256": "e5febe854fcfa3b3562ce356e8c5ddb381e9fa565efad8ec8efb7aef5126b347"
+  },
+  "validation": {
+    "rendered_slide_count": 60,
+    "package_findings": 0,
+    "geometry_findings": 0,
+    "geometry_warnings": 0,
+    "native_tables": 8,
+    "native_charts": 4,
+    "native_powerpoint_opened": false
+  }
+}

@@ -1,0 +1,117 @@
+[
+  {
+    "slide": 23,
+    "file": "src/signal.jl",
+    "ranges": [
+      [
+        2,
+        8
+      ]
+    ],
+    "label": "src/signal.jl:2–8"
+  },
+  {
+    "slide": 25,
+    "file": "src/signal.jl",
+    "ranges": [
+      [
+        10,
+        17
+      ]
+    ],
+    "label": "src/signal.jl:10–17"
+  },
+  {
+    "slide": 27,
+    "file": "src/signal.jl",
+    "ranges": [
+      [
+        23,
+        23
+      ],
+      [
+        30,
+        30
+      ]
+    ],
+    "label": "src/signal.jl:23–23, 30–30"
+  },
+  {
+    "slide": 30,
+    "file": "src/signal.jl",
+    "ranges": [
+      [
+        31,
+        36
+      ]
+    ],
+    "label": "src/signal.jl:31–36"
+  },
+  {
+    "slide": 32,
+    "file": "src/signal.jl",
+    "ranges": [
+      [
+        87,
+        89
+      ],
+      [
+        93,
+        94
+      ]
+    ],
+    "label": "src/signal.jl:87–89, 93–94"
+  },
+  {
+    "slide": 36,
+    "file": "src/signal.jl",
+    "ranges": [
+      [
+        130,
+        135
+      ]
+    ],
+    "label": "src/signal.jl:130–135"
+  },
+  {
+    "slide": 37,
+    "file": "src/signal.jl",
+    "ranges": [
+      [
+        72,
+        74
+      ],
+      [
+        126,
+        127
+      ]
+    ],
+    "label": "src/signal.jl:72–74, 126–127"
+  },
+  {
+    "slide": 40,
+    "file": "src/signal.jl",
+    "ranges": [
+      [
+        150,
+        154
+      ]
+    ],
+    "label": "src/signal.jl:150–154"
+  },
+  {
+    "slide": 41,
+    "file": "src/pipeline.jl",
+    "ranges": [
+      [
+        98,
+        101
+      ],
+      [
+        102,
+        102
+      ]
+    ],
+    "label": "src/pipeline.jl:98–101, 102–102"
+  }
+]

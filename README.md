@@ -6,6 +6,8 @@ DDCorr is a teaching interface to the numerical methods in MiningCorrelations.jl
 
 The package correlates **already identified events with phase picks**. It does not detect earthquakes in a continuous archive. It can discover station and event metadata from complete SAC headers, but it cannot recover absent coordinates or measured arrival picks from filenames.
 
+The [60-slide editable PowerPoint](teaching/DDCorr_minicourse.pptx) follows the same workflow, then explains the processing and code. See the [teaching guide](teaching/README.md) for speaker notes, source references and exercises.
+
 ## Start here: an offline exercise
 
 Install Julia 1.12 and Python 3.10 or newer. Python needs no additional packages for this exercise. A GitHub account with access to this private repository is needed to clone it.

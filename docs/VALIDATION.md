@@ -4,6 +4,17 @@ Validation performed on 17 October 2026 with Julia 1.12.3 on macOS/Apple Silicon
 These checks establish the implementation and file conventions for the tested
 cases; they do not establish universally suitable bands or detection quality.
 
+## Student workflow
+
+A fresh clone of the private GitHub repository was used to run the README's
+dependency setup, synthetic generator, SAC inspection and complete correlation
+command with four threads. Normal Julia compilation was used; no special loading
+flags were needed. Installed dependencies were reused, and a fresh compiled cache
+was built. The complete warm-cache run took 25.8 seconds on this machine, including
+all figures. This is a local timing observation, not a portable performance claim.
+The fresh clone produced the expected 80 observations and passed the independent
+truth checker. Generated data, caches and results left the checkout clean.
+
 ## Numerical and interface tests
 
 The Julia suite contains **95 passing assertions** covering:
