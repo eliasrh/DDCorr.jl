@@ -1,0 +1,2 @@
+Z7.STAM S; event_id 28 / 45; r=0.7; lag=-0.0039 s
+Waveforms: HHE, first common component; curve averages 2 SNR-qualified component(s).

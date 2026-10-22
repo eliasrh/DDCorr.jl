@@ -186,7 +186,7 @@ def make_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--events", type=Path, required=True, help="CSV: event_id,origin_utc,latitude,longitude,depth_km[,magnitude,source]")
     parser.add_argument("--network", required=True, help="One network code (no wildcard)")
-    parser.add_argument("--stations", required=True, help="Explicit comma-separated station codes")
+    parser.add_argument("--stations", help="Explicit comma-separated station codes")
     parser.add_argument("--channels", default="HH?", help="FDSN channel selection, quoted when it contains wildcards")
     parser.add_argument("--location", default="--", help="-- means blank; pass --location=--")
     parser.add_argument("--pick-mode", required=True, choices=("observed", "predicted"))
@@ -199,6 +199,10 @@ def make_parser():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cache-dir", type=Path, default=Path("work/download_cache"))
     parser.add_argument("--total-mib", type=float, default=20, help="Limit total selected archive input bytes, including cached inputs")
+    parser.add_argument("--stations-file", type=Path, help="CSV from prepare_tables.py stations; alternative to --stations")
+    parser.add_argument("--max-combinations", type=int, default=200, help="Explicit bound on event × station selections; e.g. 1200 for 100 × 12")
+    parser.add_argument("--waveform-dir", type=Path, help="Reuse local miniSEED archive; requires --stationxml; no network requests")
+    parser.add_argument("--stationxml", type=Path, help="Local StationXML covering the selected epochs")
     return parser
 
 
@@ -213,7 +217,15 @@ def run(args):
         raise RuntimeError("Install optional dependencies first: python -m pip install -r requirements-download.txt") from error
     if not re.fullmatch(r"[A-Za-z0-9]+", args.network):
         raise ValueError("Use one explicit network code")
-    stations = args.stations.split(",")
+    if bool(args.stations) == bool(args.stations_file):
+        raise ValueError("Use exactly one of --stations or --stations-file")
+    stations = args.stations.split(",") if args.stations else list(dict.fromkeys(row["station"] for row in csv.DictReader(args.stations_file.open())))
+    if args.stations_file:
+        selected_rows=list(csv.DictReader(args.stations_file.open()))
+        if any(row.get("network", args.network)!=args.network or row.get("location", args.location).replace("--", "")!=args.location.replace("--", "") for row in selected_rows):
+            raise ValueError("Station table network/location differs from --network/--location; split the selection explicitly")
+    if bool(args.waveform_dir) != bool(args.stationxml):
+        raise ValueError("Local archive reuse needs both --waveform-dir and --stationxml")
     if len(stations) != len(set(stations)) or not all(re.fullmatch(r"[A-Za-z0-9]+", x) for x in stations):
         raise ValueError("Use unique explicit comma-separated station codes, without spaces")
     if not (args.before > 0 and args.after > 0 and args.total_mib > 0 and args.vp > args.vs > 0):
@@ -225,13 +237,15 @@ def run(args):
     if args.pick_mode == "predicted" and args.picks is not None:
         raise ValueError("Choose either supplied observed picks or teaching predictions")
     events = read_events(args.events, UTCDateTime)
-    if len(events)*len(stations) > 200:
-        raise ValueError("Teaching helper limits requests to 200 event/station combinations; split the catalogue")
+    if args.max_combinations < 1 or len(events)*len(stations) > args.max_combinations:
+        raise ValueError("Selection exceeds --max-combinations; narrow it or intentionally raise that limit")
     picks = read_picks(args.picks, UTCDateTime)
     definition = {"events_sha256": sha256(args.events), "picks_sha256": sha256(args.picks) if args.picks else None,
         "network": args.network, "stations": stations, "channels": args.channels, "location": args.location,
         "pick_mode": args.pick_mode, "vp": args.vp, "vs": args.vs, "before": args.before, "after": args.after,
-        "service": args.service.rstrip("/"), "format_version": 1}
+        "service": args.service.rstrip("/"), "format_version": 2,
+        "local_waveform_directory": str(args.waveform_dir.resolve()) if args.waveform_dir else None,
+        "stationxml_sha256": sha256(args.stationxml) if args.stationxml else None}
     output = args.output; output.mkdir(parents=True, exist_ok=True)
     manifest_path = output/"manifest.json"
     if manifest_path.exists():
@@ -259,23 +273,55 @@ def run(args):
         atomic_json(manifest_path, manifest)
     metadata = {}
     for station in stations:
-        request = url("station", network=args.network, station=station, location=args.location,
-                      channel=args.channels, starttime=str(first), endtime=str(last), level="channel", format="xml", nodata=204)
-        try:
-            path = cache.get(request, ".xml"); metadata[station] = read_inventory(str(path))
-        except NoData:
-            manifest["skipped"].append({"station": station, "reason": "No station metadata for selection"})
-        journal()
-    for event in events:
-        origin = UTCDateTime(event["origin_utc"]); start, end = origin-args.before, origin+args.after
-        for station, inventory in metadata.items():
-            request = url("dataselect", network=args.network, station=station, location=args.location,
-                          channel=args.channels, starttime=str(start), endtime=str(end), format="miniseed", nodata=204)
+        if args.stationxml:
+            metadata[station] = read_inventory(str(args.stationxml)).select(network=args.network, station=station)
+        else:
+            request = url("station", network=args.network, station=station, location=args.location,
+                          channel=args.channels, starttime=str(first), endtime=str(last), level="channel", format="xml", nodata=204)
             try:
-                raw_path = cache.get(request, ".mseed"); stream = read(str(raw_path), format="MSEED")
+                path = cache.get(request, ".xml"); metadata[station] = read_inventory(str(path))
             except NoData:
-                manifest["skipped"].append({"event_id": event["event_id"], "station": station, "reason": "Archive returned no waveform data"})
-                journal(); continue
+                manifest["skipped"].append({"station": station, "reason": "No station metadata for selection"})
+        journal()
+    # Keep only one station's selected interval in memory, independent of network size.
+    for station, inventory in metadata.items():
+        local_stream = None; local_receipts = []
+        if args.waveform_dir:
+            from obspy import Stream
+            local_stream = Stream()
+            # Inspect headers first: do not decode unrelated stations or dates.
+            for candidate in sorted(args.waveform_dir.glob("*.mseed")):
+                header = read(str(candidate), headonly=True)
+                wanted = header.select(network=args.network, station=station, channel=args.channels,
+                                       location=args.location.replace("--", ""))
+                if not any(tr.stats.starttime <= last and tr.stats.endtime >= first for tr in wanted):
+                    continue
+                size = candidate.stat().st_size
+                if cache.used + size > cache.limit:
+                    raise ValueError("Local archive input exceeds --total-mib; intentionally raise the limit")
+                cache.used += size
+                record = {"path": str(candidate.resolve()), "bytes": size, "sha256": sha256(candidate)}
+                local_receipts.append(record)
+                local_stream += read(str(candidate), starttime=first, endtime=last).select(
+                    network=args.network, station=station, channel=args.channels, location=args.location.replace("--", ""))
+            manifest.setdefault("local_inputs", []).extend(local_receipts)
+        for event in events:
+            origin = UTCDateTime(event["origin_utc"]); start, end = origin-args.before, origin+args.after
+            if local_stream is not None:
+                stream = local_stream.slice(start, end)
+                if not stream:
+                    manifest["skipped"].append({"event_id": event["event_id"], "station": station, "reason": "No local waveform coverage"})
+                    journal(); continue
+                raw_digest = hashlib.sha256(json.dumps(local_receipts, sort_keys=True).encode()).hexdigest()
+            else:
+                request = url("dataselect", network=args.network, station=station, location=args.location,
+                              channel=args.channels, starttime=str(start), endtime=str(end), format="miniseed", nodata=204)
+                try:
+                    raw_path = cache.get(request, ".mseed"); stream = read(str(raw_path), format="MSEED")
+                    raw_digest = sha256(raw_path)
+                except NoData:
+                    manifest["skipped"].append({"event_id": event["event_id"], "station": station, "reason": "Archive returned no waveform data"})
+                    journal(); continue
             for trace_id in sorted({tr.id for tr in stream}):
                 try:
                     trace = coherent_trace(stream, trace_id, start, end, np)
@@ -332,7 +378,7 @@ def run(args):
                         part.unlink(); raise ValueError(f"Generated SAC differs from existing output: {path}; use a fresh output")
                     part.replace(path)
                     manifest["sac_files"].append({"path": str(path.relative_to(output)), "sha256": digest,
-                        "event_id": event["event_id"], "trace_id": trace.id, "miniSEED_sha256": sha256(raw_path),
+                        "event_id": event["event_id"], "trace_id": trace.id, "waveform_source_sha256": raw_digest,
                         "start_utc": str(trace.stats.starttime), "end_utc": str(trace.stats.endtime),
                         "sample_rate_hz": trace.stats.sampling_rate, "npts": trace.stats.npts,
                         "arrivals_utc": {k: str(v) for k, v in phase_times.items()}, "pick_provenance": phase_sources})

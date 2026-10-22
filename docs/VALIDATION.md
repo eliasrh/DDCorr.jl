@@ -1,5 +1,18 @@
 # Validation record
 
+## Revision verified 22 October 2026
+
+The revised archive workflow was also checked live: one Z7.DYSA event request returned three SAC components from EarthScope (4,885 StationXML bytes and 73,728 miniSEED bytes). Repeating the same request reused both cached objects, with zero newly downloaded bytes. A separate bounded USGS event-service request returned one catalogue event and no observed picks; the helper preserved that distinction.
+
+The student ZIP was extracted into a fresh directory and its checksums verified. The documented generator, inspection and default correlation commands succeeded there: 72 SAC files, six valid events, 80 accepted observations, 12 automatically selected example PNGs and eight matrix PNGs. No instructor solutions or bulk waveform data are included in the ZIP.
+
+Version 0.2.0 passes 109 Julia assertions and 23 Python tests. New coverage includes original-name/manual-pair resolution, retention of a good S horizontal when the other fails SNR, and metadata-table source/pick provenance. The full synthetic run retains 80 observations; four-decimal export gives a maximum absolute error of 0.6 ms. An explicit two-pair selection across four stations and two phases produced all 16 figures even with max_examples=1; eight matrix PNGs and dense CSVs were verified. No PDF files or PDF report links were produced. SAC inspection printed consistent absolute/relative times and generated a PNG.
+
+The cached-archive demonstration selected 100 S1 catalogue events and 12 metadata-eligible stations, producing 3,300 SAC files from 11 stations (STJA unavailable). Default processing accepted 2,412 P and 4,625 S observations. Twenty-two observations were flagged as near-identical; the strongest shown pair has catalogue origins only 0.06 s apart and is presented as a QC warning. Inputs use explicitly labelled homogeneous predictions, not measured picks. Details: examples/download/iceland100/validated_run.json.
+
+The material below records the **17 October baseline**. Its eight-decimal exports/PDF figures and small real-data example describe that earlier version, not current defaults. The mining numerical comparison and downstream interface checks remain historical evidence; the separate mining preset retains two-component S requirements.
+
+
 Validation performed on 17 October 2026 with Julia 1.12.3 on macOS/Apple Silicon.
 These checks establish the implementation and file conventions for the tested
 cases; they do not establish universally suitable bands or detection quality.

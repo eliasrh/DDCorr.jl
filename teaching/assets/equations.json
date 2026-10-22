@@ -1,0 +1,10 @@
+{
+  "pearson": "$r_{AB}[k]=\\frac{\\sum_{n=0}^{N-1}(A_n-\\bar{A})(B_{n+k}-\\bar{B}_k)}{\\sqrt{\\sum_{n=0}^{N-1}(A_n-\\bar{A})^2}\\,\\sqrt{\\sum_{n=0}^{N-1}(B_{n+k}-\\bar{B}_k)^2}}$",
+  "symmetric": "$C(\\ell)=\\frac{1}{2}\\left[r(A_{\\rm core},B_\\ell)+r(B_{\\rm core},A_{-\\ell})\\right]$",
+  "dt": "$\\Delta t_{ij}=(p_i-o_i)-(p_j-o_j)-\\ell$",
+  "filter": "$Y(f)=H(f)X(f),\\qquad H_{\\rm forward+reverse}(f)=H(f)H^*(f)=|H(f)|^2$",
+  "phase": "$\\tau_{\\phi}(f)=-\\frac{\\phi(f)}{2\\pi f},\\qquad H(f)=|H(f)|e^{\\mathrm{i}\\phi(f)}$",
+  "parabola": "$\\delta=\\frac{a-c}{2(a-2b+c)},\\qquad \\ell=\\frac{k+\\delta}{f_s}$",
+  "closure": "$\\Delta t_{ij}+\\Delta t_{jk}+\\Delta t_{ki}\\simeq 0$",
+  "snr": "$\\mathrm{SNR}=\\frac{\\sqrt{N^{-1}\\sum_{n=1}^N(s_n-\\bar s)^2}}{\\sqrt{M^{-1}\\sum_{n=1}^M(q_n-\\bar q)^2}}$"
+}

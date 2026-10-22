@@ -150,7 +150,10 @@ function measure(curve,pc,quality)
     if quality["subsample"] && 1<idx<length(curve)
         a,b,c=score(curve[idx-1]),score(curve[idx]),score(curve[idx+1])
         denom=a-2b+c
-        denom < -eps(Float64) && (delta=clamp(0.5*(a-c)/denom,-0.5,0.5))
+        # The selected sample is a local maximum: b >= a and b >= c.
+        # Therefore the fitted vertex is already within half a sample.
+        # This is the fractional correction, not a limit on the whole lag.
+        denom < -eps(Float64) && (delta=0.5*(a-c)/denom)
     end
     # Compare local maxima, rather than shoulders of the same broad low-frequency peak.
     radius=round(Int,pc["sidelobe_exclusion_s"]*fs)

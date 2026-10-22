@@ -1,54 +1,38 @@
 # DDCorr.jl minicourse
 
-Open [DDCorr_minicourse.pptx](DDCorr_minicourse.pptx) in PowerPoint. The 60 slides start with installation and a complete first run, then explain the signal processing, differential-time convention, quality checks, and graph-method handoff. Speaker notes contain fuller explanations, exercise answers, citations, and exact source excerpts.
+Open [DDCorr_minicourse.pptx](DDCorr_minicourse.pptx). The revised 84-slide deck has five clearly marked sections and introduces coefficient and lag before the first run.
 
-Text, mathematical expressions, tables, and four illustrative charts are editable PowerPoint objects. Expressions use editable Unicode text rather than raster equations. The line-numbered code excerpts and actual diagnostic plot are images. Their original source, line ranges, and full explanations are preserved in the notes and accompanying files. Fonts are Helvetica Neue and Menlo; inspect wrapping if your computer substitutes other fonts.
+| Slides | Section |
+|---|---|
+| 1–17 | Orientation and synthetic quick start: setup, TOML, directories, IDs, pair selection |
+| 18–36 | Finding real event/station/waveform data, Python isolation, phase provenance and SAC headers |
+| 37–46 | Running the 100-event example and assessing PNG reports, matrices and output files |
+| 47–79 | Following one waveform: filters, aliasing, windows, correlation, lag, SNR and graph checks |
+| 80–84 | Independent discovery/preparation/assessment exercise |
 
-## Teaching route
+For a short session, use the first three sections and choose method slides as needed. A full treatment plus data preparation needs a longer practical session. Students need basic P/S and waveform familiarity, but no prior correlation/filtering course.
 
-| Slides | Topic | Suggested use |
-| --- | --- | --- |
-| 1–8 | Installation, synthetic example, configuration, outputs | Run the first exercise together. |
-| 9–18 | SAC headers, time references, archive download and picks | Inspect one file before starting correlation. |
-| 19–33 | Code structure, sampling, filtering, resampling, windows and SNR | Explain each processing choice with its implementation. |
-| 34–44 | Normalized correlation, lag sign, interpolation, horizontal components and rejection rules | Calculate a small example and follow one measured pair. |
-| 45–53 | Diagnostics, matrices, graph methods, resources and actual synthetic results | Compare an output with its truth table. |
-| 54–60 | Exercises, troubleshooting and scientific handoff | Work through one controlled change at a time. |
+Text, commands and tables remain editable in PowerPoint. Scientific figures, properly typeset equations and exact code excerpts are **PNG images**, with generation/equation source included. There are no vector chart/PDF/SVG figure assets in this edition. Fonts are Helvetica Neue and Menlo; check substitution on the teaching computer. The deck was rendered and layout-checked, but has not been opened in the native PowerPoint application.
 
-Allow roughly two hours for the explanations plus practical time. For a shorter session, run slides 1–18 first and use the later sections as reference. The deck assumes basic knowledge of seismic waveforms and P/S phases, but no prior digital-filtering or correlation course.
+## Student materials
 
-Students should begin with the repository [README](../README.md), then use the [exercises](../docs/EXERCISES.md). The [data and SAC guide](../docs/DATA_AND_SAC.md) gives the complete input contract. The [handoff guide](../docs/OUTPUTS_AND_HANDOFF.md) explains DDSync and GraphSplit inputs and the limits of the small teaching test.
+- [Start here](../docs/START_HERE.md): ZIP/Git, Julia and Python versions, expected console messages, named output folders, exact pair/matrix settings.
+- [Data discovery](../docs/DATA_DISCOVERY.md): where tables come from; event-service and regional-catalogue routes; station codes; observed versus predicted phase times.
+- [Exercise](../docs/EXERCISES.md): find information, build SAC, run and assess evidence, without a solved command sequence.
+- [Lecture notes](LECTURE_NOTES.md): searchable slide text, explanations, source excerpts and citations.
 
-## What the checked examples demonstrate
+The worked [instructor solution guide](instructor/INSTRUCTOR_SOLUTIONS.md) is separate and should be distributed after the exercise. The student ZIP excludes that directory.
 
-The default synthetic run contains six events and 72 SAC files. It produced 80 accepted station-phase observations: 40 P and 40 S. The noise-only control remained in the catalogue with no accepted observations. Maximum absolute differential-time error against the synthetic truth was 0.567 ms. This is a controlled timing check, not a claim about real-catalogue accuracy.
+Instructors can rebuild the handout from a Git checkout with `python3 scripts/package_students.py --output ../DDCorr_student_package.zip`. It includes the code, slides, student guides and figure sources, but excludes local runs, environments, downloaded waveforms and the instructor directory. A checksum list records the packaged files.
 
-The real-data lesson uses six events selected as three close catalogue pairs before inspecting their correlations. Three stations yielded 54 SAC files and 12 accepted observations with the default settings. Its P and S headers contain simple predicted times, clearly identified in the acquisition manifest; they are not observed Cambridge picks. The separate four-event format example produced no accepted observations. Both outcomes are useful for learning to inspect phase windows and quality exclusions.
+## Examples and source traceability
 
-## Files and source traceability
+The synthetic case retains 80 accepted observations and an isolated noise control. Maximum timing error after the four-decimal export is 0.6 ms against known truth. The larger cached-archive example selected 100 events and 12 stations, obtained 3,300 SAC files from 11 available stations and accepted 7,037 observations. Predictions are labelled; no claim of observed Cambridge picks is made. Its 22 near-identity flags include catalogue entries only 0.06 s apart, explicitly shown as a QC warning.
 
-- [LECTURE_NOTES.md](LECTURE_NOTES.md) contains the slide explanations, answers, source excerpts and external references in searchable text.
-- [source/code_index.json](source/code_index.json) maps each code screenshot to repository files and one-based line ranges.
-- [source/PROVENANCE.json](source/PROVENANCE.json) records the source and asset SHA256 values used for this edition. Rebuild the excerpts if these implementation files change.
-- [source/content.mjs](source/content.mjs) contains all slide content and the constructed chart data.
-- [assets/synthetic_alignment.png](assets/synthetic_alignment.png) is the complete actual DDCorr diagnostic image used on slide 52. The other PNGs are exact line-numbered source excerpts.
+`source/code_index.json` maps screenshots to exact source lines. `source/PROVENANCE.json` records source/asset hashes. `source/content.mjs` holds slide text and notes. `source/make_figures.py` produces scientific PNGs; `export_trace.jl` and `export_examples.jl` export exact computed arrays. `assets/equations.json` contains the LaTeX used to render each equation. Figure input arrays are retained in `source/figure_data`, so the supplied figures can be rebuilt without raw waveform downloads.
 
-The complete deck was rendered and visually inspected. Package structure, slide geometry, source references, and native table/chart objects were checked. It has not been opened in the native PowerPoint application, so check font substitution and presenter-note display on the teaching computer before the course.
+## Optional rebuild
 
-## Rebuilding the deck
+Editing the PPTX requires none of these authoring tools. Rebuilding it uses Node.js, `@oai/artifact-tool`, `@napi-rs/canvas`, and the presentation skill utilities in the authoring environment. Set `PRESENTATION_SKILL_DIR`, `RUNTIME_NODE_MODULES` and `PYTHON_EXECUTABLE` to the corresponding installed tools. `node teaching/source/build.mjs` writes a draft and renders under `work/slides-build`. Add `--final` to validate a separate final file. Use fresh `DDCORR_SLIDES_BUILD` and `DDCORR_SLIDES_OUTPUT` paths for each finalized edition; the finalizer does not overwrite a previous final artifact.
 
-Editing the PowerPoint requires no authoring tools. Rebuilding from JavaScript is optional and requires Node.js, `@oai/artifact-tool`, `@napi-rs/canvas`, and the presentation skill utilities used by the Codex workspace. These authoring dependencies are separate from Julia and are not needed by students running DDCorr.
-
-With those modules available to Node, set `PRESENTATION_SKILL_DIR` to the installed presentations skill directory and `PYTHON_EXECUTABLE` to the Python interpreter used for its validation utilities. Run:
-
-```sh
-node teaching/source/build.mjs
-```
-
-This writes a draft, slide renders and source-excerpt images under `work/slides-build/`. It also regenerates `LECTURE_NOTES.md`. To validate and write a separate final file, use:
-
-```sh
-node teaching/source/build.mjs --final
-```
-
-The default rebuilt filename is `teaching/DDCorr_minicourse_rebuilt.pptx`. The finalizer refuses to overwrite an existing final file or validation receipt. For another edition, choose a fresh `DDCORR_SLIDES_BUILD` directory and `DDCORR_SLIDES_OUTPUT` filename. `RUNTIME_NODE_MODULES` may also be required by the validation helper to locate the same installed artifact-tool runtime.
+To regenerate PNGs with the optional ObsPy environment (which includes the plotting dependencies), run `python teaching/source/make_figures.py teaching/source/figure_data` from the repository root. Code excerpts regenerate during the deck build. Keep source hashes and screenshots together when code changes.

@@ -6,11 +6,13 @@ DDCorr is a teaching interface to the numerical methods in MiningCorrelations.jl
 
 The package correlates **already identified events with phase picks**. It does not detect earthquakes in a continuous archive. It can discover station and event metadata from complete SAC headers, but it cannot recover absent coordinates or measured arrival picks from filenames.
 
-The [60-slide editable PowerPoint](teaching/DDCorr_minicourse.pptx) follows the same workflow, then explains the processing and code. See the [teaching guide](teaching/README.md) for speaker notes, source references and exercises.
+The [Editable PowerPoint](teaching/DDCorr_minicourse.pptx) follows the same workflow, then explains the processing and code. See the [teaching guide](teaching/README.md) for speaker notes, source references and exercises.
+
+**New to the package? Follow [START_HERE.md](docs/START_HERE.md), including ZIP installation, OS-specific setup, SAC inspection, exact pair selection and PNG matrices.**
 
 ## Start here: an offline exercise
 
-Install Julia 1.12 and Python 3.10 or newer. Python needs no additional packages for this exercise. A GitHub account with access to this private repository is needed to clone it.
+The course is tested with Julia 1.12.3 and Python 3.12. Python needs no additional packages for the synthetic exercise. Clone this private repository with an authorized GitHub account, or extract the instructor's student ZIP; the ZIP route needs neither Git nor a GitHub account. See [Start here](docs/START_HERE.md) for installation and operating-system notes.
 
 ```sh
 git clone https://github.com/eliasrh/DDCorr.jl.git
@@ -23,7 +25,7 @@ julia --project=. --threads=4 bin/ddcorr.jl DDCorr.toml
 
 The first Julia setup downloads dependencies and can take several minutes. Subsequent runs reuse them. Four threads are a modest starting point; choose fewer on a small laptop. The correlator processes one station/phase group at a time and uses one FFT thread per worker.
 
-Each command prints its output directory. Inspection writes metadata tables without correlating waveforms. The full run creates a **new timestamped folder** inside `results/`. Open that folder's `report.html` in a browser. It contains waveform comparisons before and after alignment, correlation curves, coefficient and lag distributions, filter checks, graph connectivity and triangle closure diagnostics. PNG and PDF copies are alongside it.
+Each command prints its output directory. Inspection writes metadata tables without correlating waveforms. The full run creates a **new timestamped folder** inside `results/`. Open that folder's `report.html` in a browser. It contains waveform comparisons before and after alignment, correlation curves, coefficient and lag distributions, filter checks, graph connectivity and triangle closure diagnostics. PNG copies are alongside it.
 
 The offline exercise has six event folders, four stations and three components: 72 SAC files. Folder `905` is a **noise-only control**. These signals and their locations are synthetic. The known differential times in `examples/synthetic/truth_pairs.csv` let you assess timing accuracy rather than judging only whether a plot looks convincing. See [the exercises](docs/EXERCISES.md).
 
@@ -55,7 +57,7 @@ The immediate folder name supplies the original event ID. The waveform filename 
 | P pick | `A` by default; relative to the SAC reference, not the trace start |
 | S pick | `T0` by default; relative to that same reference |
 
-Change `p_pick_header` and `s_pick_header` if your files use different pick slots. P normally uses the vertical component; S uses two compatible horizontal components. Both phases need a pre-P noise window, so horizontal files should also carry the P pick. Missing picks and insufficient waveform padding appear in `phase_readiness.csv`. Header conflicts stop a run by default, with details in `input_issues.csv`. See the full [SAC and acquisition guide](docs/DATA_AND_SAC.md).
+Change `p_pick_header` and `s_pick_header` if your files use different pick slots. P normally uses the vertical component; S uses one or more compatible horizontal components that individually pass the SNR check. Both phases need a pre-P noise window, so horizontal files should also carry the P pick. Missing picks and insufficient waveform padding appear in `phase_readiness.csv`. Header conflicts stop a run by default, with details in `input_issues.csv`. See the full [SAC and acquisition guide](docs/DATA_AND_SAC.md).
 
 **SAC headers cannot reveal whether a value was entered in the wrong unit.** Confirm your producer's depth convention before starting. In particular, do not copy an event depth in metres into `EVDP` without converting it to km.
 
@@ -85,13 +87,13 @@ The optional [`examples/mining_optimized.toml`](examples/mining_optimized.toml) 
 
 Keep `[plots] enabled = true` for the class. Individual switches control the summary, examples, filter audit and closure. With `event_pairs = []`, the report takes weak, middle and strong **accepted** examples in each station/phase group, then applies the global `max_examples` cap deterministically. The selection ledger is `example_selection.csv`; this is an illustration sample, not an unbiased validation sample.
 
-To inspect particular output IDs, set `event_pairs = [[1, 2], [2, 3]]`. Pairs with no accepted observation are recorded as unplotted. Raise `max_examples` if your requested pairs span many groups. Original IDs are in `event_id_map.csv`.
+To inspect particular `event_id` values, set `event_pairs = [[1, 2], [2, 3]]`. Pairs with no accepted observation are recorded as unplotted. Explicit pairs bypass the automatic `max_examples` cap; use `example_stations` and `example_phases` to narrow them. Original IDs are in `event_id_map.csv`.
 
 Sparse station/phase correlation exports are enabled by default. `matrices/index.csv` identifies the files. For a small class example, set `[matrices] dense = true` to add labelled dense CSVs. Missing edges and the uncomputed diagonal are `NA`, not zero. Explicit event/cell limits prevent accidental huge dense exports. The matrices contain accepted observations only; lag-maximized similarities are not guaranteed to form a positive-semidefinite matrix.
 
 ## Get real waveforms from EarthScope / IRIS
 
-The [acquisition guide](docs/DATA_AND_SAC.md) contains small, tested Bárðarbunga examples, a measured-pick workflow, a single-station variation and the file-format requirements. The six-event example selects close event pairs from catalogue locations before looking at correlations; it yielded 12 accepted observations with the default settings. The four-event example yielded none and is retained as a rejection-diagnosis exercise. The optional downloader uses ObsPy; the Julia correlator does not depend on Python.
+The [data discovery guide](docs/DATA_DISCOVERY.md) explains where event tables, pick tables and station codes come from, with a 100-event / 12-selected-station exercise. The validated cached-archive run produced 3,300 SAC files from 11 available stations and 7,037 accepted observations; one selected station had no waveform coverage. See `examples/download/iceland100/validated_run.json`. The earlier small examples remain in the [SAC reference guide](docs/DATA_AND_SAC.md). The optional downloader uses ObsPy; the Julia correlator does not depend on Python.
 
 The archive provides waveform samples and station metadata. Event origins come from the supplied catalogue. Phase picks must come from a separate pick table, or from an **explicitly selected and labelled prediction mode**. The teaching prediction uses a simple homogeneous velocity approximation; it is not the Cambridge velocity model and is not a substitute for scientific phase picking.
 

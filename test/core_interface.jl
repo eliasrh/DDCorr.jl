@@ -51,3 +51,59 @@ end
         @test a!=b
     end
 end
+
+@testset "Explicit examples use mapped IDs and preserve all requested pairs" begin
+    config=DDCorr.load_config(joinpath(@__DIR__,"..","DDCorr.toml"))
+    events=[(id=1,name="alpha"),(id=2,name="17"),(id=3,name="event-z")]
+    config["plots"]["event_pairs"]=[[2,1],[1,2],[2,3]]
+    DDCorr.resolve_requested_pairs!(config,events)
+    @test config["plots"]["event_pairs"]==[[1,2],[2,3]]
+    config["plots"]["event_pairs"]=[]
+    config["plots"]["original_event_pairs"]=[["event-z","alpha"]]
+    DDCorr.resolve_requested_pairs!(config,events)
+    @test config["plots"]["event_pairs"]==[[1,3]]
+    config["plots"]["original_event_pairs"]=[["missing","alpha"]]
+    @test_throws ErrorException DDCorr.resolve_requested_pairs!(config,events)
+    config["plots"]["original_event_pairs"]=[];config["plots"]["event_pairs"]=[[1,99]]
+    @test_throws ErrorException DDCorr.resolve_requested_pairs!(config,events)
+    @test config["phase"]["S"]["min_components"]==1
+    @test config["output"]["dt_decimals"]==4
+end
+
+@testset "An absent S on one horizontal does not dilute the useful component" begin
+    mktempdir() do d
+        config=deepcopy(cfg);config["plots"]["enabled"]=false
+        entries=Tuple{M.Event,M.SACHeader}[]
+        for id in 1:2, component in ("HHN","HHE")
+            path=joinpath(d,"$(id)_$component.sac");write_synthetic_sac(path)
+            f,iv,ch=open(path) do io
+                (read!(io,Vector{Float32}(undef,70)),read!(io,Vector{Int32}(undef,40)),read(io,192))
+            end
+            f[6]=-5;f[8]=20;f[9]=40;f[11]=60;iv[2]=id;iv[10]=14000
+            f[58]=component=="HHN" ? 0 : 90;f[59]=90
+            f[7]=f[6]+(iv[10]-1)*f[1];ch[161:163]=codeunits(component)
+            t=f[6].+(0:iv[10]-1).*Float64(f[1]);q=t.-60 .- (id==1 ? 0 : 0.073)
+            x=component=="HHN" ? exp.(-((q.-1)./0.4).^2).*(sin.(2pi*4 .*q).+0.4sin.(2pi*7.3 .*q)).+0.001randn(length(t)) : randn(length(t))
+            open(path,"w") do io;write(io,f);write(io,iv);write(io,ch);write(io,Float32.(x));end
+            h=M.read_header(path);e=M.Event(id,"event$id",h.reference+h.floats[8],0.,0.,0.,[h]);push!(entries,(e,h))
+        end
+        one=M.process_group("XX.ABC","S",entries,config)
+        @test length(one.rows)==1
+        @test one.rows[1].ncomponents==1
+        @test endswith(one.rows[1].components,"HHN")
+        @test abs(one.rows[1].lag-.073)<.002
+        config["phase"]["S"]["min_components"]=2
+        two=M.process_group("XX.ABC","S",entries,config)
+        @test isempty(two.rows)
+    end
+end
+
+@testset "Explicit figure budget is checked before group processing" begin
+    c=deepcopy(cfg);c["plots"]["event_pairs"]=[[1,2]]
+    groups=Dict(("XX.A","P")=>[((id=1,),nothing),((id=2,),nothing)],("XX.B","S")=>[((id=1,),nothing),((id=2,),nothing)])
+    @test M.check_example_budget(groups,c)==2
+    c["diagnostics"]["max_requested_examples"]=1
+    @test_throws ErrorException M.check_example_budget(groups,c)
+    c["plots"]["example_stations"]=["XX.A"]
+    @test M.check_example_budget(groups,c)==1
+end

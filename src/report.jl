@@ -1,10 +1,10 @@
 using CairoMakie
 include("closure.jl")
+include("matrix_plots.jl")
 
 const REPORT_COLORS = Dict("P"=>"#167d9a","S"=>"#c26034")
 function savefigure(out,name,fig)
     save(joinpath(out,name*".png"),fig;px_per_unit=1.5)
-    save(joinpath(out,name*".pdf"),fig)
 end
 
 function graph_degrees(events,rows)
@@ -114,7 +114,7 @@ function example_figure(out,index,ex,cfg)
     shifted=interpolate_grid(b.ext,pc["window_s"][1]-L/fs,1/fs,t .+ r.lag)
     scale(x)=x./max(std(x;corrected=false),eps())
     fig=Figure(size=(1250,860),fontsize=16)
-    Label(fig[0,:],"$(r.station) $(r.phase) · $(a.event.name) / $(b.event.name)",fontsize=23,font=:bold)
+    Label(fig[0,:],"$(r.station) $(r.phase) · event_id $(r.i) / $(r.j) · folders $(a.event.name) / $(b.event.name)",fontsize=23,font=:bold)
     ax=Axis(fig[1,1],title="Filtered windows at original picks",xlabel="Seconds relative to phase pick",ylabel="Normalized amplitude")
     lines!(ax,t,scale(ac);label="Event i",color="#167d9a");lines!(ax,t,scale(bc);label="Event j",color="#c26034");axislegend(ax;position=:rt)
     bx=Axis(fig[2,1],title="After correction: lag=$(round(r.lag;digits=4)) s; dt(i−j)=$(round(r.dt;digits=4)) s",xlabel="Seconds relative to phase pick",ylabel="Normalized amplitude")
@@ -135,23 +135,26 @@ function make_report(out,events,groups,rows,cfg)
     plot["closure"] && closure_diagnostics(out,groups;maximum_samples=cfg["diagnostics"]["max_closure_triangles"])
     candidates=reduce(vcat,[g.examples for g in groups];init=NamedTuple[])
     examples=candidates;maxex=plot["max_examples"]
-    if length(examples)>maxex
+    explicit=!isempty(plot["event_pairs"])
+    explicit && length(examples)>cfg["diagnostics"]["max_requested_examples"] && error("Explicit selection needs $(length(examples)) figures; narrow example_stations/example_phases or raise diagnostics.max_requested_examples")
+    if !explicit && length(examples)>maxex
         examples=maxex==0 ? NamedTuple[] : examples[unique(round.(Int,range(1,length(examples);length=maxex)))]
     end
+    matrix_names = cfg["matrices"]["enabled"] && cfg["matrices"]["plots"] ? matrix_figures(out,events,rows,cfg) : String[]
     plot["filters"] && filter_audit(out,cfg,candidates)
     names=plot["examples"] ? [example_figure(out,i,e,cfg) for (i,e) in enumerate(examples)] : String[]
     open(joinpath(out,"example_selection.csv"),"w") do io
-        csvrow(io,"event_i","event_j","station","phase","cc_signed","selection","figure")
+        csvrow(io,"event_i","event_j","original_event_i","original_event_j","station","phase","cc_signed","selection","figure")
         for (ex,name) in zip(examples,names)
             r=ex.row
-            csvrow(io,r.i,r.j,r.station,r.phase,r.cc,isempty(plot["event_pairs"]) ? "deterministic weak/middle/strong per group, then evenly spaced group order" : "explicit requested event pair",name*".png")
+            csvrow(io,r.i,r.j,ex.a.event.name,ex.b.event.name,r.station,r.phase,r.cc,isempty(plot["event_pairs"]) ? "deterministic weak/middle/strong per group, then evenly spaced group order" : "explicit requested event pair",name*".png")
         end
         for pair in plot["event_pairs"]
             i,j=sort(Int.(pair))
             if !any(r->r.i==i && r.j==j,rows)
-                csvrow(io,i,j,"","",NaN,"requested pair has no accepted observations; not plotted","")
+                csvrow(io,i,j,events[i].name,events[j].name,"","",NaN,"requested pair has no accepted observations; not plotted","")
             elseif !any(ex->ex.row.i==i && ex.row.j==j,examples) || !plot["examples"]
-                csvrow(io,i,j,"","",NaN,"accepted pair omitted by max_examples or examples=false","")
+                csvrow(io,i,j,events[i].name,events[j].name,"","",NaN,"accepted pair has no figure in selected stations/phases, or examples=false","")
             end
         end
     end
@@ -166,6 +169,12 @@ function make_report(out,events,groups,rows,cfg)
         <div class="cards"><div class="card"><div class="n">$(length(events))</div>events</div><div class="card"><div class="n">$(count(r->r.phase=="P",rows))</div>P observations</div><div class="card"><div class="n">$(count(r->r.phase=="S",rows))</div>S observations</div><div class="card"><div class="n">$(count(==(0),deg))</div>isolated events</div></div>
         <p>Polarity: <b>$(escapehtml(cfg["quality"]["polarity"]))</b>. Largest graph components: $(join(sizes[1:min(8,end)],", ")). Connectedness does not guarantee relocation geometry or verify that a detection is an earthquake.</p>
         <p>IDs are sequential across valid input events, including isolated events. <a href="event_id_map.csv">Original ID map</a>. <a href="near_identity.csv">Near-identical arrival flags</a> are review evidence; no events were automatically deleted.</p>""")
+        if !isempty(matrix_names)
+            print(io,"""<h2>Station/phase matrices (PNG)</h2><p><a href="matrices/index.csv">Matrix file index</a>. Grey cells are missing observations, not zero correlations. Dense CSVs need <code>[matrices] dense=true</code>.</p>""")
+            for name in matrix_names
+                print(io,"""<details><summary>$(escapehtml(name))</summary><img src="$(escapehtml(name))" alt="Accepted station phase correlation and timing matrices"></details>""")
+            end
+        end
         if plot["summary"]
             print(io,"""<h2>Quality and connectivity</h2><img src="summary.png" alt="Correlation, lag, station and connectivity distributions"><p>Pair decisions follow trace preprocessing. <a href="preprocessing_issues.csv">Trace exclusions</a>, <a href="phase_readiness.csv">pick/window readiness</a>, and <a href="input_issues.csv">header issues</a> explain losses.</p>""")
         end
@@ -178,7 +187,7 @@ function make_report(out,events,groups,rows,cfg)
         if plot["examples"]
             print(io,"""<h2>Accepted pair examples</h2><p>Automatic selection takes weak, middle and strong accepted coefficients in each station/phase, then evenly samples the ordered list if it exceeds max_examples. Explicit event_pairs uses output IDs and the same accepted observations. <a href="example_selection.csv">Exact selection ledger</a>. Examples do not validate every edge.</p>""")
             for name in names
-                print(io,"<details><summary>$(escapehtml(name))</summary><img loading=\"lazy\" src=\"$name.png\" alt=\"Aligned waveforms and correlation\"><a href=\"$name.pdf\">Vector PDF</a></details>")
+                print(io,"<details><summary>$(escapehtml(name))</summary><img loading=\"lazy\" src=\"$name.png\" alt=\"Aligned waveforms and correlation\"></details>")
             end
         end
         print(io,"""<h2>Files and conventions</h2><ul><li><a href="dt.cc">dt.cc</a>: travel time i minus j; weight mode $(escapehtml(cfg["output"]["weight"])).</li><li><a href="correlations.csv">Correlation audit</a>: signed r, lag, peak gap, SNR and components.</li><li><a href="catalog.txt">Catalogue</a> · <a href="stations.txt">Stations</a> · <a href="event_id_map.csv">ID map</a>.</li><li><a href="effective_config.toml">Effective settings</a> · <a href="run_summary.toml">Run summary</a> · <a href="group_summary.csv">Group decisions</a>.</li><li><a href="ddsync.toml">DDSync configuration</a> · <a href="graphsplit_inputs.toml">GraphSplit input fragment</a>.</li></ul><p>Parabolic lag interpolation improves grid resolution; it is not an uncertainty estimate. Correlation weights are not inverse timing variances. Review sparse support, competing peaks, near-identical traces and inconsistent cycles before interpreting relocated structures.</p></html>""")

@@ -21,6 +21,7 @@ sample_rate_hz = 50.0 # resample with an anti-alias filter; native rate must be 
 min_snr = 1.5 # signal RMS / noise RMS measured before P, after filtering
 
 [S]
+min_components = 1 # only components passing min_snr enter the mean; 2 requires both horizontals
 band_hz = [2.0, 14.0] # same band is a starting point, not a universal optimum
 window_s = [-0.5, 3.0] # relative to the S pick
 max_lag_s = 0.5
@@ -34,14 +35,21 @@ summary = true # coefficients, lags, station support and graph connectivity
 examples = true # waveforms before/after alignment and full lag curve
 filters = true # actual filter response and representative waveform spectra
 closure = true # station/phase triangle closure, an internal-consistency check
-max_examples = 12
-# Empty = deterministic weak/middle/strong accepted pairs across station+phase.
-# Nonempty = output IDs from event_id_map.csv, e.g. [[1, 2], [2, 3]].
-# Only accepted observations are shown; selection/unavailable pairs are logged.
+max_examples = 12 # automatic examples only; explicit pairs are not silently capped
+# Empty pair lists choose weak/middle/strong ACCEPTED observations automatically.
+# Numeric pairs use the event_id COLUMN in event_id_map.csv, NOT original folders.
+# [[1, 2], [2, 3]] shows both pairs for every selected station and phase.
 event_pairs = []
+# Alternatively use original folder names (including nonnumeric names):
+original_event_pairs = [] # e.g. [["17", "203"]]; leave event_pairs empty
+example_stations = [] # [] = all stations; ["XX.S01"] selects one
+example_phases = ["P", "S"] # use ["P"] for P figures only
 
 [matrices]
-enabled = true # sparse accepted entries by station/phase; no N-by-N allocation
+plots = true # PNG heatmaps appear in the report, even when dense=false
+max_plot_events = 500
+max_plot_groups = 24
+enabled = true # write matrices/index.csv and sparse accepted entries by station/phase; no N-by-N allocation
 dense = false # optional CSV matrices; missing means unmeasured/rejected, not zero
 max_dense_events = 500
 max_dense_cells = 2000000 # total dense cells across station/phase groups

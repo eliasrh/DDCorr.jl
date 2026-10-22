@@ -10,14 +10,14 @@ Let `p_i` be the supplied absolute pick, `o_i` the event origin, and `L_ij` the 
 dt_ij = (p_i − o_i) − (p_j − o_j) − L_ij
 ```
 
-This is the travel time for i minus the travel time for j. It excludes the potentially large separation between the events' origin times. The lag alone is a correction to the supplied picks; it is not the differential travel time.
+This is the travel time for i minus the travel time for j. It excludes the potentially large separation between the catalogue origin times, but errors in those origins remain in the reduced times. The lag alone is a correction to the supplied picks; it is not the differential travel time.
 
 The `dt.cc` format is:
 
 ```text
 # 1 2 0.0
-XX.STA1   -0.02700000  0.960400 P
-XX.STA1   -0.04900000  0.902500 S
+XX.STA1   -0.0270  0.960400 P
+XX.STA1   -0.0490  0.902500 S
 ```
 
 The example numbers above illustrate the format. The header identifies the event pair. Each observation supplies station key, seconds, nonnegative weight and phase. Signed coefficients are retained separately in `correlations.csv`. Default weights are `r²`; they express similarity, not an independently calibrated timing variance.
@@ -37,7 +37,7 @@ IDs are assigned in lexical order of valid event-folder names. For example `1201
 Clone [DDSync](https://github.com/eliasrh/DDSync) beside your DDCorr checkout, or use an existing installation. In a terminal, change into the **completed DDCorr output folder**, then run the DDSync script using its actual path:
 
 ```sh
-cd /path/to/DDCorr.jl/results/TIMESTAMP
+cd /path/to/DDCorr.jl/results/correlate_TIMESTAMP
 julia /path/to/DDSync/DDSyncJulia/run_ddsync.jl ddsync.toml
 ```
 

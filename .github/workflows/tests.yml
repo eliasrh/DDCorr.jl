@@ -18,7 +18,18 @@ jobs:
       - run: python -m unittest discover -s scripts -p 'test_*.py'
       - run: python scripts/make_synthetic.py --output examples/synthetic
       - run: julia --project=. --threads=2 bin/ddcorr.jl DDCorr.toml --inspect
-      - run: julia --project=. --threads=2 bin/ddcorr.jl DDCorr.toml --no-plots
+      - name: Prepare explicit-pair course configuration
+        run: |
+          python - <<'PYCONFIG'
+          from pathlib import Path
+          text=Path('DDCorr.toml').read_text().replace('max_examples = 12','max_examples = 1').replace('event_pairs = []','event_pairs = [[1,2],[2,3]]',1).replace('dense = false','dense = true')
+          Path('course_test.toml').write_text(text)
+          PYCONFIG
+      - run: julia --project=. --threads=2 bin/ddcorr.jl course_test.toml
+      - name: Check figures, selection and timing representation
+        run: |
+          ddcorr_run=$(ls -dt results/correlate_*/ | head -n 1)
+          python scripts/check_course_outputs.py "$ddcorr_run"
       - name: Check timing against independent synthetic truth
         run: |
           ddcorr_run=$(ls -dt results/*/ | head -n 1)

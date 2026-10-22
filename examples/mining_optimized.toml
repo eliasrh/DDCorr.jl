@@ -16,6 +16,7 @@ sample_rate_hz = 50.0
 min_snr = 1.5
 
 [S]
+min_components = 2 # retain the original mining requirement
 band_hz = [0.4, 2.0]
 window_s = [-1.0, 7.0]
 max_lag_s = 3.0

@@ -23,7 +23,7 @@ const noteRows=[];const sourceIndex=[];const charts=[],tables=[];
 const measureContext=createCanvas(16,16).getContext('2d');
 function wrapText(value,width,size,font=FONT){
  measureContext.font=`${size}px "${font}"`;
- return value.split('\n').flatMap(p=>{const result=[];let current='';for(const word of p.split(' ')){const next=current?current+' '+word:word;if(current&&measureContext.measureText(next).width>width-12){result.push(current);current=word;}else current=next;}result.push(current);return result;});
+ return value.split('\n').flatMap(p=>{const result=[];let current='';for(const word of p.split(' ')){const next=current?current+' '+word:word;if(current&&measureContext.measureText(next).width>width-70){result.push(current);current=word;}else current=next;}result.push(current);return result;});
 }
 
 function text(slide,name,txt,x,y,w,h,size=29,color=C.ink,bold=false,font=FONT){
@@ -31,7 +31,7 @@ function text(slide,name,txt,x,y,w,h,size=29,color=C.ink,bold=false,font=FONT){
  s.text=txt;s.text.style={fontSize:size,typeface:font,color,bold,insets:0,autoFit:'none',wrap:'square',verticalAlignment:'top'};return s;
 }
 function paragraphs(slide,items,x=64,y=160,w=1150,size=29,gap=23){
- let cy=y;for(const p of items){const lines=wrapText(p,w,size);const h=lines.length*size*1.30+6;text(slide,`body-${cy}`,lines.join('\n'),x,cy,w,h,size);cy+=h+gap;}return cy;
+ let cy=y;for(const p of items){const lines=wrapText(p,w,size);const h=lines.length*size*1.30+6;text(slide,`body-${cy}`,lines.join('\n'),x,cy,w,h,size);cy+=h+gap;if(cy-gap>654)throw Error(`Body overflow on slide ${presentation.slides.items.length}: ${cy-gap}`);}return cy;
 }
 function command(slide,code,x,y,w,h,size=26){
  const box=slide.shapes.add({geometry:'rect',position:{left:x-15,top:y-14,width:w+30,height:h+24},fill:C.light,line:{fill:'none',width:0}});
@@ -73,8 +73,9 @@ function nativeChart(slide,spec){
 
 for(let i=0;i<slides.length;i++){
  const d=slides[i],n=i+1;const slide=presentation.slides.add();slide.background.fill=C.bg;
- text(slide,'title',d.title,64,50,1152,90,d.cover?60:43,C.ink,true);
+ text(slide,'title',d.title,64,50,1152,90,d.cover?54:41,C.ink,true);
  text(slide,'slide-number',String(n).padStart(2,'0'),1155,668,60,26,18,C.muted);
+ text(slide,'section-label','DDCorr · '+(n<18?'QUICK START':n<37?'DATA AND SAC':n<47?'REAL CORRELATIONS':n<80?'METHODS':'PRACTICE'),64,673,1000,23,16,C.muted);
  let notes=d.notes||'';
  if(d.cover){paragraphs(slide,d.body,64,230,1050,34,28);text(slide,'course',d.subtitle||'DDCorr.jl teaching package',64,600,1100,40,24,C.teal,true);}
  else if(d.code){
@@ -112,7 +113,7 @@ for(let i=0;i<slides.length;i++){
  noteRows.push(`# ${n}. ${d.title}\n\n${(d.body||[]).join('\n\n')}\n\n${d.command?'```sh\n'+d.command+'\n```\n\n':''}${d.equation?'Equation: '+d.equation+'\n\n':''}${notes}\n`);
 }
 await fs.writeFile(path.join(HERE,'code_index.json'),JSON.stringify(sourceIndex,null,2));
-await fs.writeFile(path.join(REPO,'teaching/LECTURE_NOTES.md'),'# DDCorr.jl lecture notes\n\nThe PowerPoint contains editable text, equations, tables and charts. Code excerpts are images of the exact source listed below.\n\n'+noteRows.join('\n---\n\n'));
+await fs.writeFile(path.join(REPO,'teaching/LECTURE_NOTES.md'),'# DDCorr.jl lecture notes\n\nThe PowerPoint contains editable text, commands and tables; equations, scientific figures and source excerpts are PNG images with source included. Code excerpts are images of the exact source listed below.\n\n'+noteRows.join('\n---\n\n'));
 await fs.writeFile(path.join(HERE,'presentation.json'),JSON.stringify(presentation.toProto()));
 const draft=path.join(HERE,'candidate.pptx');await(await PresentationFile.exportPptx(presentation)).save(draft);
 for(let i=0;i<presentation.slides.items.length;i++){

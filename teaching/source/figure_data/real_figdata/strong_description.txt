@@ -1,0 +1,2 @@
+Z7.RODG S; event_id 44 / 45; r=1.0; lag=0.0003 s
+Waveforms: HHE, first common component; curve averages 2 SNR-qualified component(s).

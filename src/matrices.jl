@@ -12,6 +12,7 @@ function write_matrices(out, events, rows, cfg)
     ids = sort([e.id for e in events])
     ids == collect(1:length(events)) || error("Matrix export requires sequential event IDs 1:N")
     n = length(ids)
+    precision = get(cfg["output"],"dt_decimals",4)
     groups = Dict{Tuple{String,String},Vector{Observation}}()
     seen = Set{Tuple{String,String,Int,Int}}()
     for row in rows
@@ -47,7 +48,7 @@ function write_matrices(out, events, rows, cfg)
                 csvrow(io,"event_i","event_j","cc_signed","dt_i_minus_j_s","lag_j_later_s","weight")
                 for r in edges
                     weight = cfg["output"]["weight"] == "cc_squared" ? r.cc^2 : abs(r.cc)
-                    csvrow(io,r.i,r.j,r.cc,r.dt,r.lag,weight)
+                    csvrow(io,r.i,r.j,r.cc,round(r.dt;digits=precision),round(r.lag;digits=precision),weight)
                 end
             end
             dense_names = ["", "", ""]
@@ -66,7 +67,7 @@ function write_matrices(out, events, rows, cfg)
                                 row === nothing && continue
                                 value = getproperty(row,quantity)
                                 quantity != :cc && i > j && (value = -value)
-                                values[j] = string(value)
+                                values[j] = string(quantity == :cc ? value : round(value;digits=precision))
                             end
                             csvrow(io,i,values...)
                         end

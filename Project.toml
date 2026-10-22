@@ -1,7 +1,7 @@
 name = "DDCorr"
 uuid = "3c85a4ae-65ee-4b3e-b290-8e27c7cfe636"
 authors = ["Elias Heimisson"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"

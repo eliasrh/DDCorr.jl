@@ -282,7 +282,7 @@ version = "0.1.0+0"
 deps = ["CairoMakie", "DSP", "Dates", "FFTW", "LinearAlgebra", "Printf", "Random", "SHA", "Serialization", "Statistics", "TOML"]
 path = "."
 uuid = "3c85a4ae-65ee-4b3e-b290-8e27c7cfe636"
-version = "0.1.0"
+version = "0.2.0"
 
 [[deps.DSP]]
 deps = ["Bessels", "FFTW", "IterTools", "LinearAlgebra", "Polynomials", "Random", "Reexport", "SpecialFunctions", "Statistics"]

@@ -52,6 +52,7 @@ function validate_config(cfg)
     finite(x)=x isa Real && !(x isa Bool) && isfinite(x)
     cfg["quality"]["polarity"] in ("positive","absolute") || error("polarity must be positive or absolute")
     cfg["output"]["weight"] in ("cc","cc_squared") || error("weight must be cc or cc_squared")
+    0<=cfg["output"]["dt_decimals"]<=9 || error("output.dt_decimals must be 0..9")
     cfg["runtime"]["max_events"]>=0 || error("max_events must be >=0")
     0<=cfg["preprocess"]["trace_taper_fraction"]<=0.1 || error("Trace taper must be in [0,0.1]")
     nw=cfg["preprocess"]["noise_window_s"]
@@ -75,6 +76,14 @@ function validate_config(cfg)
         pair isa AbstractVector && length(pair)==2 && all(x->x isa Integer && x>0,pair) && pair[1]!=pair[2] ||
             error("plots.event_pairs requires distinct positive output IDs, e.g. [[1, 2]]")
     end
+    isempty(cfg["plots"]["event_pairs"]) || isempty(cfg["plots"]["original_event_pairs"]) || error("Choose event_pairs OR original_event_pairs, not both")
+    for pair in cfg["plots"]["original_event_pairs"]
+        pair isa AbstractVector && length(pair)==2 && all(x->x isa String && !isempty(x),pair) && pair[1]!=pair[2] || error("original_event_pairs requires two different folder labels")
+    end
+    all(x->x isa String,cfg["plots"]["example_stations"]) || error("example_stations must be station strings")
+    !isempty(cfg["plots"]["example_phases"]) && all(x->x in ("P","S"),cfg["plots"]["example_phases"]) || error("example_phases must contain P and/or S")
+    cfg["diagnostics"]["max_requested_examples"]>0 || error("max_requested_examples must be positive")
+    cfg["matrices"]["max_plot_events"]>0 && cfg["matrices"]["max_plot_groups"]>0 || error("Matrix plot limits must be positive")
     cfg["matrices"]["max_dense_events"]>0 || error("max_dense_events must be positive")
     cfg["matrices"]["max_dense_cells"]>0 || error("max_dense_cells must be positive")
     cfg["downstream"]["ddsync_min_edges"]>=1 || error("ddsync_min_edges must be positive")

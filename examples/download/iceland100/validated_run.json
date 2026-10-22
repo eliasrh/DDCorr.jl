@@ -1,0 +1,14 @@
+{
+  "events": 100,
+  "selected_stations": 12,
+  "usable_stations": 11,
+  "sac_files": 3300,
+  "missing_station": "STJA",
+  "selected_archive_bytes": 52588544,
+  "new_download_bytes": 0,
+  "accepted_observations": 7037,
+  "pick_mode": "predicted",
+  "selection": "first 100 chronological S1 events from 2014-08-23T12:00Z; 12 nearest metadata-eligible stations to 64.85,-16.85",
+  "source_catalog_sha256": "0430c9deab535e4f44af96424bc564ca6af2ac8ce9118de787515b748ea49103",
+  "limits": "Local previously downloaded archive; remote coverage may differ. Teaching window centres are homogeneous predictions, not observed picks."
+}

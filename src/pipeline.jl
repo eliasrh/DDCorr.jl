@@ -29,7 +29,7 @@ end
 
 function group_fingerprint(entries,pc,cfg)
     # Change the algorithm version whenever numerical behavior changes.
-    io=IOBuffer();print(io,"DDCorr-v0.1.0\n")
+    io=IOBuffer();print(io,"DDCorr-v0.2.0\n")
     for file in ("sac.jl","signal.jl","pipeline.jl")
         write(io,read(joinpath(@__DIR__,file)))
     end
@@ -134,7 +134,7 @@ function process_group(station,phase,entries,cfg)
     # Only accepted observations qualify for pictures. Explicit requested pairs
     # use the same computed observations and curves as scientific outputs.
     examples=NamedTuple[]
-    if cfg["plots"]["enabled"] && (cfg["plots"]["examples"] || cfg["plots"]["filters"]) && !isempty(rows)
+    if cfg["plots"]["enabled"] && (cfg["plots"]["examples"] || cfg["plots"]["filters"]) && !isempty(rows) && (isempty(cfg["plots"]["example_stations"]) || station in cfg["plots"]["example_stations"]) && phase in cfg["plots"]["example_phases"]
         requested=Set(Tuple(sort(Int.(pair))) for pair in cfg["plots"]["event_pairs"])
         selected=if isempty(requested)
             ranked=sort(rows;by=x->(abs(x.cc),x.i,x.j))
@@ -143,7 +143,7 @@ function process_group(station,phase,entries,cfg)
             filter(r->(r.i,r.j) in requested,rows)
         end
         # Store a bounded set per group; globally capped again by the report.
-        selected=selected[1:min(length(selected),max(1,cfg["plots"]["max_examples"]))]
+        isempty(requested) && (selected=selected[1:min(length(selected),max(1,cfg["plots"]["max_examples"]))])
         for row in selected
             keys=split(row.components,';');A=prepared[row.i];B=prepared[row.j]
             w=CorrelationWorkspace(A[keys[1]].nfft,A[keys[1]].nlag);curve=zeros(length(w.curve))
@@ -191,8 +191,8 @@ function write_inputs(events,results,out,cfg)
             pair=(r.i,r.j)
             if pair!=previous;println(io,"# $(r.i) $(r.j) 0.0");previous=pair;end
             weight=cfg["output"]["weight"]=="cc_squared" ? r.cc^2 : abs(r.cc)
-            @printf(io,"%-12s % .8f %.6f %s\n",r.station,r.dt,weight,r.phase)
-            csvrow(audit,r.i,r.j,r.station,r.phase,r.dt,r.lag,r.cc,weight,r.second_cc,r.gap,r.snr,r.ncomponents,r.distance,r.components)
+            @printf(io,"%-12s % .*f %.6f %s\n",r.station,cfg["output"]["dt_decimals"],r.dt,weight,r.phase)
+            csvrow(audit,r.i,r.j,r.station,r.phase,round(r.dt;digits=cfg["output"]["dt_decimals"]),round(r.lag;digits=cfg["output"]["dt_decimals"]),r.cc,weight,r.second_cc,r.gap,r.snr,r.ncomponents,r.distance,r.components)
         end
       end
     end
@@ -268,17 +268,21 @@ function run(path;args=String[])
         startswith(arg,"--sac-dir=") && (cfg["input"]["sac_root"]=abspath(split(arg,'=';limit=2)[2]))
         arg=="--no-plots" && (cfg["plots"]["enabled"]=false)
     end
-    stamp=Dates.format(now(),"yyyymmdd_HHMMSS_sss")
+    mode="--inspect" in args ? "inspect" : "correlate"
+    stamp=mode*"_"*Dates.format(now(UTC),"yyyy-mm-dd_HHMMSS_sss")
     out=joinpath(cfg["output"]["root"],stamp)
     ispath(out) && error("Output already exists: $out")
     mkpath(out)
     open(joinpath(out,"effective_config.toml"),"w") do io;TOML.print(io,cfg);end
     provenance=Dict("julia_version"=>string(VERSION),"source_sha256"=>Dict(basename(f)=>bytes2hex(open(sha256,f)) for f in readdir(@__DIR__;join=true) if isfile(f)))
     open(joinpath(out,"software_provenance.toml"),"w") do io;TOML.print(io,provenance);end
-    println("Output: $out\nReading SAC metadata...")
+    println("Configuration: $(abspath(path))\nSAC input: $(cfg["input"]["sac_root"])\n$(uppercasefirst(mode)) directory: $out\nReading SAC metadata...")
+    write_run_guide(out,cfg,mode,"started")
     events=inventory(cfg,out)
     println("$(length(events)) valid events. Sequential IDs: event_id_map.csv. Pick/window checks: phase_readiness.csv.")
+    resolve_requested_pairs!(cfg,events)
     if "--inspect" in args
+        write_run_guide(out,cfg,mode,"complete")
         println("Inspection complete. No waveforms correlated. Read phase_readiness.csv before processing.")
         return out
     end
@@ -287,6 +291,7 @@ function run(path;args=String[])
         phase_component(h,phase;tolerance_deg=cfg["input"]["component_inclination_tolerance_deg"]) || continue
         push!(get!(groups,(stationkey(h),phase),Tuple{Event,SACHeader}[]),(e,h))
     end
+    check_example_budget(groups,cfg)
     FFTW.set_num_threads(1);BLAS.set_num_threads(1)
     results=NamedTuple[];cache=cfg["runtime"]["cache_dir"];mkpath(cache)
     for ((station,phase),entries) in sort(collect(groups);by=first)
@@ -307,7 +312,7 @@ function run(path;args=String[])
         csvrow(io,"event_i","event_j","station","phase","cc_signed","lag_s","dt_s","interpretation")
         for r in rows
             abs(r.cc)>=cfg["output"]["near_identity_cc"] || continue
-            csvrow(io,r.i,r.j,r.station,r.phase,r.cc,r.lag,r.dt,"review waveform overlap and independent arrivals; similarity alone does not prove duplicate event")
+            csvrow(io,r.i,r.j,r.station,r.phase,r.cc,round(r.lag;digits=cfg["output"]["dt_decimals"]),round(r.dt;digits=cfg["output"]["dt_decimals"]),"review waveform overlap and independent arrivals; similarity alone does not prove duplicate event")
         end
     end
     serialize(joinpath(out,"report_data.jls"),(events=events,groups=results,rows=rows,cfg=cfg))
@@ -325,7 +330,9 @@ function run(path;args=String[])
         Base.invokelatest(()->make_report(out,events,results,rows,cfg))
     end
     isempty(rows) && println("WARNING: No accepted correlations. Inspect phase_readiness.csv, preprocessing_issues.csv and group_summary.csv.")
+    write_run_guide(out,cfg,mode,"complete")
     println("Done: $out\n$(length(rows)) observations in $(round(time()-start;digits=1)) s")
+    cfg["plots"]["enabled"] && println("Open in your browser: $(joinpath(out,"report.html"))")
     out
 end
 

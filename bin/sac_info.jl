@@ -1,0 +1,52 @@
+#!/usr/bin/env julia
+# A first look at one binary SAC file, using the same reader as DDCorr.
+using DDCorr, Dates, Printf
+
+function main(args)
+    if isempty(args) || "--help" in args
+        println("Usage: julia --project=. bin/sac_info.jl FILE.sac [--plot FILE.png] [--p-header a] [--s-header t0]")
+        return
+    end
+    file=popfirst!(args); options=Dict("--p-header"=>"a","--s-header"=>"t0","--plot"=>"")
+    while !isempty(args)
+        key=popfirst!(args)
+        haskey(options,key) && !isempty(args) || error("Unknown or incomplete option: $key")
+        options[key]=popfirst!(args)
+    end
+    h=DDCorr.read_header(file)
+    utc(x)=isfinite(x) ? string(unix2datetime(x))*"Z" : "undefined"
+    println("File: ",abspath(file),"\nChannel: ",DDCorr.channelkey(h),"\nSAC version: ",h.ints[7])
+    println("Reference UTC (NZ fields): ",utc(h.reference))
+    for (name,index,unit) in [("DELTA",1,"s/sample"),("B",6,"s from reference"),("O",8,"s from reference"),
+            ("EVLA",36,"degrees"),("EVLO",37,"degrees"),("EVDP",39,"km"),
+            ("STLA",32,"degrees"),("STLO",33,"degrees"),("STEL",34,"m"),("CMPAZ",58,"degrees"),("CMPINC",59,"degrees")]
+        @printf("%-8s %14.6f  %s\n",name,h.floats[index],unit)
+    end
+    println("NPTS     ",h.ints[10]," samples\nOrigin UTC: ",utc(h.reference+h.floats[8]))
+    picks=Dict{String,Float64}()
+    for phase in ("P","S")
+        field=lowercase(options["--"*lowercase(phase)*"-header"])
+        haskey(DDCorr.PICK_FIELDS,field) || error("Unknown SAC pick field: $field")
+        p=DDCorr.pick(h,field);picks[phase]=p
+        println(phase," uses ",uppercase(field)," = ",p," s from reference; UTC ",utc(h.reference+p),"; pick − origin = ",p-h.floats[8]," s")
+    end
+    println("Undefined numeric headers display NaN. Header values describe the file; they do not certify a pick's accuracy.")
+    if !isempty(options["--plot"])
+        path=abspath(options["--plot"]);endswith(lowercase(path),".png") || error("Use a .png output")
+        @eval using CairoMakie
+        Base.invokelatest() do
+            data=DDCorr.read_samples(h);t=h.floats[6].+(0:length(data)-1).*h.floats[1].-h.floats[8]
+            fig=Figure(size=(1250,520),fontsize=20)
+            ax=Axis(fig[1,1],title="$(DDCorr.channelkey(h)) · raw SAC samples",xlabel="Seconds from catalogue origin",ylabel="Recorded amplitude (archive units)")
+            lines!(ax,t,data;color="#216F88",linewidth=1)
+            for (ph,p) in sort(collect(picks))
+                isfinite(p) && vlines!(ax,[p-h.floats[8]];label="$ph header",color=ph=="P" ? "#BF652F" : "#7156A4",linestyle=:dash)
+            end
+            axislegend(ax);mkpath(dirname(path));save(path,fig;px_per_unit=1.5);println("PNG: ",path)
+        end
+    end
+end
+try main(copy(ARGS)) catch err
+    err isa InterruptException && rethrow()
+    println(stderr,sprint(showerror,err));exit(1)
+end
