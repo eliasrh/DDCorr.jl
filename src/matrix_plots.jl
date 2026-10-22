@@ -16,7 +16,6 @@ function matrix_figures(out,events,rows,cfg)
                 lag[r.i,r.j]=r.lag;lag[r.j,r.i]=-r.lag
             end
             fig=Figure(size=(1500,560),fontsize=19)
-            Label(fig[0,:],"$(key[1]) $(key[2]) · accepted observations · grey = missing",fontsize=26)
             ticks=unique(round.(Int,range(1,n;length=min(n,8))))
             for (k,(data,title,unit)) in enumerate(((cc,"Signed coefficient r","r"),(dt,"dt(i − j)","seconds"),(lag,"Lag: j later than i","seconds")))
                 vals=filter(isfinite,vec(data));limit=k==1 ? 1.0 : max(maximum(abs,vals;init=0.0),1e-6)
@@ -25,6 +24,9 @@ function matrix_figures(out,events,rows,cfg)
                 hm=heatmap!(ax,1:n,1:n,permutedims(data);colormap=:vik,colorrange=(-limit,limit),nan_color="#D9DEE3")
                 Colorbar(fig[1,2k],hm;label=unit)
             end
+            # Add the spanning title after all six columns exist. Otherwise
+            # its minimum width can enlarge only the first matrix panel.
+            Label(fig[0,:],"$(key[1]) $(key[2]) · accepted observations · grey = missing",fontsize=26)
             name=@sprintf("matrices/group_%04d.png",number)
             save(joinpath(out,name),fig;px_per_unit=1.5)
             push!(names,name);csvrow(io,key...,"rendered",name)

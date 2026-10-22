@@ -98,7 +98,7 @@
     },
     {
       "path": "src/matrix_plots.jl",
-      "sha256": "e1e02cd80dc1ac06db2167c84507db56cba5802cbc0402722bda3faf2306cc5d"
+      "sha256": "83acec3b74eaf3c2efd229293fe86af208bd53d524e4c3f7307630be60021199"
     },
     {
       "path": "src/pipeline.jl",
