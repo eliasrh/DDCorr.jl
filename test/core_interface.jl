@@ -107,3 +107,114 @@ end
     c["plots"]["example_stations"]=["XX.A"]
     @test M.check_example_budget(groups,c)==1
 end
+
+@testset "Station coordinate preflight, explicit split and source depth units" begin
+    mktempdir() do d
+        sac=joinpath(d,"sac");out=joinpath(d,"inspect");mkpath(out)
+        config=deepcopy(cfg);config["input"]["sac_root"]=sac
+        config["input"]["station_epoch_policy"]="error"
+        paths=String[]
+        for (id,lat) in enumerate((-20.0,-20.01))
+            dir=joinpath(sac,"event$id");mkpath(dir)
+            path=joinpath(dir,"XX.ABC.HHZ.sac");push!(paths,path);write_synthetic_sac(path)
+            open(path,"r+") do io
+                seek(io,4*31);write(io,Float32(lat))
+                seek(io,4*38);write(io,Float32(10000))
+            end
+        end
+        original=read.(paths)
+        @test_throws ErrorException M.inventory(config,out)
+        @test occursin("XX.ABC",read(joinpath(out,"station_epochs.csv"),String))
+        @test !isfile(joinpath(out,"dt.cc"))
+        config["input"]["station_epoch_policy"]="split"
+        config["input"]["depth_unit"]="m"
+        events=M.inventory(config,out)
+        @test all(e->e.depth==10.0,events)
+        @test Set(M.stationkey(h) for e in events for h in e.headers)==Set(["XX.ABC001","XX.ABC002"])
+        @test read.(paths)==original
+        M.write_inputs(events,NamedTuple[],out,config)
+        @test countlines(joinpath(out,"stations.txt"))==2
+        @test isfile(joinpath(out,"dt.cc"))
+        again=M.inventory(config,out)
+        @test [M.stationkey(e.headers[1]) for e in events]==[M.stationkey(e.headers[1]) for e in again]
+        # A split must also change cache identity, even with identical source bytes.
+        e=events[1];h=e.headers[1]
+        orig=M.SACHeader(h.path,h.floats,h.ints,h.network,"ABC",h.location,h.channel,h.event_name,h.reference,h.swap)
+        @test M.group_fingerprint([(e,h)],config["phase"]["P"],config)!=M.group_fingerprint([(e,orig)],config["phase"]["P"],config)
+        # Conflicting coordinates among one event's components need correction.
+        other=joinpath(dirname(paths[1]),"XX.ABC.HHN.sac")
+        cp(paths[2],other)
+        open(other,"r+") do io;seek(io,600);write(io,"HHN");end
+        @test_throws ErrorException M.inventory(config,out)
+        rm(other)
+        # The regular CLI inspection records failures without attempting correlation.
+        settings=joinpath(d,"test.toml")
+        write(joinpath(d,"advanced.toml"),"[input]\nstation_epoch_policy=\"error\"\n")
+        write(settings,"[input]\nsac_dir=\"sac\"\n[output]\ndirectory=\"runs\"\n[advanced]\nfile=\"advanced.toml\"\n")
+        @test_throws ErrorException M.inspect(settings)
+        run=only(readdir(joinpath(d,"runs");join=true))
+        @test M.TOML.parsefile(joinpath(run,"run_info.toml"))["status"]=="failed"
+        @test occursin("Station coordinates differ",read(joinpath(run,"failure.txt"),String))
+        @test !isfile(joinpath(run,"catalog.txt"))
+        @test !isdir(joinpath(d,".ddcorr_cache"))
+        write(settings,"[advanced]\nfile=\"advanced.toml\"\n")
+        write(joinpath(d,"advanced.toml"),"[input]\ndepth_unit=\"feet\"\n")
+        @test_throws ErrorException M.load_config(settings)
+        write(joinpath(d,"advanced.toml"),"[input]\nstation_epoch_policy=\"ignore\"\n")
+        @test_throws ErrorException M.load_config(settings)
+    end
+end
+
+@testset "Default station conflict policy skips the entire station and preserves event IDs" begin
+    mktempdir() do d
+        sac=joinpath(d,"sac");out=joinpath(d,"inspect");mkpath(out)
+        config=deepcopy(cfg);config["input"]["sac_root"]=sac
+        @test config["input"]["station_epoch_policy"]=="skip"
+        originals=Dict{String,Vector{UInt8}}()
+        for id in 1:3
+            dir=joinpath(sac,"event$id");mkpath(dir)
+            bad=joinpath(dir,"XX.ABC.HHZ.sac");write_synthetic_sac(bad)
+            if id==2
+                open(bad,"r+") do io;seek(io,4*31);write(io,Float32(-20.01));end
+            end
+            originals[bad]=read(bad)
+            if id<3
+                good=joinpath(dir,"XX.DEF.HHZ.sac");write_synthetic_sac(good)
+                open(good,"r+") do io;seek(io,440);write(io,"DEF");end
+                originals[good]=read(good)
+            end
+        end
+        events=@test_logs (:warn,r"Station XX.ABC excluded") M.inventory(config,out)
+        @test [e.id for e in events]==[1,2,3]
+        @test [length(e.headers) for e in events]==[1,1,0]
+        @test all(h->M.stationkey(h)=="XX.DEF",[h for e in events for h in e.headers])
+        @test countlines(joinpath(out,"station_exclusions.csv"))==2
+        @test occursin("excluded from all events and both phases",read(joinpath(out,"station_exclusions.csv"),String))
+        @test occursin("excluded",read(joinpath(out,"station_epochs.csv"),String))
+        @test !occursin("XX.ABC",read(joinpath(out,"inventory.csv"),String))
+        @test !occursin("XX.ABC",read(joinpath(out,"phase_readiness.csv"),String))
+        M.write_inputs(events,NamedTuple[],out,config)
+        @test countlines(joinpath(out,"catalog.txt"))==3
+        @test !occursin("XX.ABC",read(joinpath(out,"stations.txt"),String))
+        @test occursin("XX.DEF",read(joinpath(out,"stations.txt"),String))
+        @test all(read(path)==bytes for (path,bytes) in originals)
+        # A within-event component conflict also excludes ABC globally under skip.
+        extra=joinpath(sac,"event1","XX.ABC.HHN.sac")
+        cp(joinpath(sac,"event2","XX.ABC.HHZ.sac"),extra)
+        open(extra,"r+") do io;seek(io,600);write(io,"HHN");end
+        events=@test_logs (:warn,r"Station XX.ABC excluded") M.inventory(config,out)
+        @test [length(e.headers) for e in events]==[1,1,0]
+        # Even if every station is excluded, a completed run can export an empty dt file.
+        for path in keys(originals)
+            occursin("DEF",path) && rm(path)
+        end
+        settings=joinpath(d,"test.toml")
+        write(settings,"[input]\nsac_dir=\"sac\"\n[output]\ndirectory=\"runs\"\n[plots]\nenabled=false\n")
+        run=@test_logs (:warn,r"Station XX.ABC excluded") M.run(settings)
+        @test M.TOML.parsefile(joinpath(run,"run_info.toml"))["status"]=="complete"
+        @test M.TOML.parsefile(joinpath(run,"run_info.toml"))["excluded_stations"]==1
+        @test filesize(joinpath(run,"dt.cc"))==0
+        @test countlines(joinpath(run,"catalog.txt"))==3
+        @test occursin("station(s) excluded",read(joinpath(run,"README.txt"),String))
+    end
+end

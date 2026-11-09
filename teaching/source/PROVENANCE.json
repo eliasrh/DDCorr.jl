@@ -6,7 +6,7 @@
   "source_files": [
     {
       "path": "DDCorr.toml",
-      "sha256": "106402a7af7a63ea20966743b07e6c6b896febbd6dc7621564f5b95f8f239b9e"
+      "sha256": "0eaa3d2352bb60a98744063f44a2b77624a4b1e84f8e0b4fa8264a56212ee7e8"
     },
     {
       "path": "Manifest.toml",
@@ -22,7 +22,7 @@
     },
     {
       "path": "bin/sac_info.jl",
-      "sha256": "2bdf6cbff6b9ff811df8ad247d34957c0f18098c2f904e1af35dde9d557c72e9"
+      "sha256": "29ae6f78b9837199d185e3ebd85922ca5c998dbe6c7ba0e4536712a36b54a9f1"
     },
     {
       "path": "examples/download/iceland100/events.csv",
@@ -54,7 +54,7 @@
     },
     {
       "path": "scripts/package_students.py",
-      "sha256": "317ff903e17706e4658434c6277da049cb4783ff7b66f076e349b7c961441b71"
+      "sha256": "cdc7f0037b916961cd5b00768f8f1dfa6bbc8ae586a58bd57da210a620f83f28"
     },
     {
       "path": "scripts/prepare_tables.py",
@@ -82,35 +82,35 @@
     },
     {
       "path": "src/configuration.jl",
-      "sha256": "8fb5f9fbdf7c0d16e8a557db3e418980b07546fd2a4414f39ab2acbb81203442"
+      "sha256": "ecd51d12e38d89520b36e47d49f7e509b8a6028733e17a9e7ea8a54ac52184d7"
     },
     {
       "path": "src/defaults.toml",
-      "sha256": "551d705b345b5efebb9c1b91b9f518e91fc0be32a8204476475389763686f726"
+      "sha256": "9f6b3debe78dcd52d130e1b29d8488b5bec1a87bec2901b7274b05fa284ca110"
     },
     {
       "path": "src/interface.jl",
-      "sha256": "3cbb3009c78a3124efa020d5034cf5ea6e95bd260ad0e2de0b1d5a346bb79f12"
+      "sha256": "60b006267e2aa50441d4d54e5448ca2b5bb8187e6dbb7a43b211a44e43909667"
     },
     {
       "path": "src/matrices.jl",
-      "sha256": "0e734749ebf16cd7dda0c6b7e906a0bf62f0692d23ec82a53a587eeff0896ba8"
+      "sha256": "1fe5a77aa64defd1c5a3043edb84281cc43441798a34ebd01f7275e90612c9b8"
     },
     {
       "path": "src/matrix_plots.jl",
-      "sha256": "83acec3b74eaf3c2efd229293fe86af208bd53d524e4c3f7307630be60021199"
+      "sha256": "03aca7dedfd9abcaab9b834a780ff2a6fbccc0c4066c9fe91a63bddb87e28bab"
     },
     {
       "path": "src/pipeline.jl",
-      "sha256": "43f1c20aa02712e32a6ccdad854c5fe70dcdd6ba3b5cbc4dce3b4a2dc65702f1"
+      "sha256": "4fe45b33ffdca8198248db2cf5dcfb4e61c346bc8b9b78f7879e3896591f8f2a"
     },
     {
       "path": "src/report.jl",
-      "sha256": "9e74beaabe5f86e32ee3e41544dd87ccdc2edc57b833d75ee0009b0a9e16bcbd"
+      "sha256": "084cd2f0ac2a32057d208a422be774843da0d99f708e6f0ca999d2e4885dee8a"
     },
     {
       "path": "src/sac.jl",
-      "sha256": "9a98fbd215d660696af2275c884efd498d0843413943bdaffa887cf33838483b"
+      "sha256": "bc20670e34a76d99a897fc526a708277290ee75db76a75622c85860024996ebc"
     },
     {
       "path": "src/signal.jl",
@@ -389,5 +389,7 @@
     "native_tables": 3,
     "native_charts": 0,
     "native_powerpoint_opened": false
-  }
+  },
+  "source_sync_utc": "2026-11-09",
+  "source_sync_note": "Workshop code and student defaults synchronized. PPTX unchanged; all code screenshots refer to unchanged src/signal.jl. Synthetic workflow rechecked separately."
 }

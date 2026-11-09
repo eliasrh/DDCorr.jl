@@ -17,7 +17,7 @@ def main():
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     entries = subprocess.check_output(
-        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        ["git", "ls-files", "--cached", "-z"],
         cwd=root,
     ).decode().split("\0")
     excluded = {".git", ".github", "work", "results", "node_modules", ".ddcorr_cache", "__pycache__"}

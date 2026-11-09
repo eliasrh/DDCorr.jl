@@ -36,7 +36,7 @@ function group_fingerprint(entries,pc,cfg)
     print(io,cfg["output"]["write_rejected_pairs"]); TOML.print(io,Dict("plots"=>cfg["plots"]))
     TOML.print(io,Dict("phase"=>pc,"preprocess"=>cfg["preprocess"],"quality"=>cfg["quality"]))
     for (e,h) in entries
-        s=stat(h.path); digest=open(sha256,h.path); print(io,e.id,' ',e.origin,' ',e.latitude,' ',e.longitude,' ',h.path,' ',s.size,' ',bytes2hex(digest),'\n')
+        s=stat(h.path); digest=open(sha256,h.path); print(io,e.id,' ',e.origin,' ',e.latitude,' ',e.longitude,' ',channelkey(h),' ',h.path,' ',s.size,' ',bytes2hex(digest),'\n')
     end
     bytes2hex(sha256(take!(io)))
 end
@@ -278,6 +278,7 @@ function run(path;args=String[])
     open(joinpath(out,"software_provenance.toml"),"w") do io;TOML.print(io,provenance);end
     println("Configuration: $(abspath(path))\nSAC input: $(cfg["input"]["sac_root"])\n$(uppercasefirst(mode)) directory: $out\nReading SAC metadata...")
     write_run_guide(out,cfg,mode,"started")
+    try
     events=inventory(cfg,out)
     println("$(length(events)) valid events. Sequential IDs: event_id_map.csv. Pick/window checks: phase_readiness.csv.")
     resolve_requested_pairs!(cfg,events)
@@ -334,6 +335,14 @@ function run(path;args=String[])
     println("Done: $out\n$(length(rows)) observations in $(round(time()-start;digits=1)) s")
     cfg["plots"]["enabled"] && println("Open in your browser: $(joinpath(out,"report.html"))")
     out
+    catch err
+        open(joinpath(out,"failure.txt"),"w") do io
+            println(io,sprint(showerror,err))
+            println(io,"\nRun incomplete. Do not use any partial relocation exports in this directory.")
+        end
+        write_run_guide(out,cfg,mode,"failed")
+        rethrow()
+    end
 end
 
 "Inspect SAC metadata and phase/window readiness without running correlations."

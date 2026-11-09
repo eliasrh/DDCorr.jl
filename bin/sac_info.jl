@@ -5,6 +5,7 @@ using DDCorr, Dates, Printf
 function main(args)
     if isempty(args) || "--help" in args
         println("Usage: julia --project=. bin/sac_info.jl FILE.sac [--plot FILE.png] [--p-header a] [--s-header t0]")
+        println("Always lists A and T0–T9 with their text labels. P/S options select displayed/plot markers; they do not edit your TOML or SAC file.")
         return
     end
     file=popfirst!(args); options=Dict("--p-header"=>"a","--s-header"=>"t0","--plot"=>"")
@@ -23,6 +24,24 @@ function main(args)
         @printf("%-8s %14.6f  %s\n",name,h.floats[index],unit)
     end
     println("NPTS     ",h.ints[10]," samples\nOrigin UTC: ",utc(h.reference+h.floats[8]))
+    # SAC's 192-byte character block follows 70 Float32 and 40 Int32 values.
+    # KA is character slot 6; KT0–KT9 are slots 7–16 (KEVNM takes two slots).
+    chars=open(file) do io
+        seek(io,440)
+        read(io,192)
+    end
+    function picklabel(slot)
+        value=strip(replace(String(chars[8*(slot-1)+1:8*slot]), '\0'=>""))
+        return isempty(value) || value=="-12345" ? "(undefined)" : value
+    end
+    println("\nArrival fields (seconds from the SAC reference time):")
+    @printf("%-6s %14s  %-7s %s\n","Field","Time (s)","Label","Label text")
+    for (field,slot) in vcat([("a",6)],[("t$i",7+i) for i in 0:9])
+        @printf("%-6s %14.6f  %-7s %s\n",uppercase(field),DDCorr.pick(h,field),"K"*uppercase(field),picklabel(slot))
+    end
+    println("Set [input] p_pick_header / s_pick_header to the FIELD names (e.g. t8 / t9), not label text (e.g. Pm / Sm).")
+    println("Labels are supplied by the data author. Confirm their meaning; a finite time alone does not identify its phase.")
+    println("\nSelected P/S markers (defaults A/T0 unless overridden below):")
     picks=Dict{String,Float64}()
     for phase in ("P","S")
         field=lowercase(options["--"*lowercase(phase)*"-header"])

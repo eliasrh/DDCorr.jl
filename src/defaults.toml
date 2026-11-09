@@ -3,6 +3,8 @@
 # in DDCorr.toml. A partial advanced TOML is allowed; unknown keys are errors.
 
 [input]
+depth_unit = "km" # SAC EVDP source units: km or m; export is always km, original files untouched
+station_epoch_policy = "skip" # skip: exclude conflicting stations and continue; error: stop; split: separate coordinate groups
 origin_tolerance_s = 0.02 # maximum origin disagreement between SAC channels
 coordinate_tolerance_deg = 0.0001 # maximum event coordinate disagreement
 depth_tolerance_km = 0.01 # maximum event depth disagreement

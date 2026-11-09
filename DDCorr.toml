@@ -6,8 +6,12 @@
 
 [input]
 sac_dir = "examples/synthetic/sac" # one immediate subdirectory per event
-p_pick_header = "a" # A contains P arrival relative to the SAC reference time
-s_pick_header = "t0" # T0 contains S arrival; change if your archive differs
+# These defaults match the synthetic example, not every SAC archive.
+# First list A/T0–T9 and their labels: julia --project=. bin/sac_info.jl PATH_TO_FILE.sac
+# Choose the FIELD containing the arrival, e.g. "t8", not its text label "Pm".
+# See docs/START_HERE.md, section 3, before using your own dataset.
+p_pick_header = "a" # P arrival, in seconds from the SAC reference time
+s_pick_header = "t0" # S arrival; both mappings apply to the whole input dataset
 
 [output]
 directory = "results" # a new timestamped run directory preserves older results

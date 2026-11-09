@@ -34,15 +34,91 @@ py -3.12 scripts/make_synthetic.py --output examples/synthetic
 
 ## 3. Inspect before calculating
 
+### If you are using your own SAC files: identify the pick fields first
+
+Skip the signal-generation step above for an existing dataset. DDCorr expects one immediate subfolder per event under `sac_dir`, containing that event's SAC traces. **Do not assume the example's P=`A` and S=`T0` settings match your files.** SAC stores arrival times in numeric header fields, and archives choose different fields for P and S.
+
+From the repository folder, list the headers of one of your SAC files. Replace the quoted path with an actual file, not an event directory; quotes preserve spaces in a path:
+
+```sh
+julia --project=. bin/sac_info.jl "/path/to/events/event_001/NET.STA..HHZ.sac"
+```
+
+No SAC application or Python installation is needed for this command. It reads the file without changing it. It lists **A and T0–T9**, their times, and the associated text labels **KA and KT0–KT9**. A time is in seconds from the SAC reference time, not necessarily from the start of the recording or from the event origin. `NaN` means the numeric field is undefined; `(undefined)` in the label column means no label is provided.
+
+For illustration, an archive might store arrivals as follows. This is an example of how to read the output, not a required layout:
+
+| Numeric field | Contents | Text-label field | Label supplied by the data author |
+| --- | --- | --- | --- |
+| A | Undefined | KA | Undefined |
+| T0 | Undefined | KT0 | Undefined |
+| T8 | P arrival time | KT8 | `P` |
+| T9 | S arrival time | KT9 | `S` |
+
+**The TOML needs the numeric field name (`t8`), not its label (`P`).** Label conventions vary: for example, a provider might use `Pm` for a manual P pick and `Pt` for a theoretical P prediction, but you must confirm that meaning with the provider. DDCorr does not automatically discover phases from labels or prefer manual arrivals over theoretical ones. If an archive uses different fields for manual and theoretical arrivals, choose deliberately which to use; the current settings select one field per phase for the entire dataset.
+
+Edit the **existing** `[input]` section of `DDCorr.toml`; do not append a second `[input]` section. For the illustrative T8/T9 layout above:
+
+```toml
+[input]
+sac_dir = "/path/to/events"
+p_pick_header = "t8"
+s_pick_header = "t9"
+```
+
+Use your own directory and field names for another dataset. The synthetic example uses `sac_dir = "examples/synthetic/sac"`, `p_pick_header = "a"`, and `s_pick_header = "t0"`. Paths in the TOML are relative to the TOML file; supplying `--sac-dir` changes the directory only, **not the pick fields**.
+
+Inspect several events and stations, including vertical and horizontal components, to check that the same mapping applies. If labels are missing or unclear, ask the data provider which fields represent P and S; do not infer the phase just from a populated number. To view a raw waveform with your selected arrivals marked:
+
+```sh
+julia --project=. bin/sac_info.jl "/path/to/events/event_001/NET.STA..HHZ.sac" --p-header t8 --s-header t9 --plot work/one_sac.png
+```
+
+The viewer's `--p-header` and `--s-header` flags only choose its markers. **They do not update `DDCorr.toml`**, which you must edit separately. Likewise, the viewer does not read the TOML: without these flags its selected markers still use A/T0.
+
+A missing arrival excludes that trace for the affected phase; it does not invalidate all other events. With the default noise-window settings, S processing also needs a P arrival to place the pre-P noise window. Theoretical arrivals can centre correlation windows, but correlation searches only within `max_lag_s` of the initial alignment; it does not automatically pick an unmarked phase. Missing picks are not filled by this workflow.
+
+### Check the complete dataset with your chosen settings
+
 ```sh
 julia --project=. bin/ddcorr.jl DDCorr.toml --inspect
 ```
 
-`bin/ddcorr.jl` is the program. `DDCorr.toml` supplies settings. `--inspect` reads headers and checks required times and coverage. The expected message is **6 valid events** and **Inspection complete. No waveforms correlated.** That is success, not an error. It does not yet evaluate signal-to-noise ratio (SNR).
+`bin/ddcorr.jl` is the program. `DDCorr.toml` supplies settings. `--inspect` reads headers and checks required times and coverage. For the **synthetic example**, the expected message is **6 valid events** and **Inspection complete. No waveforms correlated.** Your own dataset will have a different event count. A valid event count confirms event metadata; it does **not** mean the P/S picks are populated or usable. Inspection does not yet evaluate signal-to-noise ratio (SNR).
 
 The command prints an absolute directory ending in `results/inspect_YYYY-MM-DD_HHMMSS_mmm`. Open its `README.txt`, `event_id_map.csv`, `input_issues.csv` and `phase_readiness.csv` in a text editor or spreadsheet. A table with only a header has no issue rows.
 
-To see a SAC header and its waveform:
+- In `inventory.csv`, check `P_pick_s` and `S_pick_s`: these are the values read using your TOML mappings. All-`NaN` columns are a reason to check the mappings before correlating.
+- In `phase_readiness.csv`, look for `ready` rows for the phases/stations you plan to use. Repeated `missing a pick` or `missing t0 pick` messages can mean that the configured fields are empty, even if another field contains the arrival. Other rows explain missing P noise anchors, sampling or window-coverage problems.
+- Correct the settings and repeat `--inspect` before calculating. Inspection also checks station coordinate consistency across events. It is a preflight check, not a guarantee that later waveform processing will pass.
+
+### Check source units and station locations
+
+DDCorr assumes SAC EVDP is in kilometres by default and always exports catalogue depths in kilometres. Confirm your source convention. If EVDP is stored in metres, create an `advanced.toml` alongside your public TOML containing:
+
+```toml
+[input]
+depth_unit = "m"
+```
+
+Then add this section to the public TOML (or edit it if it already exists):
+
+```toml
+[advanced]
+file = "advanced.toml"
+```
+
+The conversion occurs in memory; source SAC files are never changed. This setting applies to the whole dataset. Mixed source units must be normalised explicitly before processing.
+
+If a station code has coordinates that disagree beyond the configured tolerances, **DDCorr excludes that station from all events and both phases, warns you, and continues with the remaining stations**. This is the default `station_epoch_policy = "skip"`. It applies both across events and across components of an event. `station_exclusions.csv` records the station, reason, affected file/event counts and coordinate ranges. `station_epochs.csv` retains the individual source-file coordinates and marks the station as excluded. The report and run README highlight the exclusion. Events and their IDs remain in the catalogue, even if an event loses all usable stations and becomes isolated.
+
+Check whether a conflict represents a real station move or incorrect metadata before restoring that station. For other behaviour, set `station_epoch_policy = "error"` to stop, or `station_epoch_policy = "split"` to explicitly treat recorded locations separately, under the **existing `[input]` section of the advanced TOML**. Do not increase the coordinate tolerance to hide a real move. These choices handle conflicting valid coordinates; malformed or missing required metadata still follow the separate `strict_headers` setting.
+
+With `split`, DDCorr assigns separate output station codes to coordinate groups before correlation. It does not correlate across those groups. Codes use up to five characters of the original station name followed by a three-digit group number; the network code is retained. Group numbers identify recorded locations, not chronological epochs. `station_epochs.csv` maps each original file to its output station. Review and retain this file with the run. Different coordinates among components of the same event still require correction. Splitting accepts the supplied coordinates; it cannot establish whether those coordinates are correct.
+
+If any stage fails, open `failure.txt` in the printed result directory. `run_info.toml` and `README.txt` record `failed`; partial exports from that directory must not be used for relocation. A failed run may have no `dt.cc` or figures even when some correlations were calculated. After resolving the error, rerun the command to create a new result directory.
+
+To inspect the synthetic example's header and waveform with its A/T0 defaults:
 ```sh
 julia --project=. bin/sac_info.jl examples/synthetic/sac/1201/XX.S01..HHZ.sac --plot work/one_sac.png
 ```
@@ -65,7 +141,7 @@ Replace the run directory with the actual path printed by your command. On Windo
 
 TOML is a plain-text settings format. `[P]`, `[S]` and `[plots]` are section names: the lines below a heading belong to that section until the next heading. Text after `#` is a comment. Save as plain text, not a Word document.
 
-`[P] band_hz = [2.0, 14.0]` chooses the P frequency band. In the actual file place the section heading on its own line. `window_s` defines the core waveform around its pick. `max_lag_s=0.5` searches from −0.5 to +0.5 seconds around the pick alignment. `min_cc=0.70` is the minimum signed correlation **coefficient r** (the option is called `min_cc`); it is not the squared weight in `dt.cc`.
+`[P] band_hz = [2.0, 14.0]` chooses the P frequency band. In the actual file place the section heading on its own line. `window_s` defines the core waveform around its pick. `max_lag_s=0.5` searches from −0.5 to +0.5 seconds around the pick alignment. A peak outside this interval cannot be found, even if a smaller peak inside it passes QC. With uncertain initial picks, inspect a wider lag curve and competing peaks before accepting the timing. `min_cc=0.70` is the minimum signed correlation **coefficient r** (the option is called `min_cc`); it is not the squared weight in `dt.cc`.
 
 Paths in the TOML are relative to that TOML. `--sac-dir PATH` overrides only the input path and is relative to your terminal's current directory. You do not need to edit source code to change input data or normal processing choices.
 

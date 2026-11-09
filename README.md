@@ -137,3 +137,7 @@ julia --project=. test/runtests.jl
 The second command uses the optional ObsPy environment created in the acquisition guide. The Julia tests do not require it.
 
 The tests check the FFT result against direct Pearson sums, lag and differential-time signs, filter response, resampling, SAC byte order and v7 precision, stable IDs, rejection rules and matrix conventions. `SOURCE_PROVENANCE.json` records the MiningCorrelations source hashes used for this derivative. This private teaching/scientific snapshot does not add a new distribution licence to the original code.
+
+## Clean student handout
+
+Start with `docs/START_HERE.md` and `teaching/DDCorr_minicourse.pptx`. The default TOML uses the generated synthetic SAC example (A/T0 picks); no personal dataset paths are required. The packaging script includes Git-tracked files only and excludes instructor solutions, runs, caches and environments. Commit or stage intended new course files before packaging. Use a fresh extracted folder for a student rehearsal.

@@ -15,9 +15,9 @@ function matrix_figures(out,events,rows,cfg)
                 dt[r.i,r.j]=r.dt;dt[r.j,r.i]=-r.dt
                 lag[r.i,r.j]=r.lag;lag[r.j,r.i]=-r.lag
             end
-            fig=Figure(size=(1500,560),fontsize=19)
+            fig=Figure(size=(1500,600),fontsize=19)
             ticks=unique(round.(Int,range(1,n;length=min(n,8))))
-            for (k,(data,title,unit)) in enumerate(((cc,"Signed coefficient r","r"),(dt,"dt(i − j)","seconds"),(lag,"Lag: j later than i","seconds")))
+            for (k,(data,title,unit)) in enumerate(((cc,"Signed coefficient r","r"),(dt,"dt(i − j)","seconds"),(lag,"Residual lag (j vs i)","seconds")))
                 vals=filter(isfinite,vec(data));limit=k==1 ? 1.0 : max(maximum(abs,vals;init=0.0),1e-6)
                 ax=Axis(fig[1,2k-1],title=title,xlabel="event_id j",ylabel="event_id i",yreversed=true,aspect=DataAspect(),xticks=ticks,yticks=ticks)
                 # Makie stores x on the first dimension; transpose so rows are i.
@@ -27,7 +27,9 @@ function matrix_figures(out,events,rows,cfg)
             # Add the spanning title after all six columns exist. Otherwise
             # its minimum width can enlarge only the first matrix panel.
             Label(fig[0,:],"$(key[1]) $(key[2]) · accepted observations · grey = missing",fontsize=26)
-            name=@sprintf("matrices/group_%04d.png",number)
+            Label(fig[2,:],"Lag is measured after aligning each waveform on its own pick. Positive lag: shift event j left to align with event i.",fontsize=16)
+            station=replace(key[1],r"[^A-Za-z0-9_.-]"=>"_")
+            name=@sprintf("matrices/group_%04d_%s_%s.png",number,station,key[2])
             save(joinpath(out,name),fig;px_per_unit=1.5)
             push!(names,name);csvrow(io,key...,"rendered",name)
         end

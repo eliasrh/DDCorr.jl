@@ -50,6 +50,8 @@ end
 
 function validate_config(cfg)
     finite(x)=x isa Real && !(x isa Bool) && isfinite(x)
+    cfg["input"]["depth_unit"] in ("km","m") || error("input.depth_unit must be km or m")
+    cfg["input"]["station_epoch_policy"] in ("skip","error","split") || error("input.station_epoch_policy must be skip, error or split")
     cfg["quality"]["polarity"] in ("positive","absolute") || error("polarity must be positive or absolute")
     cfg["output"]["weight"] in ("cc","cc_squared") || error("weight must be cc or cc_squared")
     0<=cfg["output"]["dt_decimals"]<=9 || error("output.dt_decimals must be 0..9")

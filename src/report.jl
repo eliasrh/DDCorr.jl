@@ -40,7 +40,7 @@ function summary_figure(out,events,groups,rows,cfg)
         vals=[r.cc for r in rows if r.phase==ph]
         isempty(vals)||hist!(b,vals;bins=collect(-1:0.025:1),color=(REPORT_COLORS[ph],0.55),label=ph)
     end
-    c=Axis(fig[2,1],title="Accepted pick corrections",xlabel="Lag (s), positive = event j later",ylabel="Observations")
+    c=Axis(fig[2,1],title="Accepted residual lags after pick alignment",xlabel="Lag (s); positive: shift j left to align",ylabel="Observations")
     for ph in ("P","S")
         vals=[r.lag for r in rows if r.phase==ph];maxlag=cfg["phase"][ph]["max_lag_s"]
         isempty(vals)||hist!(c,vals;bins=range(-maxlag,maxlag;length=61),color=(REPORT_COLORS[ph],0.55),label=ph)
@@ -119,7 +119,7 @@ function example_figure(out,index,ex,cfg)
     lines!(ax,t,scale(ac);label="Event i",color="#167d9a");lines!(ax,t,scale(bc);label="Event j",color="#c26034");axislegend(ax;position=:rt)
     bx=Axis(fig[2,1],title="After correction: lag=$(round(r.lag;digits=4)) s; dt(i−j)=$(round(r.dt;digits=4)) s",xlabel="Seconds relative to phase pick",ylabel="Normalized amplitude")
     lines!(bx,t,scale(ac);color="#167d9a");lines!(bx,t,scale(shifted);color="#c26034")
-    cx=Axis(fig[3,1],title="$(r.ncomponents)-component symmetric correlation; r=$(round(r.cc;digits=3)), peak gap=$(round(r.gap;digits=3))",xlabel="Lag (s), positive = event j later",ylabel="Signed correlation",limits=(nothing,nothing,-1,1))
+    cx=Axis(fig[3,1],title="$(r.ncomponents)-component symmetric correlation; r=$(round(r.cc;digits=3)), peak gap=$(round(r.gap;digits=3))",xlabel="Lag after pick alignment (s); positive: shift j left to align",ylabel="Signed correlation",limits=(nothing,nothing,-1,1))
     lines!(cx,(-L:L)./fs,ex.curve;color="#42526a");vlines!(cx,[r.lag];color="#c26034",linestyle=:dash)
     hlines!(cx,[pc["min_cc"]];color="#167d9a",linestyle=:dash)
     Label(fig[4,:],"$(pc["band_hz"]) Hz · RMS SNR ≥ $(round(r.snr;digits=2)) · $(round(r.distance;digits=2)) km seed separation\nWaveforms show first common component ($(a.header.channel)); correlation uses all $(r.ncomponents) listed components.",fontsize=13)
@@ -169,6 +169,12 @@ function make_report(out,events,groups,rows,cfg)
         <div class="cards"><div class="card"><div class="n">$(length(events))</div>events</div><div class="card"><div class="n">$(count(r->r.phase=="P",rows))</div>P observations</div><div class="card"><div class="n">$(count(r->r.phase=="S",rows))</div>S observations</div><div class="card"><div class="n">$(count(==(0),deg))</div>isolated events</div></div>
         <p>Polarity: <b>$(escapehtml(cfg["quality"]["polarity"]))</b>. Largest graph components: $(join(sizes[1:min(8,end)],", ")). Connectedness does not guarantee relocation geometry or verify that a detection is an earthquake.</p>
         <p>IDs are sequential across valid input events, including isolated events. <a href="event_id_map.csv">Original ID map</a>. <a href="near_identity.csv">Near-identical arrival flags</a> are review evidence; no events were automatically deleted.</p>""")
+        print(io,"""<p><strong>What does the lag mean?</strong> Each waveform is first centred on its own phase pick. A positive lag of +0.10 s means the matching feature in event j is 0.10 s later within that pick-centred window; shift j left by 0.10 s to align it with i. It does not mean the earthquakes occurred 0.10 s apart. The exported differential travel time is <code>dt(i−j) = (pick_i−origin_i) − (pick_j−origin_j) − lag</code>. Template-derived picks can change correlation windows and noise estimates, so accepted-pair counts need not increase even when more traces have picks.</p>""")
+        exclusions=joinpath(out,"station_exclusions.csv")
+        nexcluded=isfile(exclusions) ? max(0,countlines(exclusions)-1) : 0
+        if nexcluded>0
+            print(io,"""<p role="alert"><strong>Warning: $nexcluded station(s) excluded because recorded coordinates conflict.</strong> All events and both phases at those stations were omitted; processing continued with the other stations. <a href="station_exclusions.csv">Excluded stations and reasons</a> · <a href="station_epochs.csv">Coordinates and source files</a>.</p>""")
+        end
         if !isempty(matrix_names)
             print(io,"""<h2>Station/phase matrices (PNG)</h2><p><a href="matrices/index.csv">Matrix file index</a>. Grey cells are missing observations, not zero correlations. Dense CSVs need <code>[matrices] dense=true</code>.</p>""")
             for name in matrix_names

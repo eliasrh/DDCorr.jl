@@ -84,7 +84,7 @@ function write_matrices(out, events, rows, cfg)
             "diagonal"=>"NA: self-correlations were not computed",
             "cc_symmetry"=>"symmetric", "dt_and_lag_symmetry"=>"antisymmetric",
             "dt_definition"=>"travel_time(i) - travel_time(j), seconds",
-            "lag_definition"=>"positive means event j waveform later relative to its pick, seconds",
+            "lag_definition"=>"residual after centring each waveform on its own pick; positive lag means shift j left to align with i, seconds",
             "weight"=>cfg["output"]["weight"],
             "positive_semidefinite_guaranteed"=>false);sorted=true)
     end

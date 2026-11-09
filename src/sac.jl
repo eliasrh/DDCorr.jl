@@ -14,6 +14,79 @@ struct SACHeader
     swap::Bool
 end
 
+"Validate station coordinates before correlation; explicitly requested splits stay in memory."
+function station_epochs!(events,cfg,out)
+    tol=[cfg["input"]["station_coordinate_tolerance_deg"],cfg["input"]["station_coordinate_tolerance_deg"],cfg["input"]["station_elevation_tolerance_m"]]
+    entries=Dict{String,Vector{Tuple{Event,Int}}}()
+    for e in events, i in eachindex(e.headers)
+        push!(get!(entries,stationkey(e.headers[i]),Tuple{Event,Int}[]),(e,i))
+    end
+    occupied=Set(keys(entries)); conflicts=String[];excluded=Set{String}()
+    policy=cfg["input"]["station_epoch_policy"]
+    open(joinpath(out,"station_exclusions.csv"),"w") do issues
+    csvrow(issues,"station","reason","excluded_files","affected_events","coordinate_groups","latitude_min","latitude_max","longitude_min","longitude_max","elevation_min_m","elevation_max_m")
+    open(joinpath(out,"station_epochs.csv"),"w") do audit
+        csvrow(audit,"original_station","output_station","event_id","original_event_id","path","latitude","longitude","elevation_m","coordinate_group","action")
+        for key in sort(collect(keys(entries)))
+            records=sort(entries[key];by=x->(Tuple(x[1].headers[x[2]].floats[[32,33,34]]),x[1].name,x[1].headers[x[2]].path))
+            groups=Vector{Tuple{Event,Int}}[];bounds=Tuple{Vector{Float64},Vector{Float64}}[]
+            for record in records
+                e,i=record;coords=e.headers[i].floats[[32,33,34]]
+                j=findfirst(b->all(max.(b[2],coords).-min.(b[1],coords).<=tol),bounds)
+                if j===nothing
+                    push!(groups,[record]);push!(bounds,(copy(coords),copy(coords)))
+                else
+                    push!(groups[j],record)
+                    bounds[j]=(min.(bounds[j][1],coords),max.(bounds[j][2],coords))
+                end
+            end
+            changed=length(groups)>1
+            split=changed && policy=="split"
+            skip=changed && policy=="skip"
+            changed && policy=="error" && push!(conflicts,key)
+            if skip
+                push!(excluded,key)
+                coords=reduce(hcat,[e.headers[i].floats[[32,33,34]] for (e,i) in records])
+                reason="Conflicting station coordinates exceed configured tolerances; excluded from all events and both phases"
+                csvrow(issues,key,reason,length(records),length(unique(e.id for (e,i) in records)),length(groups),
+                    minimum(coords[1,:]),maximum(coords[1,:]),minimum(coords[2,:]),maximum(coords[2,:]),minimum(coords[3,:]),maximum(coords[3,:]))
+                @warn "Station $key excluded: conflicting coordinates. Continuing with other stations; see station_exclusions.csv and station_epochs.csv." excluded_files=length(records)
+            end
+            # Two components of one event cannot be silently assigned to different sites.
+            eventgroups=Dict{Int,Int}()
+            for (j,group) in enumerate(groups),(e,i) in group
+                if split && haskey(eventgroups,e.id) && eventgroups[e.id]!=j
+                    error("Station $key has conflicting component coordinates within event $(e.name); correct the metadata before splitting epochs")
+                end
+                eventgroups[e.id]=j
+            end
+            for (j,group) in enumerate(groups)
+                h0=first(group)[1].headers[first(group)[2]]
+                code=split ? first(h0.station,min(length(h0.station),5))*lpad(string(j),3,'0') : h0.station
+                outputkey=skip ? "" : join((h0.network,code),".")
+                if split
+                    outputkey in occupied && error("Generated station $outputkey conflicts with another station; rename the source station codes explicitly")
+                    push!(occupied,outputkey)
+                end
+                for (e,i) in group
+                    h=e.headers[i]
+                    action=skip ? "excluded" : split ? "split" : changed ? "error" : "retained"
+                    csvrow(audit,key,outputkey,e.id,e.name,relpath(h.path,cfg["input"]["sac_root"]),h.floats[32],h.floats[33],h.floats[34],j,action)
+                    if split
+                        e.headers[i]=SACHeader(h.path,h.floats,h.ints,h.network,code,h.location,h.channel,h.event_name,h.reference,h.swap)
+                    end
+                end
+            end
+        end
+    end
+    end
+    isempty(conflicts) || error("Station coordinates differ across events: $(join(conflicts,", ")). Read station_epochs.csv. Correct erroneous metadata, use advanced input.station_epoch_policy=\"skip\" to exclude the station and continue, or explicitly use \"split\" to treat recorded locations separately. No correlations have been calculated.")
+    for e in events
+        filter!(h->!(stationkey(h) in excluded),e.headers)
+    end
+    events
+end
+
 "Read binary SAC v6/v7, either endian. Only evenly sampled time series are accepted."
 function read_header(path::AbstractString)
     open(path) do io
@@ -99,6 +172,10 @@ csvrow(io,x...) = println(io,join(csvcell.(x),','))
 function inventory(cfg,out)
     root=cfg["input"]["sac_root"]
     isdir(root) || error("SAC directory not found: $root. Supply --sac-dir PATH or input.sac_dir.")
+    marker=joinpath(root,"ddpick-output.toml")
+    if isfile(marker) && !get(TOML.parsefile(marker),"ready",true)
+        error("DDPick output is being updated or its update was interrupted: $root. Finish/rerun DDPick before correlating these files.")
+    end
     dirs=sort(filter(d->isdir(d) && any(f->endswith(lowercase(f),".sac"),readdir(d)),readdir(root;join=true)))
     isempty(dirs) && error("No event folders found in $root. Use sac_dir/<original_event_id>/*.sac; a flat continuous archive needs event cuts and picks first.")
     limit=cfg["runtime"]["max_events"]
@@ -112,7 +189,8 @@ function inventory(cfg,out)
             endswith(lowercase(path),".sac") || continue
             try
                 h=read_header(path)
-                all(isfinite,h.floats[[8,36,37,39]]) || error("Missing event metadata: require O (origin offset), EVLA, EVLO and EVDP (km). SAC download alone does not supply picks/origin.")
+                all(isfinite,h.floats[[8,36,37,39]]) || error("Missing event metadata: require O (origin offset), EVLA, EVLO and EVDP. Set input.depth_unit in advanced settings for source units. SAC download alone does not supply picks/origin.")
+                cfg["input"]["depth_unit"]=="m" && (h.floats[39]/=1000)
                 all(isfinite,h.floats[[32,33,34]]) || error("Missing station metadata: require STLA, STLO, STEL (metres).")
                 -90<=h.floats[32]<=90 && -180<=h.floats[33]<=180 || error("Invalid station coordinates")
                 -90<=h.floats[36]<=90 && -180<=h.floats[37]<=180 || error("Invalid event coordinates")
@@ -149,6 +227,7 @@ function inventory(cfg,out)
         csvrow(io,"event_id","original_event_id","event_directory")
         for e in events;csvrow(io,e.id,e.name,e.name);end
     end
+    station_epochs!(events,cfg,out)
     open(joinpath(out,"inventory.csv"),"w") do io
         csvrow(io,"event_id","original_event_id","path","network","station","location","channel","sample_rate_hz","npts","P_pick_s","S_pick_s","origin_s","azimuth","inclination")
         for e in events,h in e.headers
