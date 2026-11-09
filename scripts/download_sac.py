@@ -214,7 +214,7 @@ def run(args):
         from obspy.geodetics import gps2dist_azimuth
         from obspy.io.sac import SACTrace
     except ImportError as error:
-        raise RuntimeError("Install optional dependencies first: python -m pip install -r requirements-download.txt") from error
+        raise RuntimeError("From the DDCorr.jl folder, install the archive tools with .venv/bin/python -m pip install -r requirements-download.txt, then run this script with .venv/bin/python. On Windows use .\\.venv\\Scripts\\python.exe.") from error
     if not re.fullmatch(r"[A-Za-z0-9]+", args.network):
         raise ValueError("Use one explicit network code")
     if bool(args.stations) == bool(args.stations_file):

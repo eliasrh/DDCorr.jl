@@ -71,13 +71,69 @@ function nativeChart(slide,spec){
  });applyPresentationChartFont(chart,{fontFamily:FONT});return chart;
 }
 
+// Editable scientific schematics. Coordinates and example times are illustrative.
+function stroke(slide,points,color=C.ink,width=3){
+ const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);const x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x||1,h=Math.max(...ys)-y||1;
+ return slide.shapes.add({geometry:'custom',position:{left:x,top:y,width:w,height:h},fill:'none',line:{fill:color,width,style:'solid'},customPaths:[{width:w,height:h,commands:points.map(([xx,yy],i)=>i?{lineTo:{x:xx-x,y:yy-y}}:{moveTo:{x:xx-x,y:yy-y}})}]});
+}
+function marker(slide,x,y,label,color=C.teal,station=false){
+ const s=slide.shapes.add({geometry:station?'triangle':'ellipse',position:{left:x-10,top:y-10,width:20,height:20},fill:color,line:{fill:color,width:1}});
+ text(slide,'marker-'+label,label,x-75,y+(station?-50:22),150,40,23,color,true);return s;
+}
+function introDiagram(slide,kind){
+ if(kind==='single'){
+  stroke(slide,[[85,225],[735,225]],C.muted,2);
+  for(const [x,name] of [[145,'Station 1'],[405,'Station 2'],[680,'Station 3']]){stroke(slide,[[405,495],[x,225]],'#8CA1AB',3);marker(slide,x,225,name,C.ink,true);}
+  marker(slide,405,495,'Event',C.orange);
+  paragraphs(slide,['At each station, we measure a P or S arrival time.','We estimate the source position and origin time by matching measured and predicted arrivals.'],800,220,410,27,26);
+  text(slide,'equation','Arrival time = origin time + travel time',95,565,650,42,26,C.teal,true);
+  text(slide,'caption','Schematic ray paths; no measured geometry',95,618,650,28,19,C.muted);
+ }
+ if(kind==='shared'){
+  slide.shapes.add({geometry:'rect',position:{left:422,top:275,width:130,height:72},fill:'#EEE3DB',line:{fill:'#C49B7C',width:1}});
+  stroke(slide,[[255,500],[655,220]],C.teal,4);stroke(slide,[[310,500],[655,220]],C.orange,4);
+  marker(slide,255,500,'',C.teal);marker(slide,310,500,'',C.orange);
+  text(slide,'event-i','Event i',170,535,130,40,24,C.teal,true);text(slide,'event-j','Event j',330,535,130,40,24,C.orange,true);marker(slide,655,220,'Station',C.ink,true);
+  text(slide,'uncertain','Uncertain\nwave speed',85,285,245,75,25,C.muted);stroke(slide,[[310,320],[420,310]],C.muted,1.5);
+  text(slide,'shared-title','Nearly shared paths',120,190,420,42,29,C.ink,true);
+  paragraphs(slide,['Nearby events can send the same phase through nearly the same structures.','The resulting model error is partly shared. Taking a travel-time difference reduces that shared error.'],800,220,410,27,26);
+  text(slide,'caption','Schematic: the closer the sources, the more similar the paths can be',95,610,1100,36,23,C.muted);
+ }
+ if(kind==='difference'){
+  table(slide,[['At one station','Measured travel time','Predicted travel time'],['Event i','5.12 s','5.00 s'],['Event j','4.92 s','4.80 s'],['i minus j','0.20 s','0.20 s']],[330,411,411],170,260);
+  text(slide,'residual','Double difference = 0.20 − 0.20 = 0.00 s',95,450,1090,54,35,C.teal,true);
+  paragraphs(slide,['Both predictions are early by 0.12 s, so the shared error cancels here. Real paths share only part of their error. Relocation adjusts positions and origin times to reduce these residuals across many stations and event pairs.'],95,530,1100,25,14);
+ }
+ if(kind==='pipeline'){
+  const xs=[80,495,910];const names=['DDCorr','DDSync','GraphSplit'];
+  for(let k=0;k<3;k++){
+   text(slide,'stage-'+k,names[k],xs[k],185,300,55,38,C.teal,true);
+   if(k<2){stroke(slide,[[xs[k]+280,230],[xs[k]+370,230]],C.muted,3);stroke(slide,[[xs[k]+358,220],[xs[k]+370,230],[xs[k]+358,240]],C.muted,3);}
+  }
+  // A waveform pair, an event graph and a relative-location scatter are editable.
+  const wave=(x,y,color,phase)=>stroke(slide,Array.from({length:110},(_,i)=>[x+i*2.3,y+Math.sin((i-phase)*.48)*Math.exp(-(((i-52-phase)/23)**2))*27]),color,2.5);
+  wave(82,320,C.teal,0);wave(82,360,C.orange,5);
+  const pts=[[515,310],[610,285],[705,340],[635,395],[525,395]];
+  for(const [a,b] of [[0,1],[1,2],[2,3],[3,4],[4,0],[1,3],[0,3]])stroke(slide,[pts[a],pts[b]],'#A3B5BC',2);
+  pts.forEach(([x,y],i)=>slide.shapes.add({geometry:'ellipse',position:{left:x-7,top:y-7,width:14,height:14},fill:C.teal,line:{fill:C.teal,width:1}}));
+  stroke(slide,[[930,405],[1170,405]],C.muted,1.5);stroke(slide,[[930,405],[930,280]],C.muted,1.5);
+  for(const [x,y] of [[975,360],[1005,347],[1030,335],[1065,321],[1090,310],[1125,294]])slide.shapes.add({geometry:'ellipse',position:{left:x-5,top:y-5,width:10,height:10},fill:C.orange,line:{fill:C.orange,width:1}});
+  paragraphs(slide,['Measure waveform shifts','dt.cc + catalogue + stations'],80,455,325,26,17);
+  paragraphs(slide,['Estimate consistent relative arrival times','theta + timing uncertainties'],495,455,325,26,17);
+  paragraphs(slide,['Relocate events using a velocity model','Relative positions + origins'],910,455,300,26,17);
+  text(slide,'current','This block',82,620,320,34,24,C.orange,true);
+  text(slide,'later','Later course blocks',495,620,700,34,24,C.muted);
+ }
+}
+
 for(let i=0;i<slides.length;i++){
  const d=slides[i],n=i+1;const slide=presentation.slides.add();slide.background.fill=C.bg;
  text(slide,'title',d.title,64,50,1152,90,d.cover?54:41,C.ink,true);
  text(slide,'slide-number',String(n).padStart(2,'0'),1155,668,60,26,18,C.muted);
- text(slide,'section-label','DDCorr · '+(n<18?'QUICK START':n<37?'DATA AND SAC':n<47?'REAL CORRELATIONS':n<80?'METHODS':'PRACTICE'),64,673,1000,23,16,C.muted);
+ text(slide,'section-label','DDCorr · '+(d.section||'DDCORR'),64,673,1000,23,16,C.muted);
  let notes=d.notes||'';
- if(d.cover){paragraphs(slide,d.body,64,230,1050,34,28);text(slide,'course',d.subtitle||'DDCorr.jl teaching package',64,600,1100,40,24,C.teal,true);}
+ if(d.diagram){introDiagram(slide,d.diagram);}
+ else if(d.cover){paragraphs(slide,d.body,64,230,1050,34,28);text(slide,'course',d.subtitle||'DDCorr.jl teaching package',64,600,1100,40,24,C.teal,true);}
  else if(d.code){
    paragraphs(slide,d.body,64,154,1152,d.size||28,14);
    const e=await excerpt(d.code,n),maxH=d.codeHeight||300,scale=Math.min(1,(1152/e.width),(maxH/e.height));
@@ -108,6 +164,7 @@ for(let i=0;i<slides.length;i++){
  }
  else if(d.columns){paragraphs(slide,d.columns[0],64,160,550,d.size||28,24);paragraphs(slide,d.columns[1],666,160,550,d.size||28,24);}
  else paragraphs(slide,d.body,64,160,1152,d.size||30,d.gap||30);
+ if(d.link){const link=text(slide,'source-link',d.link,64,638,1130,27,18,C.teal);link.hyperlink={uri:d.link,isExternal:true};}
  if(d.sources)notes+='\n\nSources:\n'+d.sources.join('\n');
  slide.speakerNotes.text=notes;
  noteRows.push(`# ${n}. ${d.title}\n\n${(d.body||[]).join('\n\n')}\n\n${d.command?'```sh\n'+d.command+'\n```\n\n':''}${d.equation?'Equation: '+d.equation+'\n\n':''}${notes}\n`);
@@ -125,5 +182,6 @@ for(let i=0;i<presentation.slides.items.length;i++){
 const montage=await presentation.export({format:'webp',montage:true,scale:.25});await fs.writeFile(path.join(HERE,'montage.webp'),new Uint8Array(await montage.arrayBuffer()));
 if(process.argv.includes('--final')){
  const finalPath=path.resolve(process.env.DDCORR_SLIDES_OUTPUT||path.join(REPO,'teaching/DDCorr_minicourse_rebuilt.pptx'));
+ await fs.mkdir(path.dirname(finalPath),{recursive:true});
  const result=await finalizePresentation({workspaceDir:WORKSPACE,candidatePath:draft,finalPath,pythonExecutable:RUNTIME_PYTHON,integrityValidatorPath:path.join(SKILL,'container_tools/inspect_presentation_package_integrity.py'),layoutValidatorPath:path.join(SKILL,'container_tools/inspect_presentation_layout_geometry.py'),layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-heading-fit',...tables.flatMap(n=>['--require-native-table-slide',String(n)])],fontPolicy:{basis:'design',families:[FONT,MONO]},requiredNativeTableOwnerSlides:tables,requiredNativeChartOwnerSlides:charts,materializeLiteralChartWorkbooks:true,nativeChartTargetApplication:'powerpoint',verifyArtifactToolImport:true,receiptPath:path.join(HERE,'validation_verified.json')});console.log(result);
 }else console.log({draft,slides:slides.length,font:FONT,charts,tables});

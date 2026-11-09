@@ -1,18 +1,19 @@
 # DDCorr.jl minicourse
 
-Open [DDCorr_minicourse.pptx](DDCorr_minicourse.pptx). The revised 84-slide deck has five clearly marked sections and introduces coefficient and lag before the first run.
+Open [DDCorr_minicourse.pptx](DDCorr_minicourse.pptx). This edition contains 100 slides. The introduction uses editable scientific diagrams, a numerical example and a workflow diagram. Commands identify the required executable and current configuration explicitly.
 
 | Slides | Section |
 |---|---|
-| 1–17 | Orientation and synthetic quick start: setup, TOML, directories, IDs, pair selection |
-| 18–36 | Finding real event/station/waveform data, Python isolation, phase provenance and SAC headers |
-| 37–46 | Running the 100-event example and assessing PNG reports, matrices and output files |
-| 47–79 | Following one waveform: filters, aliasing, windows, correlation, lag, SNR and graph checks |
-| 80–84 | Independent discovery/preparation/assessment exercise |
+| 1–5 | Single-event location, shared paths, double differences and the course workflow |
+| 6–27 | Correlation concepts, synthetic run, output files and parameter experiments |
+| 28–51 | Data discovery, Python setup, a five-event/three-station download and SAC headers |
+| 52–62 | Real-data processing, larger reference results and matrix export |
+| 63–95 | Signal processing, cross-correlation mathematics, implementation and quality checks |
+| 96–100 | Independent exercise and assessment |
 
-For a short session, use the first three sections and choose method slides as needed. A full treatment plus data preparation needs a longer practical session. Students need basic P/S and waveform familiarity, but no prior correlation/filtering course.
+Students can follow the commands without access to the instructor’s chat history. Text, commands, tables and introductory diagrams are editable PowerPoint objects. Scientific plots, equations and exact code excerpts are PNG images with the generation source included. Windows PowerShell commands are in [docs/WINDOWS.md](../docs/WINDOWS.md).
 
-Text, commands and tables remain editable in PowerPoint. Scientific figures, properly typeset equations and exact code excerpts are **PNG images**, with generation/equation source included. There are no vector chart/PDF/SVG figure assets in this edition. Fonts are Helvetica Neue and Menlo; check substitution on the teaching computer. The deck was rendered and layout-checked, but has not been opened in the native PowerPoint application.
+The small real-data request was tested with five events and three selected stations, producing 45 SAC traces. Counts from the separate 100-event reference run are not targets for that small test. The source catalogue has no observed phase-pick table, so the demonstration explicitly uses predicted window centres.
 
 ## Student materials
 

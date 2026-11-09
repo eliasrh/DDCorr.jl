@@ -4,7 +4,7 @@
 This selects metadata, not good correlations. Receipts retain source hashes and
 selection parameters. Read docs/DATA_DISCOVERY.md before choosing a service.
 """
-import argparse, csv, datetime as dt, json, math, re
+import argparse, csv, datetime as dt, json, math, re, sys
 from pathlib import Path
 from download_sac import RequestCache, sha256, atomic_json, NoData
 
@@ -91,7 +91,14 @@ def main(argv=None):
             a.add_argument('--near-lat',type=float,required=True);a.add_argument('--near-lon',type=float,required=True)
             a.add_argument('--require-components',default='Z,N,E',help='Suffixes required at a common location, or empty for any')
     args=p.parse_args(argv)
-    from obspy import UTCDateTime
+    try:
+        from obspy import UTCDateTime
+    except ImportError:
+        raise RuntimeError("ObsPy is missing from the Python you used. From the DDCorr.jl folder, run:\n"
+            "  python3 -m venv .venv\n"
+            "  .venv/bin/python -m pip install -r requirements-download.txt\n"
+            "Then repeat this command with .venv/bin/python instead of python3.\n"
+            "Windows PowerShell: use .\\.venv\\Scripts\\python.exe instead of .venv/bin/python.") from None
     if args.limit<1 or UTCDateTime(args.end)<=UTCDateTime(args.start): raise ValueError('Positive limit and end after start required')
     args.output.mkdir(parents=True,exist_ok=True)
     receipt={'parameters':{k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()},'selection':'events: chronological first N; stations: nearest eligible N, no waveform/CC criterion'}

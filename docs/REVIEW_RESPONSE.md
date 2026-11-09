@@ -36,3 +36,17 @@ The deck has been reorganized into 84 slides. Numbers below in the first column 
 | Manual pairs do not show only requested IDs | Both ID types shown; original-name alternative; filters by station/phase; explicit pairs bypass auto cap; selection ledger | 15–16; 16-figure integration check |
 
 The 100-event test uses labelled homogeneous predicted centres, not observed picks. Twelve selected stations produced 11 usable stations in the existing archive; STJA's missing data remain documented. Counts and near-identity warnings are evidence to inspect, not claims of catalogue completeness or independently validated phases.
+
+
+## November 2026 student walkthrough
+
+Slide numbers in the comments refer to the previous 84-slide edition. The revised deck has 100 slides.
+
+- Old 7: Julia package installation is explained in complete sentences, including the meaning of the current directory and the two package files.
+- Old 8–10: the generated directory structure and purpose of general input inspection are explicit. Inspection precedes the correlation command, and the two result directories are introduced in that order.
+- Old 11–17: actual dt.cc, catalogue and station formats are explained immediately after the first run. The ID map location and reason for sequential indices are explicit. The TOML exercise combines settings with their meaning and requires save, rerun and opening the new report. Rejection statuses have definitions.
+- Old 18: editable diagrams explain individual locations, shared ray paths, double differences and the DDCorr/DDSync/GraphSplit workflow.
+- Old 19–21: the Iceland example has scientific context, a catalogue DOI, explicit script names, service definitions and visible service links. The same information needed for another region is described.
+- Old 22–25: Python 3.12 setup includes an ObsPy import check. Every archive command names .venv/bin/python. The previous failure used a different interpreter even though ObsPy was installed in .venv. Missing-dependency errors now explain how to recover.
+- Data acquisition starts with five events and three stations. A separate Iceland.toml resets synthetic figure requests. PowerShell forms are provided separately. A larger run remains an optional expansion.
+- An independent agent reviewed the student materials without chat history. The remaining interpreter, configuration carry-over and action-sequence blockers were corrected.

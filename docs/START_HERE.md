@@ -2,7 +2,7 @@
 
 Use Julia **1.12.3** for the class environment (the supplied Manifest was resolved on this version). The package declares Julia ≥1.10 compatibility; that is broader than the tested course environment. Install the appropriate 64-bit build for your CPU from [Julia's platform guide](https://julialang.org/downloads/platform/). macOS Apple Silicon and Ubuntu are tested; Windows commands below are provided but have not been executed on Windows.
 
-Use Python **3.12** for the optional archive tools. The offline signal generator only uses Python's standard library; it needs no ObsPy installation. Python and Julia are separate programs. Installing Julia packages does not install Python packages.
+Install Python **3.12** from [python.org](https://www.python.org/downloads/) for the optional archive tools. Confirm it with `python3.12 --version` on macOS/Linux or `py -3.12 --version` on Windows. The offline signal generator only uses Python's standard library; it needs no ObsPy installation. Python and Julia are separate programs. Installing Julia packages does not install Python packages.
 
 ## 1. Get a local copy
 
@@ -10,7 +10,7 @@ With repository access, use Git clone or GitHub's **Code → Download ZIP**. Thi
 
 Open a terminal **in the extracted repository folder**, where `Project.toml` and `DDCorr.toml` are visible. Commands below are entered in the operating-system terminal, not at Julia's `julia>` prompt.
 
-`Project.toml` names DDCorr and its dependencies. `Manifest.toml` records the exact resolved dependency versions for the class. Keep both. `--project=.` means “use the Julia project in this current folder”; `Pkg.instantiate()` installs the versions recorded there. It does not replace your other Julia projects. Packages may share a download cache under your home directory.
+In `Project.toml`, you can read the Julia package names required to run DDCorr. In `Manifest.toml`, you can read the exact package versions used for this course. Keep both files. In `--project=.`, the dot means your current terminal folder. Julia then uses the package settings in this DDCorr.jl folder. The second command installs those package versions. The first run may take several minutes.
 
 ```sh
 julia --version
@@ -185,3 +185,9 @@ Set these in the existing section. `enabled=true` exports sparse edge CSVs plus 
 Each run's `README.txt` describes the files it actually contains. For relocation, copy **that run's** `dt.cc`, `catalog.txt`, `stations.txt`, `event_id_map.csv` and settings together. Mixing a dt file with another run's catalogue can assign measurements to the wrong events. Keeping the complete result directory also preserves the diagnostic evidence and settings; it does not mean rerunning the directory.
 
 Timing exports use four decimals (0.1 ms) by default. To change that representation, create `advanced.toml` with `[output]` and `dt_decimals=6`, then point `[advanced] file="advanced.toml"` in the public TOML. Extra digits do not create timing accuracy. Fractional-sample interpolation is distinct from both total search lag and export precision.
+
+## 9. Optional real-data download
+
+After the synthetic exercise, follow [DATA_DISCOVERY.md](DATA_DISCOVERY.md) to obtain a published catalogue, station metadata and waveform snippets. Start with five events and three stations, then expand. The Python archive utilities need a separate installation of ObsPy. Every macOS/Linux archive command explicitly starts with `.venv/bin/python`. For PowerShell, use [WINDOWS.md](WINDOWS.md). Do not switch back to plain `python3` after installing ObsPy into `.venv`.
+
+Use a separate `Iceland.toml` for the real data and clear the synthetic figure selections as described in that guide. The 100-event slide figures are reference results, not fixed counts for the small test.

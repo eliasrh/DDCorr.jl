@@ -2,11 +2,18 @@ import csv
 from pathlib import Path
 import tempfile
 import unittest
+import subprocess,sys
 from obspy import UTCDateTime, Catalog
 from obspy.core.event import Event, Origin, Pick, Arrival, WaveformStreamID, ResourceIdentifier
 import prepare_tables as tables
 
 class TableTests(unittest.TestCase):
+    def test_missing_obspy_reports_environment_commands(self):
+        result=subprocess.run([sys.executable,'-S',str(Path(tables.__file__)), 's1','--input','missing.txt','--start','2020-01-01','--end','2020-01-02','--output','unused'],capture_output=True,text=True)
+        self.assertNotEqual(result.returncode,0)
+        self.assertIn('.venv/bin/python',result.stderr)
+        self.assertNotIn('Traceback',result.stderr)
+
     def test_s1_rollover_and_source_line(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)/'S1.txt';p.write_text('#235 2014-08-23 12:00:60.000 64.8 -16.8 5.0 0 1.2\n')

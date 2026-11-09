@@ -28,7 +28,7 @@ The example numbers above illustrate the format. The header identifies the event
 year month day hour minute second latitude longitude depth_km event_id
 ```
 
-`stations.txt` contains `NET.STA latitude longitude elevation_m`. The same station key is used in `dt.cc` and downstream theta filenames. Station coordinate conflicts are errors; a physically moved station needs a consistent epoch-aware treatment before combining observations.
+`stations.txt` contains `NET.STA latitude longitude elevation_m`. The same station key is used in `dt.cc` and downstream theta filenames. By default a station with conflicting coordinates is excluded from all events and both phases, while processing continues. Read station_exclusions.csv and station_epochs.csv before deciding whether metadata need correction or separate station locations should be used.
 
 IDs are assigned in lexical order of valid event-folder names. For example `1201` sorts before `17`; it is not a chronological or numeric ordering. `event_id_map.csv` is the authority. Isolated events keep their rows and IDs. No fake edge is created to make them connected.
 
@@ -76,3 +76,13 @@ The handoff is designed for the Julia implementations. Other programs accepting 
 | `software_provenance.toml` | Which Julia version and source hashes were used? |
 
 The report's triangle residual is `dt_ij + dt_jk − dt_ik`. Small closure error shows pairwise consistency; coherent noise or a common systematic error can also close well. Absolute correlation |r| ≥0.99 deserves inspection for duplicate windows, repeated events or shared arrivals, but is not by itself a deletion rule.
+
+## Reading group_summary.csv
+
+Each row refers to one station, one phase and one status. `files` counts candidate input component files. `prepared_events` counts events with at least one usable prepared component. `count` counts event pairs in the named status, not waveform files or earthquakes. In the unchanged synthetic example, XX.S01/P has six files, five prepared events and ten accepted pairs.
+
+`accepted` means the observation passed the pair checks. `low_cc` means its best coefficient was too low. `boundary` means the best sample was at a search edge. `ambiguous_peak` means another local maximum was too close in score. Other status names are described by the effective settings and the optional `rejected_pairs.csv` ledger. Trace preparation losses are listed separately in `preprocessing_issues.csv`.
+
+## Report generation
+
+With `[plots] enabled=true`, a completed correlation run on any dataset produces `report.html` and the requested diagnostic graphics. Inspection does not produce a correlation report. `--no-plots` suppresses the report. A failed run is marked failed and must not be used as a completed relocation handoff.

@@ -1,9 +1,17 @@
 {
-  "created_utc": "2026-10-22",
+  "created_utc": "2026-11-09",
   "repository": "https://github.com/eliasrh/DDCorr.jl",
   "package_version": "0.2.0",
-  "slide_count": 84,
+  "slide_count": 100,
   "source_files": [
+    {
+      "path": ".github/workflows/tests.yml",
+      "sha256": "7b4cb476a56e6cfcd96d514e83bb02b64d45417c431aca5676688fe8a62ae8f7"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "fd0202c955a0cefe03e918fe66288183dc0f67211a4a8ab2cf5ebd6c45eddbaa"
+    },
     {
       "path": "DDCorr.toml",
       "sha256": "0eaa3d2352bb60a98744063f44a2b77624a4b1e84f8e0b4fa8264a56212ee7e8"
@@ -17,6 +25,14 @@
       "sha256": "373fbdb2e2d79bec9efc531cee854382c1aa07ec678678a200e054d6b78308d6"
     },
     {
+      "path": "README.md",
+      "sha256": "744e1be2ab6634049d40c657fb103acaa1b2479d5e4dff3d5d5edbc0cac592f8"
+    },
+    {
+      "path": "SOURCE_PROVENANCE.json",
+      "sha256": "0e40d74b148c7dbe3ac4b32c8d89259fcae7f2b2e1b9aec71d658f5cb67194b5"
+    },
+    {
       "path": "bin/ddcorr.jl",
       "sha256": "086ca8a7895fb401bb6dd6a549915b67c0221f73936b1678ee9ce676de1e176e"
     },
@@ -25,8 +41,64 @@
       "sha256": "29ae6f78b9837199d185e3ebd85922ca5c998dbe6c7ba0e4536712a36b54a9f1"
     },
     {
+      "path": "docs/DATA_AND_SAC.md",
+      "sha256": "bf07339fe07ce8c4abeedcc19b156efcf5e307f992cc2af3d01060ba763d2367"
+    },
+    {
+      "path": "docs/DATA_DISCOVERY.md",
+      "sha256": "8f84d045506d7a6ed0900a3b5bfca5844c05862b871296e10d27c7e411aabb23"
+    },
+    {
+      "path": "docs/EXERCISES.md",
+      "sha256": "b3ba0c0d85e959fb0b6e1c683d3107839d88dda8b9cd5b91ae5332a08d98068c"
+    },
+    {
+      "path": "docs/OUTPUTS_AND_HANDOFF.md",
+      "sha256": "a5529418ee6f82ef4111895a5d4564a839e953118df2ca9db1b62b3995741aea"
+    },
+    {
+      "path": "docs/REVIEW_RESPONSE.md",
+      "sha256": "d8d7dfa0d8d0f69aa869a808543820fbd55258b036e5c1763220706fb2ece62f"
+    },
+    {
+      "path": "docs/START_HERE.md",
+      "sha256": "90f4f7538cce342325c2975d94dc4c6784ea92e49c7e6097e0b757610afe36b6"
+    },
+    {
+      "path": "docs/VALIDATION.md",
+      "sha256": "972741de25db1f215cfff0e630acd702e6319eac87f7e706ffd1701751324fef"
+    },
+    {
+      "path": "docs/WINDOWS.md",
+      "sha256": "62f0b16592a043a19a22e121fd994a565c6dd838077a5e48787b5f8d2642ad68"
+    },
+    {
+      "path": "examples/download/README.md",
+      "sha256": "614d15a5633be1af334163991f2800d23394242f7fcaac60a9c5e2aaec7cc4a9"
+    },
+    {
+      "path": "examples/download/close_pairs_selection.json",
+      "sha256": "4a43c1a9d39dcfdcb5c448c89579980f4c62b4279f7e2af710307705c9454748"
+    },
+    {
+      "path": "examples/download/close_pairs_validation.json",
+      "sha256": "2a71d847db05a4811b1d9240eea9658bdf8f4c0b73373875215d2a38e6f1cd6d"
+    },
+    {
+      "path": "examples/download/iceland.toml",
+      "sha256": "624c2fe18b4bbdb402ad067a59a8da6cf0c4b1bd48bcab5d4a6d3948c75d8ca2"
+    },
+    {
+      "path": "examples/download/iceland100/README.md",
+      "sha256": "fe770ca4fc5d2606d99f82f30be02f63c522f1a77ab536b9b3f72f604a4a4ab5"
+    },
+    {
       "path": "examples/download/iceland100/events.csv",
       "sha256": "fa1c7b4fff31dd7abc8d3a7736a3046974304ef272a949985316052bccf629e8"
+    },
+    {
+      "path": "examples/download/iceland100/run_summary.toml",
+      "sha256": "a35090e6ff1c0e1c67db0045494741867bddc600cc8193ba076d000acc4f0b19"
     },
     {
       "path": "examples/download/iceland100/stations.csv",
@@ -35,6 +107,38 @@
     {
       "path": "examples/download/iceland100/validated_run.json",
       "sha256": "030af24e3efb7294041f0e162e6d2f141547920b0fd88407691475240af50155"
+    },
+    {
+      "path": "examples/download/iceland_close_pairs.csv",
+      "sha256": "d26592092d623782161ecbe8163cae54499f46e1a23f1ab47681d11d0eb86e0a"
+    },
+    {
+      "path": "examples/download/iceland_close_pairs.toml",
+      "sha256": "337846e226d96be8d28f4f5bfd40c201e2540f89fe5b5d7198842b716df76dac"
+    },
+    {
+      "path": "examples/download/iceland_events.csv",
+      "sha256": "5e7986edac6e383eb18e87566d79ab02698e38d95a53a95aa42d6efdf15be492"
+    },
+    {
+      "path": "examples/download/picks_template.csv",
+      "sha256": "07b67bdcd16dd8a7334286bf73321db0bf6cbc21452e7089bd371dad2d816510"
+    },
+    {
+      "path": "examples/download/validation.json",
+      "sha256": "3b15563789003034ae97762262487b9c9012c13a61b44b688fafe254a706fe5f"
+    },
+    {
+      "path": "examples/mining_optimized.toml",
+      "sha256": "01fc46985f0a2ec2d7cd136184b4d8cb1dc50ccc64a8848f70bf33f972e714a9"
+    },
+    {
+      "path": "examples/mining_optimized_advanced.toml",
+      "sha256": "f4fefa10f88a86659ac8276ff3f610e09c04405e5ca55f5ab4ebdf572adc1f84"
+    },
+    {
+      "path": "requirements-download.txt",
+      "sha256": "47584effc62462688c32b5e4f8ad556f2568f7b72dde8fe2223d50c781acc0c9"
     },
     {
       "path": "scripts/check_course_outputs.py",
@@ -46,7 +150,7 @@
     },
     {
       "path": "scripts/download_sac.py",
-      "sha256": "a2a30fac5c0add3ed1837d33626ea7287bf989590daa497f22558521fa7b5373"
+      "sha256": "bd12f5945db66e2b4db16fec1f17a7cf73ad049258c5dd0342ef3deaf3a2142d"
     },
     {
       "path": "scripts/make_synthetic.py",
@@ -58,7 +162,7 @@
     },
     {
       "path": "scripts/prepare_tables.py",
-      "sha256": "af6e94c2be7c8847c2a8574cafd18a9f34fd56accc92a3c8d100cd9b31b29d20"
+      "sha256": "b9e57ab345c24d84f35d8ff3a8c64b393b5bcf627ca263301a064b99c4b03faf"
     },
     {
       "path": "scripts/test_check_synthetic.py",
@@ -70,7 +174,7 @@
     },
     {
       "path": "scripts/test_prepare_tables.py",
-      "sha256": "34d8f5edaa639f594dccd01d36f2186fae870785abd5496b8bc4065470a844b1"
+      "sha256": "98eff8308cf5eb1940b5e1b2ef957161a701e3f1552ff81bfb527440b16098af"
     },
     {
       "path": "src/DDCorr.jl",
@@ -117,31 +221,43 @@
       "sha256": "6feae3c4ec3aa6b17c1817b432804ec47975ae65821a624835cf561364897821"
     },
     {
+      "path": "teaching/DDCorr_minicourse.pptx",
+      "sha256": "e413344e70f26a54633a11ee5791b5b76d61e99203d45212275eab72fd018985"
+    },
+    {
+      "path": "teaching/LECTURE_NOTES.md",
+      "sha256": "b0c132063161615ff26ce2be6027ac71affd315b206481564a46369fc5f02dd1"
+    },
+    {
+      "path": "teaching/README.md",
+      "sha256": "0d43f1a327f68f74cfce67a5d781ed232e90bf9ab2c84d0bda70e85f412cbd16"
+    },
+    {
       "path": "teaching/assets/aliasing.png",
       "sha256": "a18d790c8456d90c0735ea24b366eb54d2bceee1c2aee8485b2a2b680a6a23cf"
     },
     {
-      "path": "teaching/assets/code-50.png",
+      "path": "teaching/assets/code-66.png",
       "sha256": "3274f5e208859dd55cdafcf1280d1153cd5f7d0f3f0aabecfdb016341cc9143e"
     },
     {
-      "path": "teaching/assets/code-52.png",
+      "path": "teaching/assets/code-68.png",
       "sha256": "2af68ca31b611f346ed29bc472c479cba190239f5ff871af3e4e4772faa04f61"
     },
     {
-      "path": "teaching/assets/code-57.png",
+      "path": "teaching/assets/code-73.png",
       "sha256": "b7e43017a2f5c3f69432609f814c484ca238499792cdc481c39ed32f4f817f59"
     },
     {
-      "path": "teaching/assets/code-60.png",
+      "path": "teaching/assets/code-76.png",
       "sha256": "8b3ec60142321a21519f1d695b65c50450d60b92bb650f23fc12bb3fce06c932"
     },
     {
-      "path": "teaching/assets/code-66.png",
+      "path": "teaching/assets/code-82.png",
       "sha256": "7a78152780c6de8afeed4fe428c2348d1cf51b4a4b1cc011b811160cc1041f99"
     },
     {
-      "path": "teaching/assets/code-68.png",
+      "path": "teaching/assets/code-84.png",
       "sha256": "cd75b1bcc9547f70bc560d7134fe68669f76873ae6d818e489a2b874be5c9ab0"
     },
     {
@@ -221,16 +337,20 @@
       "sha256": "5d06388ac2a107117c7a0efa29ff9450d37578abed35d1982b8325f5e64b47dd"
     },
     {
+      "path": "teaching/instructor/INSTRUCTOR_SOLUTIONS.md",
+      "sha256": "d04fc4eb040830f28cd7684086939e6f18af59d6aab1167c41168533d6648602"
+    },
+    {
       "path": "teaching/source/build.mjs",
-      "sha256": "3701a64cc8a0858f386da0650e8d547ae4431e28381b2f98eef1e298b0261e08"
+      "sha256": "6b90d9459a619807cd47c699987666c270de77d6ba8c7cb1744d3a578b040fba"
     },
     {
       "path": "teaching/source/code_index.json",
-      "sha256": "e6abb1047f84dc0477ffe0df380a041e3dfe76e92ee0a853bc0f65d8c04b5dd6"
+      "sha256": "0c22ddc7f570ebad5e1602369d1832383f2496480b8778c2b89820b9b8191821"
     },
     {
       "path": "teaching/source/content.mjs",
-      "sha256": "1f7ecd1244ca8a8a33faa5d24f41cdbbac7d8c397f7a313643f440f672128463"
+      "sha256": "a385c7e9b40cff2366701eac335c10b259bc8442bb088d228815df7806c00aaf"
     },
     {
       "path": "teaching/source/export_examples.jl",
@@ -291,6 +411,22 @@
     {
       "path": "teaching/source/make_figures.py",
       "sha256": "2bd5f38c1aaf208d2898c88542fcc1ace04917bc8f61486048fe47b924bffccc"
+    },
+    {
+      "path": "test/core_interface.jl",
+      "sha256": "288931988d789fe7b3ff6c95d6cb40d8dce814768c93c93bf23d3dfa2a30e0ac"
+    },
+    {
+      "path": "test/core_numerics.jl",
+      "sha256": "b774bf47ae2f4511cce1eb330df6d2a1893461d49aac8c06a2a75494411f5290"
+    },
+    {
+      "path": "test/matrix_tests.jl",
+      "sha256": "2b1113b4808634fc94984ece25d5af484651efe80e0389d60f5652f46e22f593"
+    },
+    {
+      "path": "test/runtests.jl",
+      "sha256": "175fc31933e743c7b9b94e61129b546b911a32b3ccba557625acd8f1ca6597f8"
     }
   ],
   "code_excerpts": [
@@ -391,5 +527,5 @@
     "native_powerpoint_opened": false
   },
   "source_sync_utc": "2026-11-09",
-  "source_sync_note": "Workshop code and student defaults synchronized. PPTX unchanged; all code screenshots refer to unchanged src/signal.jl. Synthetic workflow rechecked separately."
+  "source_sync_note": "Revised after independent student walkthrough. Introductory diagrams are editable. Python archive commands explicitly use the installed virtual environment."
 }
