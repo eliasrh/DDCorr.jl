@@ -1,531 +1,106 @@
 {
-  "created_utc": "2026-11-09",
+  "workshop": "Friday: waveform correlation. Saturday: synchronization and relative relocation.",
   "repository": "https://github.com/eliasrh/DDCorr.jl",
-  "package_version": "0.2.0",
-  "slide_count": 100,
-  "source_files": [
-    {
-      "path": ".github/workflows/tests.yml",
-      "sha256": "7b4cb476a56e6cfcd96d514e83bb02b64d45417c431aca5676688fe8a62ae8f7"
-    },
-    {
-      "path": ".gitignore",
-      "sha256": "fd0202c955a0cefe03e918fe66288183dc0f67211a4a8ab2cf5ebd6c45eddbaa"
-    },
-    {
-      "path": "DDCorr.toml",
-      "sha256": "0eaa3d2352bb60a98744063f44a2b77624a4b1e84f8e0b4fa8264a56212ee7e8"
-    },
-    {
-      "path": "Manifest.toml",
-      "sha256": "48deb539196194b39c0b7759f0ae197fad2805425f278ef1a867d2b402e100d5"
-    },
-    {
-      "path": "Project.toml",
-      "sha256": "373fbdb2e2d79bec9efc531cee854382c1aa07ec678678a200e054d6b78308d6"
-    },
-    {
-      "path": "README.md",
-      "sha256": "744e1be2ab6634049d40c657fb103acaa1b2479d5e4dff3d5d5edbc0cac592f8"
-    },
-    {
-      "path": "SOURCE_PROVENANCE.json",
-      "sha256": "0e40d74b148c7dbe3ac4b32c8d89259fcae7f2b2e1b9aec71d658f5cb67194b5"
-    },
-    {
-      "path": "bin/ddcorr.jl",
-      "sha256": "086ca8a7895fb401bb6dd6a549915b67c0221f73936b1678ee9ce676de1e176e"
-    },
-    {
-      "path": "bin/sac_info.jl",
-      "sha256": "29ae6f78b9837199d185e3ebd85922ca5c998dbe6c7ba0e4536712a36b54a9f1"
-    },
-    {
-      "path": "docs/DATA_AND_SAC.md",
-      "sha256": "bf07339fe07ce8c4abeedcc19b156efcf5e307f992cc2af3d01060ba763d2367"
-    },
-    {
-      "path": "docs/DATA_DISCOVERY.md",
-      "sha256": "8f84d045506d7a6ed0900a3b5bfca5844c05862b871296e10d27c7e411aabb23"
-    },
-    {
-      "path": "docs/EXERCISES.md",
-      "sha256": "b3ba0c0d85e959fb0b6e1c683d3107839d88dda8b9cd5b91ae5332a08d98068c"
-    },
-    {
-      "path": "docs/OUTPUTS_AND_HANDOFF.md",
-      "sha256": "a5529418ee6f82ef4111895a5d4564a839e953118df2ca9db1b62b3995741aea"
-    },
-    {
-      "path": "docs/REVIEW_RESPONSE.md",
-      "sha256": "d8d7dfa0d8d0f69aa869a808543820fbd55258b036e5c1763220706fb2ece62f"
-    },
-    {
-      "path": "docs/START_HERE.md",
-      "sha256": "90f4f7538cce342325c2975d94dc4c6784ea92e49c7e6097e0b757610afe36b6"
-    },
-    {
-      "path": "docs/VALIDATION.md",
-      "sha256": "972741de25db1f215cfff0e630acd702e6319eac87f7e706ffd1701751324fef"
-    },
-    {
-      "path": "docs/WINDOWS.md",
-      "sha256": "62f0b16592a043a19a22e121fd994a565c6dd838077a5e48787b5f8d2642ad68"
-    },
-    {
-      "path": "examples/download/README.md",
-      "sha256": "614d15a5633be1af334163991f2800d23394242f7fcaac60a9c5e2aaec7cc4a9"
-    },
-    {
-      "path": "examples/download/close_pairs_selection.json",
-      "sha256": "4a43c1a9d39dcfdcb5c448c89579980f4c62b4279f7e2af710307705c9454748"
-    },
-    {
-      "path": "examples/download/close_pairs_validation.json",
-      "sha256": "2a71d847db05a4811b1d9240eea9658bdf8f4c0b73373875215d2a38e6f1cd6d"
-    },
-    {
-      "path": "examples/download/iceland.toml",
-      "sha256": "624c2fe18b4bbdb402ad067a59a8da6cf0c4b1bd48bcab5d4a6d3948c75d8ca2"
-    },
-    {
-      "path": "examples/download/iceland100/README.md",
-      "sha256": "fe770ca4fc5d2606d99f82f30be02f63c522f1a77ab536b9b3f72f604a4a4ab5"
-    },
-    {
-      "path": "examples/download/iceland100/events.csv",
-      "sha256": "fa1c7b4fff31dd7abc8d3a7736a3046974304ef272a949985316052bccf629e8"
-    },
-    {
-      "path": "examples/download/iceland100/run_summary.toml",
-      "sha256": "a35090e6ff1c0e1c67db0045494741867bddc600cc8193ba076d000acc4f0b19"
-    },
-    {
-      "path": "examples/download/iceland100/stations.csv",
-      "sha256": "67e975f78fbdc9a20e84ca76644df7a305d3f084260d7e94a67e031145b2e17a"
-    },
-    {
-      "path": "examples/download/iceland100/validated_run.json",
-      "sha256": "030af24e3efb7294041f0e162e6d2f141547920b0fd88407691475240af50155"
-    },
-    {
-      "path": "examples/download/iceland_close_pairs.csv",
-      "sha256": "d26592092d623782161ecbe8163cae54499f46e1a23f1ab47681d11d0eb86e0a"
-    },
-    {
-      "path": "examples/download/iceland_close_pairs.toml",
-      "sha256": "337846e226d96be8d28f4f5bfd40c201e2540f89fe5b5d7198842b716df76dac"
-    },
-    {
-      "path": "examples/download/iceland_events.csv",
-      "sha256": "5e7986edac6e383eb18e87566d79ab02698e38d95a53a95aa42d6efdf15be492"
-    },
-    {
-      "path": "examples/download/picks_template.csv",
-      "sha256": "07b67bdcd16dd8a7334286bf73321db0bf6cbc21452e7089bd371dad2d816510"
-    },
-    {
-      "path": "examples/download/validation.json",
-      "sha256": "3b15563789003034ae97762262487b9c9012c13a61b44b688fafe254a706fe5f"
-    },
-    {
-      "path": "examples/mining_optimized.toml",
-      "sha256": "01fc46985f0a2ec2d7cd136184b4d8cb1dc50ccc64a8848f70bf33f972e714a9"
-    },
-    {
-      "path": "examples/mining_optimized_advanced.toml",
-      "sha256": "f4fefa10f88a86659ac8276ff3f610e09c04405e5ca55f5ab4ebdf572adc1f84"
-    },
-    {
-      "path": "requirements-download.txt",
-      "sha256": "47584effc62462688c32b5e4f8ad556f2568f7b72dde8fe2223d50c781acc0c9"
-    },
-    {
-      "path": "scripts/check_course_outputs.py",
-      "sha256": "7e8157ebec4dc9dcabde132ae7f7cffefdf32fa9f61f8a527869da45abd4327a"
-    },
-    {
-      "path": "scripts/check_synthetic.py",
-      "sha256": "b5c2c06c69eeaf2ffe9fd95d979e3a6ad65d50d0a18dc110eeb62dee0747283f"
-    },
-    {
-      "path": "scripts/download_sac.py",
-      "sha256": "bd12f5945db66e2b4db16fec1f17a7cf73ad049258c5dd0342ef3deaf3a2142d"
-    },
-    {
-      "path": "scripts/make_synthetic.py",
-      "sha256": "6bcdeb34bc5f2fd3985de72c9f3f42db48143d9d339a87468a4c1f84d604baf2"
-    },
-    {
-      "path": "scripts/package_students.py",
-      "sha256": "cdc7f0037b916961cd5b00768f8f1dfa6bbc8ae586a58bd57da210a620f83f28"
-    },
-    {
-      "path": "scripts/prepare_tables.py",
-      "sha256": "b9e57ab345c24d84f35d8ff3a8c64b393b5bcf627ca263301a064b99c4b03faf"
-    },
-    {
-      "path": "scripts/test_check_synthetic.py",
-      "sha256": "6a5e0c5fb365dd116bcfa384a192a94928b89e5331b30498ad24e6cfea0a3831"
-    },
-    {
-      "path": "scripts/test_download_sac.py",
-      "sha256": "f7012b8b093f75d624cd9c096fd23e95fa40d05840fb193435225aca96db052b"
-    },
-    {
-      "path": "scripts/test_prepare_tables.py",
-      "sha256": "98eff8308cf5eb1940b5e1b2ef957161a701e3f1552ff81bfb527440b16098af"
-    },
-    {
-      "path": "src/DDCorr.jl",
-      "sha256": "edb81875bd218dd18d202d919a799509fcc281d3f4da358eb053dc13fe9c8b7d"
-    },
-    {
-      "path": "src/closure.jl",
-      "sha256": "b2556329f7340a543a5a06a0e023935d02c5097c960c82bb27841b140acccfd8"
-    },
-    {
-      "path": "src/configuration.jl",
-      "sha256": "ecd51d12e38d89520b36e47d49f7e509b8a6028733e17a9e7ea8a54ac52184d7"
-    },
-    {
-      "path": "src/defaults.toml",
-      "sha256": "9f6b3debe78dcd52d130e1b29d8488b5bec1a87bec2901b7274b05fa284ca110"
-    },
-    {
-      "path": "src/interface.jl",
-      "sha256": "60b006267e2aa50441d4d54e5448ca2b5bb8187e6dbb7a43b211a44e43909667"
-    },
-    {
-      "path": "src/matrices.jl",
-      "sha256": "1fe5a77aa64defd1c5a3043edb84281cc43441798a34ebd01f7275e90612c9b8"
-    },
-    {
-      "path": "src/matrix_plots.jl",
-      "sha256": "03aca7dedfd9abcaab9b834a780ff2a6fbccc0c4066c9fe91a63bddb87e28bab"
-    },
-    {
-      "path": "src/pipeline.jl",
-      "sha256": "4fe45b33ffdca8198248db2cf5dcfb4e61c346bc8b9b78f7879e3896591f8f2a"
-    },
-    {
-      "path": "src/report.jl",
-      "sha256": "084cd2f0ac2a32057d208a422be774843da0d99f708e6f0ca999d2e4885dee8a"
-    },
-    {
-      "path": "src/sac.jl",
-      "sha256": "bc20670e34a76d99a897fc526a708277290ee75db76a75622c85860024996ebc"
-    },
-    {
-      "path": "src/signal.jl",
-      "sha256": "6feae3c4ec3aa6b17c1817b432804ec47975ae65821a624835cf561364897821"
-    },
-    {
-      "path": "teaching/DDCorr_minicourse.pptx",
-      "sha256": "e413344e70f26a54633a11ee5791b5b76d61e99203d45212275eab72fd018985"
-    },
-    {
-      "path": "teaching/LECTURE_NOTES.md",
-      "sha256": "b0c132063161615ff26ce2be6027ac71affd315b206481564a46369fc5f02dd1"
-    },
-    {
-      "path": "teaching/README.md",
-      "sha256": "0d43f1a327f68f74cfce67a5d781ed232e90bf9ab2c84d0bda70e85f412cbd16"
-    },
-    {
-      "path": "teaching/assets/aliasing.png",
-      "sha256": "a18d790c8456d90c0735ea24b366eb54d2bceee1c2aee8485b2a2b680a6a23cf"
-    },
-    {
-      "path": "teaching/assets/code-66.png",
-      "sha256": "3274f5e208859dd55cdafcf1280d1153cd5f7d0f3f0aabecfdb016341cc9143e"
-    },
-    {
-      "path": "teaching/assets/code-68.png",
-      "sha256": "2af68ca31b611f346ed29bc472c479cba190239f5ff871af3e4e4772faa04f61"
-    },
-    {
-      "path": "teaching/assets/code-73.png",
-      "sha256": "b7e43017a2f5c3f69432609f814c484ca238499792cdc481c39ed32f4f817f59"
-    },
-    {
-      "path": "teaching/assets/code-76.png",
-      "sha256": "8b3ec60142321a21519f1d695b65c50450d60b92bb650f23fc12bb3fce06c932"
-    },
-    {
-      "path": "teaching/assets/code-82.png",
-      "sha256": "7a78152780c6de8afeed4fe428c2348d1cf51b4a4b1cc011b811160cc1041f99"
-    },
-    {
-      "path": "teaching/assets/code-84.png",
-      "sha256": "cd75b1bcc9547f70bc560d7134fe68669f76873ae6d818e489a2b874be5c9ab0"
-    },
-    {
-      "path": "teaching/assets/core_extended.png",
-      "sha256": "6e9e7e050a3c2d7ff3bfe6c68759f9760e8297129b9b498f25c1296dcda11aea"
-    },
-    {
-      "path": "teaching/assets/equations.json",
-      "sha256": "e84fcc87cfa8ed4669e579c3c7a626e5dce9601e0ec34c530942abd69f49a1db"
-    },
-    {
-      "path": "teaching/assets/filter_gain.png",
-      "sha256": "dd1fb909cdb6cee4dfb9345d5334b6a38ab760ac953d29e0ca445dbbad341f5f"
-    },
-    {
-      "path": "teaching/assets/lag_introduction.png",
-      "sha256": "cda5bfda6e7b1399a269d8c889a3dca9da9d3eddc6d6a984719742d23bda354c"
-    },
-    {
-      "path": "teaching/assets/math_closure.png",
-      "sha256": "1bd6e7aa1123a626f40e107201eb196d414cb937e4342d7e6d35714f97cc898a"
-    },
-    {
-      "path": "teaching/assets/math_dt.png",
-      "sha256": "497c1170edfc8e9c49d215ef772f6b16e54e153821ce960ba50f0acbad8b26f2"
-    },
-    {
-      "path": "teaching/assets/math_filter.png",
-      "sha256": "ab59b974fd4b7ea2a3ca02e4c241b0882f6f71376d446359de712286ef765a76"
-    },
-    {
-      "path": "teaching/assets/math_parabola.png",
-      "sha256": "64773cb3a41798ea461d08714f0fb9c77b7a967edac09805cd57d505356c7426"
-    },
-    {
-      "path": "teaching/assets/math_pearson.png",
-      "sha256": "ab3af2e947d6322af2f7a735401fc7ea8052d6df2ed5ed18964c1f9c80f9f62f"
-    },
-    {
-      "path": "teaching/assets/math_phase.png",
-      "sha256": "5bea491f337e1786fb263acd08e9cedf1e25d848f5814b1c63fd11f71c84832b"
-    },
-    {
-      "path": "teaching/assets/math_snr.png",
-      "sha256": "55e0dc926fe3f8cd7f8ba05b2282aed974ac14c810b9f9464f064da3069ac621"
-    },
-    {
-      "path": "teaching/assets/math_symmetric.png",
-      "sha256": "f5e35dee74d570d6591729e1e1e5bf415637af274c03c11125ea4b9b264e5a50"
-    },
-    {
-      "path": "teaching/assets/real_lags.png",
-      "sha256": "bcd06e2036a26478e50a35d84cb08ba8c6e51bd3a9c57acc1a945bc86f8d63d0"
-    },
-    {
-      "path": "teaching/assets/real_matrix.png",
-      "sha256": "10d3ae6a38270a9892966303c324de3969318446efe7e1afe75bd443403a5bcb"
-    },
-    {
-      "path": "teaching/assets/real_strong.png",
-      "sha256": "91eed847711bd9960e7ca93969815a4e3f3003cf9b9860c0fe4438bed3d91ac8"
-    },
-    {
-      "path": "teaching/assets/real_weak.png",
-      "sha256": "a0300de23e00e17a5533fb49081feca4c71bd106dff63bda87bcd762c2d59ad1"
-    },
-    {
-      "path": "teaching/assets/taper.png",
-      "sha256": "f14bf1cf97bc75ca1ceb7720379dfa4754756e949a942ece12003536cab99f84"
-    },
-    {
-      "path": "teaching/assets/trace_stages.png",
-      "sha256": "2e8d7bdac32d0b3233b8cf89d007e23527322a0710015826adfcf988abfa00a5"
-    },
-    {
-      "path": "teaching/assets/windows.png",
-      "sha256": "5d06388ac2a107117c7a0efa29ff9450d37578abed35d1982b8325f5e64b47dd"
-    },
-    {
-      "path": "teaching/instructor/INSTRUCTOR_SOLUTIONS.md",
-      "sha256": "d04fc4eb040830f28cd7684086939e6f18af59d6aab1167c41168533d6648602"
-    },
-    {
-      "path": "teaching/source/build.mjs",
-      "sha256": "6b90d9459a619807cd47c699987666c270de77d6ba8c7cb1744d3a578b040fba"
-    },
-    {
-      "path": "teaching/source/code_index.json",
-      "sha256": "0c22ddc7f570ebad5e1602369d1832383f2496480b8778c2b89820b9b8191821"
-    },
-    {
-      "path": "teaching/source/content.mjs",
-      "sha256": "a385c7e9b40cff2366701eac335c10b259bc8442bb088d228815df7806c00aaf"
-    },
-    {
-      "path": "teaching/source/export_examples.jl",
-      "sha256": "5622236d3f8575b028d21619f58a82d5d82f2f42d0879fb6bcb6a53943f58368"
-    },
-    {
-      "path": "teaching/source/export_trace.jl",
-      "sha256": "b4a3417cd525f54810f74933ebae35ecbeab74ac5d18624aafd6e0cd026386cf"
-    },
-    {
-      "path": "teaching/source/figure_data/real_figdata/strong_curve.csv",
-      "sha256": "7550c5a6baed371750da8444381e9a895c9eac631377df07cfb890beadef1926"
-    },
-    {
-      "path": "teaching/source/figure_data/real_figdata/strong_description.txt",
-      "sha256": "dbaa7d27eb2e4d28648208bee878dd7a4cb7218872519feabdef4e0b44a28b20"
-    },
-    {
-      "path": "teaching/source/figure_data/real_figdata/strong_waveforms.csv",
-      "sha256": "296a9acb6eec524be3412f3ab7d1d6f5424c00c610e204c8a15f02018e2e2325"
-    },
-    {
-      "path": "teaching/source/figure_data/real_figdata/weak_curve.csv",
-      "sha256": "c43d6c7e6b5213f25789cecbc47e50e1548ebc526cb29f9099dfbc2b3928a907"
-    },
-    {
-      "path": "teaching/source/figure_data/real_figdata/weak_description.txt",
-      "sha256": "56f689e8fd9428b163ff8290da7a4e45f501a714656307780fd424ba27a10663"
-    },
-    {
-      "path": "teaching/source/figure_data/real_figdata/weak_waveforms.csv",
-      "sha256": "19272e28871488671a24590d0d34bea51e7009c40b42915aad313f1f08b0bbad"
-    },
-    {
-      "path": "teaching/source/figure_data/real_results/correlate_validated/correlations.csv",
-      "sha256": "eee293b95b6e05d88dba8585a298d3d8d7971fc02e3d8ab2f206e444a8c81e33"
-    },
-    {
-      "path": "teaching/source/figure_data/real_results/correlate_validated/matrices/group_0001_edges.csv",
-      "sha256": "a4201d1f39d7ac827e0424a084bec9e78560e93ca9a7ab8002cac310e081b4bf"
-    },
-    {
-      "path": "teaching/source/figure_data/trace/filter_response.csv",
-      "sha256": "9ed502e3254a1b91ed63ff55c554d0b31718f16cf409087045a59ebf4c94bd17"
-    },
-    {
-      "path": "teaching/source/figure_data/trace/resampled.csv",
-      "sha256": "52b4801da96b51f73498db68503f24d92e3c3026e839925d2a837014dc67fd59"
-    },
-    {
-      "path": "teaching/source/figure_data/trace/source.txt",
-      "sha256": "bb85404ac79b3d0bad25e1f0205b8e5a1dc868b4f9a43951441206a0ee0ba1b0"
-    },
-    {
-      "path": "teaching/source/figure_data/trace/trace_stages.csv",
-      "sha256": "20f0d9a49cfea5c5a4fefc345ff735565942830abc68860ab58286f53e6a716b"
-    },
-    {
-      "path": "teaching/source/make_figures.py",
-      "sha256": "2bd5f38c1aaf208d2898c88542fcc1ace04917bc8f61486048fe47b924bffccc"
-    },
-    {
-      "path": "test/core_interface.jl",
-      "sha256": "288931988d789fe7b3ff6c95d6cb40d8dce814768c93c93bf23d3dfa2a30e0ac"
-    },
-    {
-      "path": "test/core_numerics.jl",
-      "sha256": "b774bf47ae2f4511cce1eb330df6d2a1893461d49aac8c06a2a75494411f5290"
-    },
-    {
-      "path": "test/matrix_tests.jl",
-      "sha256": "2b1113b4808634fc94984ece25d5af484651efe80e0389d60f5652f46e22f593"
-    },
-    {
-      "path": "test/runtests.jl",
-      "sha256": "175fc31933e743c7b9b94e61129b546b911a32b3ccba557625acd8f1ca6597f8"
+  "source_baseline": "00f4a798d5e725ff39b4ebf50a669ef7ecbbf7ea",
+  "slide_count": 46,
+  "slides_sha256": "f3cb1f97747016a9dfd60dc41bd489216da361a6f519e1f9abe5b2bfcd803a03",
+  "data": {
+    "event_catalog": "Ágústsdóttir et al. (2019), Data Set S1, https://doi.org/10.1029/2018JB016010",
+    "network": "Z7",
+    "sample": "2014-08-23 12:00:29.86 to 13:48:56.81 UTC, first 100 consecutive events after noon. 11 available stations, 3300 SAC cuts.",
+    "phase_markers": "SAC A/T0 calculated using homogeneous 6.0/3.5 km/s P/S speeds.",
+    "accepted": {
+      "P": 2412,
+      "S": 4625
+    },
+    "downstream": {
+      "DDSync": "3c38abb490d69c91f6fd90d7f6f445c2ffb98840",
+      "GraphSplit": "541f518d89bc0a2d650c7a3d0aa16485e2a6a101",
+      "retained": 6736,
+      "prelocation_events": 65,
+      "final_DD_events": 57,
+      "matched_plot": "Iceland100/solutions/matched_locations.png"
     }
-  ],
-  "code_excerpts": [
+  },
+  "illustrations": {
+    "agustsdottir_fig1.png": "Figure 1 in Ágústsdóttir et al. (2019), accepted manuscript, Cambridge repository DOI 10.17863/CAM.41805, p. 5.",
+    "fapesp_graph.png": "From instructor’s Some_slides_for_FAPESP_augmented.pptx, slide 9, graph schematic. Related ray-path teaching diagram on slide 2 adapted from seminar slides 4–6.",
+    "field_pair.png; field_peak.png; real_strong.png; real_weak.png": "Original DDCorr export arrays for Z7.STAM and Z7.RODG S in figure_data/real_figdata.",
+    "field_processing.png; kver_worked.png": "S1_009900/Z7.KVER..HHZ.sac raw/filtered samples and the KVER P comparison of IDs 1 and 2. Exported by Julia.",
+    "phase_demo.png; alias_demo.png; core_extended.png; lag_introduction.png; windows.png": "Constructed teaching examples.",
+    "threshold.png; real_lags.png; real_matrix.png": "Counted/plotted from the accepted Iceland100 measurements.",
+    "matched_locations.png": "Input, prelocation, and final DD locations for the identical 57 final events, kept in the supplied Iceland100 solutions.",
+    "taper.png": "Real processing of a synthetic pulse train. Input in figure_data/trace."
+  },
+  "source_screenshots": [
     {
-      "slide": 50,
+      "slide": 42,
       "file": "src/signal.jl",
       "ranges": [
         [
-          2,
-          8
-        ]
-      ],
-      "label": "src/signal.jl:2\u20138"
-    },
-    {
-      "slide": 52,
-      "file": "src/signal.jl",
-      "ranges": [
+          13,
+          14
+        ],
         [
-          10,
-          17
-        ]
-      ],
-      "label": "src/signal.jl:10\u201317"
-    },
-    {
-      "slide": 57,
-      "file": "src/signal.jl",
-      "ranges": [
-        [
-          26,
+          28,
           30
         ]
       ],
-      "label": "src/signal.jl:26\u201330"
+      "label": "src/signal.jl:13–14, 28–30"
     },
     {
-      "slide": 60,
+      "slide": 43,
       "file": "src/signal.jl",
       "ranges": [
         [
           34,
-          37
+          35
+        ],
+        [
+          72,
+          74
         ]
       ],
-      "label": "src/signal.jl:34\u201337"
+      "label": "src/signal.jl:34–35, 72–74"
     },
     {
-      "slide": 66,
+      "slide": 44,
       "file": "src/signal.jl",
       "ranges": [
         [
-          131,
+          126,
+          129
+        ],
+        [
+          132,
           133
         ]
       ],
-      "label": "src/signal.jl:131\u2013133"
+      "label": "src/signal.jl:126–129, 132–133"
     },
     {
-      "slide": 68,
+      "slide": 45,
       "file": "src/signal.jl",
       "ranges": [
         [
-          72,
-          75
+          151,
+          152
+        ],
+        [
+          156,
+          156
+        ],
+        [
+          169,
+          169
         ]
       ],
-      "label": "src/signal.jl:72\u201375"
+      "label": "src/signal.jl:151–152, 156–156, 169–169"
     }
   ],
-  "figure_policy": "PNG only. Actual synthetic preprocessing arrays and real-field correlation arrays are retained under teaching/source/figure_data; the other signal diagrams are explicitly constructed illustrations. Equations have LaTeX source in teaching/assets/equations.json.",
-  "real_example": {
-    "events": 100,
-    "selected_stations": 12,
-    "usable_stations": 11,
-    "sac_files": 3300,
-    "missing_station": "STJA",
-    "selected_archive_bytes": 52588544,
-    "new_download_bytes": 0,
-    "accepted_observations": 7037,
-    "pick_mode": "predicted",
-    "selection": "first 100 chronological S1 events from 2014-08-23T12:00Z; 12 nearest metadata-eligible stations to 64.85,-16.85",
-    "source_catalog_sha256": "0430c9deab535e4f44af96424bc564ca6af2ac8ce9118de787515b748ea49103",
-    "limits": "Local previously downloaded archive; remote coverage may differ. Teaching window centres are homogeneous predictions, not observed picks."
-  },
-  "deck": {
-    "path": "teaching/DDCorr_minicourse.pptx",
-    "sha256": "921511b7db3acaa2aa473024a923e05c0086af1e19ec7fc4198bca7def64d7f5"
-  },
-  "validation": {
-    "rendered_slide_count": 84,
-    "visually_reviewed_slides": "1-84",
-    "package_findings": 0,
-    "geometry_findings": 0,
-    "geometry_warnings": 0,
-    "native_tables": 3,
-    "native_charts": 0,
-    "native_powerpoint_opened": false
-  },
-  "source_sync_utc": "2026-11-09",
-  "source_sync_note": "Revised after independent student walkthrough. Introductory diagrams are editable. Python archive commands explicitly use the installed virtual environment."
+  "papers": [
+    "https://doi.org/10.1785/0120020238",
+    "https://doi.org/10.1785/0120000006",
+    "https://doi.org/10.1029/2018JB016010"
+  ]
 }

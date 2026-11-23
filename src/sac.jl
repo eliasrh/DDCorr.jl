@@ -162,11 +162,37 @@ struct Event
     longitude::Float64
     depth::Float64
     headers::Vector{SACHeader}
+    magnitude::Float64
+    magnitude_status::String
+end
+
+"Use a populated SAC MAG when the event's reporting channels agree."
+function Event(id,name,origin,latitude,longitude,depth,headers::Vector{SACHeader})
+    reported=[h for h in headers if isfinite(h.floats[40])]
+    values=unique(h.floats[40] for h in reported)
+    # Undefined/unknown magnitude types do not contradict a specified type.
+    types=unique(h.ints[26] for h in reported if h.ints[26] ∉ (-12345,5))
+    if isempty(values)
+        magnitude,status=NaN,"missing"
+    elseif length(values)==1 && length(types)<=1
+        magnitude,status=only(values),"from SAC MAG"
+    else
+        magnitude,status=NaN,"conflicting SAC magnitudes or types"
+    end
+    Event(id,name,origin,latitude,longitude,depth,headers,magnitude,status)
 end
 
 "CSV escaping is also used for paths and error messages containing commas."
 csvcell(x) = x isa AbstractString ? "\"" * replace(x,"\""=>"\"\"") * "\"" : string(x)
 csvrow(io,x...) = println(io,join(csvcell.(x),','))
+
+"Evenly sample an ordered list. A single request returns its first item."
+function spaced_indices(n::Int,count::Int)
+    0<=count<=n || throw(ArgumentError("Sample size must be between zero and list length"))
+    count==0 && return Int[]
+    count==1 && return [1]
+    round.(Int,range(1,n;length=count))
+end
 
 "Index only immediate event directories; emit sequential IDs without changing input files."
 function inventory(cfg,out)
@@ -180,7 +206,7 @@ function inventory(cfg,out)
     isempty(dirs) && error("No event folders found in $root. Use sac_dir/<original_event_id>/*.sac; a flat continuous archive needs event cuts and picks first.")
     limit=cfg["runtime"]["max_events"]
     if 0<limit<length(dirs)
-        dirs=dirs[unique(round.(Int,range(1,length(dirs);length=limit)))]
+        dirs=dirs[spaced_indices(length(dirs),limit)]
     end
     events=Event[]; issues=Tuple{String,String}[]
     for d in dirs
@@ -224,16 +250,18 @@ function inventory(cfg,out)
     !isempty(issues) && cfg["input"]["strict_headers"] && error("SAC metadata problems found. Read $(joinpath(out,"input_issues.csv")). Fix the listed headers before processing; advanced input.strict_headers=false explicitly excludes affected events.")
     isempty(events) && error("No valid events; see $(joinpath(out,"input_issues.csv"))")
     open(joinpath(out,"event_id_map.csv"),"w") do io
-        csvrow(io,"event_id","original_event_id","event_directory")
-        for e in events;csvrow(io,e.id,e.name,e.name);end
+        csvrow(io,"event_id","original_event_id","event_directory","magnitude","magnitude_status")
+        for e in events
+            csvrow(io,e.id,e.name,e.name,isfinite(e.magnitude) ? e.magnitude : "",e.magnitude_status)
+        end
     end
     station_epochs!(events,cfg,out)
     open(joinpath(out,"inventory.csv"),"w") do io
-        csvrow(io,"event_id","original_event_id","path","network","station","location","channel","sample_rate_hz","npts","P_pick_s","S_pick_s","origin_s","azimuth","inclination")
+        csvrow(io,"event_id","original_event_id","path","network","station","location","channel","sample_rate_hz","npts","P_pick_s","S_pick_s","origin_s","azimuth","inclination","sac_mag","sac_imagtyp")
         for e in events,h in e.headers
             csvrow(io,e.id,e.name,relpath(h.path,root),h.network,h.station,h.location,h.channel,
                 1/h.floats[1],h.ints[10],pick(h,cfg["phase"]["P"]["pick_header"]),pick(h,cfg["phase"]["S"]["pick_header"]),
-                h.floats[8],h.floats[58],h.floats[59])
+                h.floats[8],h.floats[58],h.floats[59],h.floats[40],h.ints[26])
         end
     end
     # Preflight is metadata-only: sample values and SNR are checked during run.

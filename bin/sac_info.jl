@@ -4,7 +4,8 @@ using DDCorr, Dates, Printf
 
 function main(args)
     if isempty(args) || "--help" in args
-        println("Usage: julia --project=. bin/sac_info.jl FILE.sac [--plot FILE.png] [--p-header a] [--s-header t0]")
+        println("Usage: julia --project=. bin/sac_info.jl SAC_FILE_OR_FOLDER [--plot FILE.png] [--p-header a] [--s-header t0]")
+        println("Supply one SAC file, an event folder, or a folder of events. A directory displays the first SAC example in filename order.")
         println("Always lists A and T0–T9 with their text labels. P/S options select displayed/plot markers; they do not edit your TOML or SAC file.")
         return
     end
@@ -14,12 +15,26 @@ function main(args)
         haskey(options,key) && !isempty(args) || error("Unknown or incomplete option: $key")
         options[key]=popfirst!(args)
     end
+    if isdir(file)
+        root=abspath(file)
+        # Check at most the two levels accepted by the teaching workflow.
+        dirs=[root;filter(isdir,readdir(root;join=true))]
+        for dir in dirs
+            names=readdir(dir)
+            example=findfirst(f->endswith(lowercase(f),".sac") && isfile(joinpath(dir,f)),names)
+            if example!==nothing
+                file=joinpath(dir,names[example])
+                break
+            end
+        end
+        isfile(file) || error("No *.sac file in $root or its event folders")
+    end
     h=DDCorr.read_header(file)
     utc(x)=isfinite(x) ? string(unix2datetime(x))*"Z" : "undefined"
     println("File: ",abspath(file),"\nChannel: ",DDCorr.channelkey(h),"\nSAC version: ",h.ints[7])
     println("Reference UTC (NZ fields): ",utc(h.reference))
     for (name,index,unit) in [("DELTA",1,"s/sample"),("B",6,"s from reference"),("O",8,"s from reference"),
-            ("EVLA",36,"degrees"),("EVLO",37,"degrees"),("EVDP",39,"km"),
+            ("EVLA",36,"degrees"),("EVLO",37,"degrees"),("EVDP",39,"source units (usually km)"),("MAG",40,"event magnitude"),
             ("STLA",32,"degrees"),("STLO",33,"degrees"),("STEL",34,"m"),("CMPAZ",58,"degrees"),("CMPINC",59,"degrees")]
         @printf("%-8s %14.6f  %s\n",name,h.floats[index],unit)
     end

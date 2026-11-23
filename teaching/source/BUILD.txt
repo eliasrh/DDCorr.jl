@@ -1,0 +1,30 @@
+Rebuilding the instructor PowerPoint
+
+Students can use the delivered PPTX directly. The authoring source is content.mjs.
+build.mjs uses @oai/artifact-tool and @napi-rs/canvas. It reads the DDCorr Julia
+source to make a fresh screenshot of each implementation excerpt. The two files
+use ES modules. Put the two Node dependencies on the module resolution path.
+
+In the corresponding presentation-authoring runtime, set PRESENTATION_SKILL_DIR
+to the directory containing container_tools/artifact_tool_utils.mjs, set
+RUNTIME_NODE_MODULES to its dependencies, and set PYTHON_EXECUTABLE to the
+validation interpreter. From the repository root run:
+
+    node teaching/source/build.mjs --final
+
+By default a private build goes under work/slides-build, and the validated
+presentation is teaching/DDCorr_minicourse_rebuilt.pptx. DDCORR_SLIDES_BUILD
+and DDCORR_SLIDES_OUTPUT can name new build and output paths.
+
+All figures used by the slide builder are in teaching/assets/. To regenerate
+the field plots from the supplied data on a machine with Julia and Python:
+
+    julia --project=. teaching/source/export_kver.jl ../Iceland100
+    julia --project=. teaching/source/export_trace.jl ../Iceland100/sac/S1_009900/Z7.KVER..HHZ.sac teaching/source/figure_data/field_trace
+    python teaching/source/workshop_figures.py ../Iceland100
+
+The plotting interpreter needs NumPy, Matplotlib and SciPy. Field examples in
+figure_data/real_figdata were exported by export_examples.jl. make_figures.py
+can regenerate the original window, taper, pair, lag and matrix illustrations
+from teaching/source/figure_data. Provenance for adapted figures is listed in
+PROVENANCE.json and in the PowerPoint speaker notes.

@@ -1,68 +1,66 @@
 [
   {
-    "slide": 66,
+    "slide": 42,
     "file": "src/signal.jl",
     "ranges": [
       [
-        2,
-        8
-      ]
-    ],
-    "label": "src/signal.jl:2–8"
-  },
-  {
-    "slide": 68,
-    "file": "src/signal.jl",
-    "ranges": [
+        13,
+        14
+      ],
       [
-        10,
-        17
-      ]
-    ],
-    "label": "src/signal.jl:10–17"
-  },
-  {
-    "slide": 73,
-    "file": "src/signal.jl",
-    "ranges": [
-      [
-        26,
+        28,
         30
       ]
     ],
-    "label": "src/signal.jl:26–30"
+    "label": "src/signal.jl:13–14, 28–30"
   },
   {
-    "slide": 76,
+    "slide": 43,
     "file": "src/signal.jl",
     "ranges": [
       [
         34,
-        37
+        35
+      ],
+      [
+        72,
+        74
       ]
     ],
-    "label": "src/signal.jl:34–37"
+    "label": "src/signal.jl:34–35, 72–74"
   },
   {
-    "slide": 82,
+    "slide": 44,
     "file": "src/signal.jl",
     "ranges": [
       [
-        131,
+        126,
+        129
+      ],
+      [
+        132,
         133
       ]
     ],
-    "label": "src/signal.jl:131–133"
+    "label": "src/signal.jl:126–129, 132–133"
   },
   {
-    "slide": 84,
+    "slide": 45,
     "file": "src/signal.jl",
     "ranges": [
       [
-        72,
-        75
+        151,
+        152
+      ],
+      [
+        156,
+        156
+      ],
+      [
+        169,
+        169
       ]
     ],
-    "label": "src/signal.jl:72–75"
+    "label": "src/signal.jl:151–152, 156–156, 169–169"
   }
 ]

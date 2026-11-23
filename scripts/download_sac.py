@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
-"""Download bounded event snippets, preserve provenance, and write DDCorr SAC.
+"""Write each available channel as a SAC file for every selected earthquake.
 
-Waveforms alone do not identify earthquakes or contain picks. Supply an event
-catalogue and observed picks, or explicitly request labelled teaching predictions.
-Only this optional helper needs ObsPy; the Julia correlator does not.
+For the optional class exercise run .venv/bin/python scripts/download_example.py.
+For your own event CSV and observed picks, from the DDCorr.jl folder run:
+
+  .venv/bin/python scripts/download_sac.py --events events.csv --network Z7 --stations HRIM,FLUR --channels "HH?" --location=-- --pick-mode observed --picks picks.csv --output work/observed
+
+In PowerShell replace .venv/bin/python with .\\.venv\\Scripts\\python.exe.
+events.csv supplies the event ID, UTC origin, latitude, longitude and depth (km).
+picks.csv supplies UTC arrivals for a network, station, location and phase.
+The downloader joins waveforms to time-matched station metadata and writes one
+SAC per channel to OUTPUT/sac/EVENT_ID/. Read OUTPUT/manifest.json for coverage,
+missing traces, pick sources and downloaded bytes. Identical archive requests use
+the shared cache. Download mode requires ObsPy and an internet connection on a cache miss.
 """
 import argparse
 import csv
@@ -183,21 +192,21 @@ def exact_channel(inventory, network, station, location, channel, start, end):
 
 
 def make_parser():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--events", type=Path, required=True, help="CSV: event_id,origin_utc,latitude,longitude,depth_km[,magnitude,source]")
     parser.add_argument("--network", required=True, help="One network code (no wildcard)")
     parser.add_argument("--stations", help="Explicit comma-separated station codes")
     parser.add_argument("--channels", default="HH?", help="FDSN channel selection, quoted when it contains wildcards")
     parser.add_argument("--location", default="--", help="-- means blank; pass --location=--")
-    parser.add_argument("--pick-mode", required=True, choices=("observed", "predicted"))
+    parser.add_argument("--pick-mode", required=True, choices=("observed", "predicted"), help="observed reads supplied station picks; predicted places P and S using straight-line distance / speed.")
     parser.add_argument("--picks", type=Path, help="Required for observed mode; P and S arrival times in UTC")
     parser.add_argument("--vp", type=float, default=6.0, help="Teaching homogeneous P velocity, km/s")
     parser.add_argument("--vs", type=float, default=3.5, help="Teaching homogeneous S velocity, km/s")
     parser.add_argument("--before", type=float, default=25, help="Seconds before each origin")
     parser.add_argument("--after", type=float, default=70, help="Seconds after each origin")
     parser.add_argument("--service", default="https://service.earthscope.org", help="FDSN service base URL")
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--cache-dir", type=Path, default=Path("work/download_cache"))
+    parser.add_argument("--output", type=Path, required=True, help="Create sac/EVENT_ID/ and manifest.json here. Use the same folder for identical repeat requests.")
+    parser.add_argument("--cache-dir", type=Path, default=Path("work/download_cache"), help="Reuse the exact stored FDSN requests in this folder (default work/download_cache).")
     parser.add_argument("--total-mib", type=float, default=20, help="Limit total selected archive input bytes, including cached inputs")
     parser.add_argument("--stations-file", type=Path, help="CSV from prepare_tables.py stations; alternative to --stations")
     parser.add_argument("--max-combinations", type=int, default=200, help="Explicit bound on event × station selections; e.g. 1200 for 100 × 12")
@@ -390,7 +399,7 @@ def run(args):
     if not manifest["sac_files"]:
         raise ValueError("No usable SAC traces were produced; inspect skipped entries in the manifest")
     if args.pick_mode == "predicted":
-        print("Teaching predictions are window centres, not measured picks. Inspect waveforms before scientific interpretation.")
+        print("SAC A and T0 contain calculated P and S arrival times. The correlation windows are centred on those times.")
     return manifest
 
 

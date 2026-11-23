@@ -2,9 +2,9 @@
 # Inspect phase windows before interpreting measurements scientifically.
 # DDCorr: the settings to explore in class. Times are seconds, bands are Hz.
 # Paths below are relative to this TOML. Override input with --sac-dir PATH.
-# Download first: see examples/download/README.md
-# Then: julia --project=. --threads=auto bin/ddcorr.jl examples/download/iceland.toml --inspect
-#       julia --project=. --threads=auto bin/ddcorr.jl examples/download/iceland.toml
+# Download first: see docs/START_HERE.md
+# Then: julia --project=. --threads=2 bin/ddcorr.jl examples/download/iceland.toml --inspect
+#       julia --project=. --threads=2 bin/ddcorr.jl examples/download/iceland.toml
 
 [input]
 sac_dir = "../../work/iceland/sac" # one immediate subdirectory per event
@@ -45,10 +45,7 @@ event_pairs = []
 [matrices]
 enabled = true # sparse accepted entries by station/phase; no N-by-N allocation
 dense = false # optional CSV matrices; missing means unmeasured/rejected, not zero
-max_dense_events = 500
+max_dense_events = 500 # upper limit on events when writing square CSV matrices
 max_dense_cells = 2000000 # total dense cells across station/phase groups
 
-# Optional: copy src/defaults.toml, adjust a few advanced values, then uncomment.
-# Every advanced default is documented; effective_config.toml records the merge.
-# [advanced]
-# file = "my_advanced.toml"
+# Change advanced settings directly in src/advanced.toml. DDCorr loads them automatically.

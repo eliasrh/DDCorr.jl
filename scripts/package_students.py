@@ -1,58 +1,53 @@
 #!/usr/bin/env python3
-"""Build the instructor's ZIP handout without solutions or local run data.
+"""Package the student code, short guides, slides and worked solutions.
 
-Run from a Git checkout. Students only extract the resulting ZIP; they do not
-need Git, this packaging script, or access to the private GitHub repository.
+From the repository folder run:
+    python3 scripts/package_students.py --output ../DDCorr_student_package.zip
+
+Share the separate Iceland100.zip alongside this handout. It contains the SAC
+files and the inputs for the DDSync and GraphSplit exercises.
 """
 import argparse
 import hashlib
 from pathlib import Path
-import subprocess
 import zipfile
 
 
+def course_files(root):
+    files = [root / name for name in (
+        ".gitignore", "README.md", "Project.toml", "Manifest.toml", "DDCorr.toml",
+        "requirements-download.txt", "docs/START_HERE.md", "docs/INPUTS_OUTPUTS.md",
+        "teaching/DDCorr_minicourse.pptx", "teaching/SOLUTIONS.txt",
+    )]
+    for pattern in ("bin/*.jl", "src/*.jl", "src/*.toml", "scripts/*.py", "test/*.jl",
+                    "examples/*.toml", "examples/download/*.toml", "examples/download/*.csv",
+                    "examples/download/*.json", "examples/download/iceland100/*.csv",
+                    "examples/download/iceland100/*.json", "examples/download/iceland100/*.toml"):
+        files.extend(root.glob(pattern))
+    missing = [p for p in files if not p.is_file()]
+    if missing:
+        raise ValueError("Missing student file: " + str(missing[0]))
+    return sorted(files)
+
+
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, required=True)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--output", type=Path, required=True, help="Destination ZIP file.")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    entries = subprocess.check_output(
-        ["git", "ls-files", "--cached", "-z"],
-        cwd=root,
-    ).decode().split("\0")
-    excluded = {".git", ".github", "work", "results", "node_modules", ".ddcorr_cache", "__pycache__"}
-    files = []
-    for entry in sorted(set(entries)):
-        rel = Path(entry)
-        source = root / rel
-        if not entry or any(p in excluded or p.startswith(".venv") for p in rel.parts):
-            continue
-        if entry.startswith("teaching/instructor/") or not source.is_file() or source.is_symlink():
-            continue
-        if source.suffix in {".pyc", ".part", ".tmp", ".zip"}:
-            continue
-        files.append((entry, source))
-    assert any(entry == "teaching/DDCorr_minicourse.pptx" for entry, _ in files)
-    assert any(entry == "src/DDCorr.jl" for entry, _ in files)
+    files = course_files(root)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     hashes = []
-    with zipfile.ZipFile(args.output, "w", zipfile.ZIP_DEFLATED) as archive:
-        for entry, source in files:
-            data = source.read_bytes()
-            # Keep the handout's link honest: solutions are distributed later.
-            if entry == "teaching/README.md":
-                data = data.decode().replace(
-                    "The worked [instructor solution guide](instructor/INSTRUCTOR_SOLUTIONS.md) is separate and should be distributed after the exercise. The student ZIP excludes that directory.",
-                    "The instructor solution guide is distributed separately after the exercise; it is not included in this student handout.",
-                ).encode()
-            archive.writestr("DDCorr.jl/" + entry, data)
-            hashes.append(hashlib.sha256(data).hexdigest() + "  " + entry)
+    archive_path = args.output.with_suffix(".zip.part")
+    with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
+        for source in files:
+            rel = source.relative_to(root).as_posix()
+            contents = source.read_bytes()
+            archive.writestr("DDCorr.jl/" + rel, contents)
+            hashes.append(hashlib.sha256(contents).hexdigest() + "  " + rel)
         archive.writestr("DDCorr.jl/PACKAGE_CONTENTS.sha256", "\n".join(hashes) + "\n")
-        archive.writestr("DDCorr.jl/READ_ME_FIRST.txt",
-                         "Open docs/START_HERE.md for installation and the first run.\n"
-                         "Open teaching/DDCorr_minicourse.pptx for the course slides.\n"
-                         "Instructor solutions and downloaded waveforms are not included.\n")
-    print(f"Created {args.output.resolve()}: {len(files)} files, {args.output.stat().st_size:,} bytes")
+    archive_path.replace(args.output)
+    print(f"Created {args.output.resolve()} with {len(files)} student files.")
 
 
 if __name__ == "__main__":

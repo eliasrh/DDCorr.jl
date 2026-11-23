@@ -1,0 +1,117 @@
+# DDCorr automatically reads this file at startup. Edit the advanced setting
+# here and rerun DDCorr. No import or second configuration file is required.
+# DDCorr.toml contains the settings used most often and takes precedence for
+# the public options it specifies. Each run saves its full effective_config.toml.
+
+[input]
+depth_unit = "km" # SAC EVDP source units: km or m; export is always km, original files untouched
+station_epoch_policy = "skip" # skip: exclude conflicting stations and continue; error: stop; split: separate coordinate groups
+origin_tolerance_s = 0.02 # maximum origin disagreement between SAC channels
+coordinate_tolerance_deg = 0.0001 # maximum event coordinate disagreement
+depth_tolerance_km = 0.01 # maximum event depth disagreement
+station_coordinate_tolerance_deg = 0.0001 # A larger latitude or longitude difference triggers the station_epoch_policy above
+station_elevation_tolerance_m = 10.0 # maximum station elevation disagreement
+component_inclination_tolerance_deg = 10.0 # allow a component axis this many degrees from vertical for P or horizontal for S
+strict_headers = true # stop if an event has invalid or conflicting required metadata. false skips the whole affected event and logs the reason
+
+[output]
+weight = "cc_squared" # write r² in dt.cc. Choose "cc" to write |r| instead
+write_rejected_pairs = false # true keeps one row per failed event pair at each station and phase. This can use substantial memory and disk
+dt_decimals = 4 # round exported time differences and lags to this many decimal places in seconds
+near_identity_cc = 0.99 # list accepted arrivals with |r| at or above this value in near_identity.csv for duplicate review
+
+[preprocess]
+trace_taper_fraction = 0.02 # smoothly reduce amplitudes across the first and last 2% of the trace before filtering
+noise_pick_header = "auto" # anchor the noise measurement to the selected P arrival for both phases
+noise_window_s = [-8.0, -2.0] # before P; avoid measuring P coda as S background
+orientation_tolerance_deg = 10.0 # allow this much difference in sensor inclination and azimuth between like-named channels
+
+[quality]
+polarity = "positive" # use the strongest positive correlation. "absolute" can also select waveforms with reversed motion
+subsample = true # fit a parabola through the best sample and its two neighbors to estimate the peak time between samples
+boundary_guard_samples = 1 # reject a peak in this many samples at either end of the searched lag range
+component_pick_tolerance_s = 0.001 # common components must agree within this many seconds on (pick_i − origin_i) − (pick_j − origin_j)
+max_pair_distance_km = 0.0 # 0: compare every pair sharing usable channels
+
+[phase.P]
+filter_order = 4 # Butterworth filter order. Increasing it makes the transition at each frequency corner steeper
+filter_padding_s = 5.0 # require extra recorded samples on both sides of the noise and comparison windows to avoid filter edge effects
+min_components = 1 # require this many common usable vertical components for P
+min_peak_gap = 0.10 # require the winning peak to exceed the next competing local maximum by this amount
+sidelobe_exclusion_s = 0.04 # ignore local maxima within this time of the winning peak when measuring min_peak_gap
+
+[phase.S]
+filter_order = 4 # Butterworth order for the S filter
+filter_padding_s = 5.0 # require at least 5 s of recorded data beyond the S search and pre-P noise windows
+min_peak_gap = 0.08 # require the S peak to exceed its strongest competing peak by this coefficient difference
+sidelobe_exclusion_s = 0.04 # maxima within this many seconds of the best peak belong to its immediate neighborhood
+
+[runtime]
+max_events = 0 # 0 uses all events; positive selects evenly spaced folders first
+resume = true # reuse a finished station and phase when its SAC files and correlation settings match
+cache_dir = ".ddcorr_cache" # relative to the PUBLIC TOML
+# A group contains the waveforms from one station for either P or S. With
+# 100 events at that station there are 100 × 99 / 2 = 4,950 candidate pairs.
+# DDCorr checks this count before reading the group's waveform samples.
+# Lower this limit to catch long runs early. Use 0 to allow any pair count.
+max_pairs_per_group = 2000000
+# Before processing that group, DDCorr estimates the memory needed to filter
+# one full trace, retain one short window and its spectra per trace, and keep
+# one FFT work area per worker. With 1,024 MiB it stops if that estimate
+# exceeds 1 GiB. Leave room for Julia, accepted results and optional figures.
+max_group_memory_mib = 1024
+
+[diagnostics]
+max_requested_examples = 200 # stop if the chosen event pairs, stations and phases could request more examples than this
+max_closure_triangles = 100000 # maximum number of three-event timing sums kept for the closure plot at each station and phase
+
+# The entries below supply defaults for any public settings omitted from your
+# DDCorr.toml. Edit the public file to change a setting that appears in both.
+[interface.input]
+sac_dir = "examples/synthetic/sac" # one immediate subdirectory per event
+p_pick_header = "a" # A contains P arrival relative to the SAC reference time
+s_pick_header = "t0" # T0 contains S arrival; change if your archive differs
+
+[interface.output]
+directory = "results" # a new timestamped run directory preserves older results
+
+[interface.P]
+band_hz = [2.0, 14.0] # P bandpass corners in Hz. Signals above and below this band are attenuated
+window_s = [-0.5, 2.0] # compare samples from 0.5 s before the P pick to 2 s after it
+max_lag_s = 0.5 # after centring each waveform on its pick, search shifts from −0.5 to +0.5 s
+min_cc = 0.70 # require the best P correlation coefficient to reach 0.70 before accepting its lag
+sample_rate_hz = 50.0 # compare P signals at 50 samples per second. Input traces must have at least this rate
+min_snr = 1.5 # the filtered P window must have at least 1.5 times the RMS amplitude of pre-P noise
+
+[interface.S]
+min_components = 1 # one usable horizontal is enough; set 2 to require both
+band_hz = [2.0, 14.0] # S bandpass corners in Hz
+window_s = [-0.5, 3.0] # compare samples from 0.5 s before S to 3 s after S
+max_lag_s = 0.5 # largest earlier or later correction to the S picks, in seconds
+min_cc = 0.70 # minimum peak coefficient for the average curve across shared usable components
+sample_rate_hz = 50.0 # time grid used to compare the S waveforms, in samples per second
+min_snr = 1.5 # minimum S-window RMS divided by pre-P noise RMS on each component
+
+[interface.plots]
+enabled = true # write the HTML report and its selected figures
+summary = true # coefficients, lags, station support and graph connectivity
+examples = true # show the two traces before and after alignment, and their correlation at each lag
+filters = true # actual filter response and representative waveform spectra
+closure = true # for triples at one station and phase, compare dt(i,j) + dt(j,k) with dt(i,k)
+max_examples = 12 # automatic selection only; explicit pairs are all shown
+# Empty = deterministic weak/middle/strong accepted pairs across station+phase.
+# Nonempty = output IDs from event_id_map.csv, e.g. [[1, 2], [2, 3]].
+# Only accepted observations are shown; selection/unavailable pairs are logged.
+event_pairs = [] # numeric event_id column in event_id_map.csv
+original_event_pairs = [] # alternative folder labels, e.g. [["17", "203"]]; do not set both
+example_stations = [] # empty means all, or ["XX.S01"]
+example_phases = ["P", "S"]
+
+[interface.matrices]
+plots = true # PNG heatmaps, independent of dense CSV export; also needs plots.enabled=true
+max_plot_events = 500 # larger runs skip heatmaps with a reason in matrix_plots.csv
+max_plot_groups = 24 # render at most this many station/phase groups
+enabled = true # sparse accepted entries by station/phase; no N-by-N allocation
+dense = false # optional CSV matrices; missing means unmeasured/rejected, not zero
+max_dense_events = 500
+max_dense_cells = 2000000 # maximum total entries in the three square CSVs (coefficient, dt, lag) across all groups

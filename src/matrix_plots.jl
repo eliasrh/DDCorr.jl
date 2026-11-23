@@ -16,7 +16,7 @@ function matrix_figures(out,events,rows,cfg)
                 lag[r.i,r.j]=r.lag;lag[r.j,r.i]=-r.lag
             end
             fig=Figure(size=(1500,600),fontsize=19)
-            ticks=unique(round.(Int,range(1,n;length=min(n,8))))
+            ticks=spaced_indices(n,min(n,8))
             for (k,(data,title,unit)) in enumerate(((cc,"Signed coefficient r","r"),(dt,"dt(i − j)","seconds"),(lag,"Residual lag (j vs i)","seconds")))
                 vals=filter(isfinite,vec(data));limit=k==1 ? 1.0 : max(maximum(abs,vals;init=0.0),1e-6)
                 ax=Axis(fig[1,2k-1],title=title,xlabel="event_id j",ylabel="event_id i",yreversed=true,aspect=DataAspect(),xticks=ticks,yticks=ticks)

@@ -1,0 +1,2 @@
+Source SAC: S1_009900/Z7.KVER..HHZ.sac
+Actual DDCorr.filtered_trace; 2–14 Hz, order 4, 50 Hz target.
