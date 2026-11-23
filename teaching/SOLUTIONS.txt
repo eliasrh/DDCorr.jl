@@ -1,0 +1,92 @@
+DDCorr workshop • worked answers
+
+1. Which phase times does the first Iceland trace contain?
+
+In S1_009900/Z7.HRIM..HHZ.sac, KA is P_pred and KT0 is S_pred. The numeric
+times used for P and S are A and T0, respectively. O gives the event origin
+relative to the SAC clock. Subtract O from A to read the P time after origin.
+The Iceland S1 catalogue contains event origins, locations and magnitudes.
+The SAC producer calculated arrival times to centre the windows using 6.0 km/s
+for P and 3.5 km/s for S. On another dataset, inspect the field names and labels.
+
+2. What do the Iceland baseline counts mean?
+
+100 event folders × 11 stations × 3 components = 3,300 SAC traces.
+Twelve stations met the original metadata selection; STJA had no usable
+waveforms in the selected archive. The baseline produced 2,412 P rows
+and 4,625 S rows, or 7,037 station–phase measurements across 1,914
+distinct earthquake pairs. Separate stations can measure the same pair.
+Multiple horizontal components can contribute to one S measurement.
+
+In group_summary.csv, Z7.DYSA P had 66 prepared events. Its 2,145 possible
+pairs yielded 800 accepted, 1,307 below the correlation threshold and 38 at
+the search boundary. A boundary peak suggests the true optimum might lie
+beyond the chosen lag range. Check the waveforms before increasing that range.
+
+3. Does every convincing correlation demonstrate two different earthquakes?
+
+In the existing [plots] section of a copy of Iceland100/DDCorr.toml, set
+  event_pairs = [[44, 45], [28, 45]]
+  example_stations = ["Z7.RODG", "Z7.STAM"]
+  example_phases = ["S"]
+Save this TOML in Iceland100/. Run DDCorr with this copy and open the printed
+report. Use example_selection.csv to locate the requested figures.
+
+IDs 28, 44 and 45 map to S1_009927, S1_009943 and S1_009944.
+For 44/45, Z7.RODG S gives r = 0.99982 and lag = +0.0003 s. The two traces
+nearly cover each other. Their catalogue origins differ by only 0.060 s and
+15 accepted measurements at 11 stations have r between 0.908 and 0.99982.
+Check the cuts in absolute UTC against the continuous record. Two catalogue
+entries may be using the very same physical arrival. A high r warrants that
+check; a decision to merge requires evidence of one source occurrence.
+
+For 28/45, Z7.STAM S gives r = 0.700006 and lag = −0.0039 s. An early pulse
+aligns better than the later coda. Compare the other horizontal component,
+neighbouring lag peaks and the other stations. There are eight accepted
+measurements across six stations for this pair; the strongest has r = 0.92963.
+
+4. What happens when only the P threshold changes?
+
+A Threshold.toml alongside the Iceland baseline with [P] min_cc = 0.90 leaves
+233 P rows. All 4,625 S rows still pass. Together these give 4,858 observations
+on 1,260 pairs. At 0.70 there were 2,412 P rows and 1,914 linked pairs. These
+counts can also be checked by filtering the baseline correlations.csv on
+cc_signed; the default comparison keeps r greater than or equal to the
+threshold. The smaller set gives fewer P constraints for relocation.
+
+5. How do we check the sign and error independently?
+
+In the optional synthetic dataset, output events 1 and 2 map to original names
+1201 and 17. At XX.S01 P their supplied pick-minus-origin times differ by
++0.3600 s (event 1 minus event 2). The waveform of event 2 arrives +0.2247 s
+later relative to its own pick on the aligned axes. Subtract that correction.
+DDCorr writes 0.3600 − 0.2247 = +0.1353 s for event 1 minus event 2. The
+synthetic pulses were generated with a difference of +0.1350 s, giving a
+signed error of +0.0003 s. The squared coefficient in dt.cc, approximately
+0.9698, is the weight. Use check_synthetic.py as shown in START_HERE for all
+accepted rows. Expect 80 signal measurements, maximum absolute error about
+0.0006 s, and zero accepted rows for the noise-only event, original ID 905.
+
+6. Which Friday result should we bring to DDSync and GraphSplit on Saturday?
+
+Choose the 100-event baseline result and keep its dt.cc, catalog.txt,
+stations.txt and event_id_map.csv together. In Iceland100/ use prepare_run.jl
+with that result path or with reference, as described in START.txt. DDSync
+uses alternate paths through the station–phase graph to test consistency.
+GraphSplit uses measurements from several stations and a velocity model to
+estimate relative positions. DDSync retains 6,736 of 7,037 observations in
+the supplied run. GraphSplit uses 65 events for prelocation and 57 in the DD
+solve. Select the 57 IDs in catalog_dd_filt.txt from each of the three
+catalogues before comparing them. Iceland100/solutions/RESULTS.txt and matched_locations.png give the
+worked comparison. Assess coverage, link redundancy and station geometry
+before interpreting a change in cluster shape.
+
+
+7. Trace events 28 and 45 through Saturday’s relocation.
+
+Both IDs appear in graphsplit_output/catalog_dd_filt.txt. Match the final
+integer ID in each catalogue to the same two IDs at input and prelocation.
+Their horizontal separation is about 0.176 km initially, 0.171 km after
+prelocation and 0.172 km after DD. Their 3-D separation is about 0.291,
+0.355 and 0.362 km. Most of the change for this pair was in the vertical
+direction. These are distances between the fitted hypocentres.

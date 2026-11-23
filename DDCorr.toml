@@ -1,15 +1,15 @@
 # DDCorr: the settings to explore in class. Times are seconds, bands are Hz.
 # Paths below are relative to this TOML. Override input with --sac-dir PATH.
 # Start with: python3 scripts/make_synthetic.py
-# Then: julia --project=. --threads=auto bin/ddcorr.jl DDCorr.toml --inspect
-#       julia --project=. --threads=auto bin/ddcorr.jl DDCorr.toml
+# Then: julia --project=. --threads=2 bin/ddcorr.jl DDCorr.toml --inspect
+#       julia --project=. --threads=2 bin/ddcorr.jl DDCorr.toml
 
 [input]
 sac_dir = "examples/synthetic/sac" # one immediate subdirectory per event
 # These defaults match the synthetic example, not every SAC archive.
 # First list A/T0–T9 and their labels: julia --project=. bin/sac_info.jl PATH_TO_FILE.sac
 # Choose the FIELD containing the arrival, e.g. "t8", not its text label "Pm".
-# See docs/START_HERE.md, section 3, before using your own dataset.
+# bin/sac_info.jl also accepts your SAC directory and opens the first example.
 p_pick_header = "a" # P arrival, in seconds from the SAC reference time
 s_pick_header = "t0" # S arrival; both mappings apply to the whole input dataset
 
@@ -17,28 +17,28 @@ s_pick_header = "t0" # S arrival; both mappings apply to the whole input dataset
 directory = "results" # a new timestamped run directory preserves older results
 
 [P]
-band_hz = [2.0, 14.0] # retain frequencies where similar P arrivals are clear
-window_s = [-0.5, 2.0] # relative to the P pick; include onset and short coda
-max_lag_s = 0.5 # search +/- this correction around the picks
-min_cc = 0.70 # signed coefficient r threshold, not the exported r^2 weight
-sample_rate_hz = 50.0 # resample with an anti-alias filter; native rate must be >= this
-min_snr = 1.5 # signal RMS / noise RMS measured before P, after filtering
+band_hz = [2.0, 14.0] # P bandpass corners in Hz. Signals above and below this band are attenuated
+window_s = [-0.5, 2.0] # compare samples from 0.5 s before the P pick to 2 s after it
+max_lag_s = 0.5 # after centring each waveform on its pick, search shifts from −0.5 to +0.5 s
+min_cc = 0.70 # require the best P correlation coefficient to reach 0.70 before accepting its lag
+sample_rate_hz = 50.0 # compare P signals at 50 samples per second. Input traces must have at least this rate
+min_snr = 1.5 # the filtered P window must have at least 1.5 times the RMS amplitude of pre-P noise
 
 [S]
 min_components = 1 # only components passing min_snr enter the mean; 2 requires both horizontals
-band_hz = [2.0, 14.0] # same band is a starting point, not a universal optimum
-window_s = [-0.5, 3.0] # relative to the S pick
-max_lag_s = 0.5
-min_cc = 0.70
-sample_rate_hz = 50.0
-min_snr = 1.5
+band_hz = [2.0, 14.0] # S bandpass corners in Hz
+window_s = [-0.5, 3.0] # compare samples from 0.5 s before S to 3 s after S
+max_lag_s = 0.5 # largest earlier or later correction to the S picks, in seconds
+min_cc = 0.70 # minimum peak coefficient for the average curve across shared usable components
+sample_rate_hz = 50.0 # time grid used to compare the S waveforms, in samples per second
+min_snr = 1.5 # minimum S-window RMS divided by pre-P noise RMS on each component
 
 [plots]
-enabled = true
+enabled = true # write the HTML report and its selected figures
 summary = true # coefficients, lags, station support and graph connectivity
-examples = true # waveforms before/after alignment and full lag curve
+examples = true # show the two traces before and after alignment, and their correlation at each lag
 filters = true # actual filter response and representative waveform spectra
-closure = true # station/phase triangle closure, an internal-consistency check
+closure = true # for triples at one station and phase, compare dt(i,j) + dt(j,k) with dt(i,k)
 max_examples = 12 # automatic examples only; explicit pairs are not silently capped
 # Empty pair lists choose weak/middle/strong ACCEPTED observations automatically.
 # Numeric pairs use the event_id COLUMN in event_id_map.csv, NOT original folders.
@@ -51,14 +51,11 @@ example_phases = ["P", "S"] # use ["P"] for P figures only
 
 [matrices]
 plots = true # PNG heatmaps appear in the report, even when dense=false
-max_plot_events = 500
-max_plot_groups = 24
-enabled = true # write matrices/index.csv and sparse accepted entries by station/phase; no N-by-N allocation
+max_plot_events = 500 # skip heatmap figures above this catalogue size
+max_plot_groups = 24 # draw up to this many station and phase combinations
+enabled = true # write a matrix index and one list of measured event pairs for each station and phase
 dense = false # optional CSV matrices; missing means unmeasured/rejected, not zero
-max_dense_events = 500
-max_dense_cells = 2000000 # total dense cells across station/phase groups
+max_dense_events = 500 # upper limit on events when writing square CSV matrices
+max_dense_cells = 2000000 # maximum total entries in the three square CSVs (coefficient, dt, lag) across all groups
 
-# Optional: copy src/defaults.toml, adjust a few advanced values, then uncomment.
-# Every advanced default is documented; effective_config.toml records the merge.
-# [advanced]
-# file = "my_advanced.toml"
+# Change advanced settings directly in src/advanced.toml. DDCorr loads them automatically.

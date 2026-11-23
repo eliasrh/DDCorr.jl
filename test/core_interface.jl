@@ -218,3 +218,57 @@ end
         @test occursin("station(s) excluded",read(joinpath(run,"README.txt"),String))
     end
 end
+
+@testset "SAC magnitudes stay optional, ID remains last" begin
+    mktempdir() do d
+        sac=joinpath(d,"sac"); out=joinpath(d,"inspect"); mkpath(out)
+        config=deepcopy(cfg); config["input"]["sac_root"]=sac
+        for (i,mags,types) in [(1,[-0.25,-12345.0],[54,-12345]),(2,[0.,0.],[54,54]),
+                               (3,[-12345.0,-12345.0],[-12345,-12345]),
+                               (4,[1.,2.],[54,54]),(5,[1.,1.],[54,55])]
+            dir=joinpath(sac,"event$i"); mkpath(dir)
+            for (k,channel) in enumerate(("HHZ","HHN"))
+                path=joinpath(dir,"$channel.sac"); write_synthetic_sac(path)
+                open(path,"r+") do io
+                    seek(io,4*39); write(io,Float32(mags[k]))
+                    seek(io,4*(70+25)); write(io,Int32(types[k]))
+                    seek(io,600); write(io,channel)
+                end
+            end
+        end
+        events=M.inventory(config,out)
+        @test isequal([e.magnitude for e in events],[-0.25,0.,NaN,NaN,NaN])
+        @test [e.magnitude_status for e in events[3:5]]==["missing",fill("conflicting SAC magnitudes or types",2)...]
+        M.write_inputs(events,NamedTuple[],out,config)
+        catalog=split.(readlines(joinpath(out,"catalog.txt")))
+        @test all(row->length(row)==11,catalog)
+        @test parse.(Int,last.(catalog))==1:5
+        @test isequal(parse.(Float64,[r[end-1] for r in catalog]),[-0.25,0.,NaN,NaN,NaN])
+        M.write_inputs(events[3:5],NamedTuple[],out,config)
+        @test all(row->length(split(row))==10,readlines(joinpath(out,"catalog.txt")))
+        @test occursin("conflicting SAC magnitudes or types",read(joinpath(out,"event_id_map.csv"),String))
+    end
+end
+
+@testset "Large group preflight does not allocate a pair table" begin
+    c=deepcopy(cfg); c["runtime"]["max_pairs_per_group"]=0
+    c["runtime"]["max_group_memory_mib"]=2048
+    # Reuse a header here to isolate startup planning from waveform I/O.
+    h=M.SACHeader("/missing/test.sac",zeros(70),fill(Int32(2000),40),"X","A","","HHZ","",0.,false)
+    entries=[((id=i,),h) for i in 1:10000]
+    plan=M.group_plan("X.A","P",entries,c)
+    @test plan.pairs==49_995_000
+    @test (@allocated M.group_plan("X.A","P",entries,c)) < 2^20
+    c["runtime"]["max_pairs_per_group"]=100
+    message=try M.process_group("X.A","P",entries,c); "" catch err; sprint(showerror,err) end
+    @test occursin("49995000 possible pairs",message)
+    c["runtime"]["max_pairs_per_group"]=0; c["runtime"]["max_group_memory_mib"]=1
+    @test_throws ErrorException M.group_plan("X.A","P",entries,c)
+end
+
+@testset "Automatic selections allow a single event or example" begin
+    @test M.spaced_indices(12,0)==Int[]
+    @test M.spaced_indices(12,1)==[1]
+    @test M.spaced_indices(12,2)==[1,12]
+    @test M.spaced_indices(5,3)==[1,3,5]
+end

@@ -7,10 +7,10 @@ import {slides} from './content.mjs';
 
 const SOURCE_DIR=path.dirname(fileURLToPath(import.meta.url));
 const REPO=path.resolve(SOURCE_DIR,'../..');
-const WORKSPACE=REPO;
+const WORKSPACE=path.resolve(process.env.DDCORR_SLIDES_WORKSPACE||REPO);
 const HERE=path.resolve(process.env.DDCORR_SLIDES_BUILD||path.join(REPO,'work/slides-build'));
 const SKILL=process.env.PRESENTATION_SKILL_DIR;
-if(!SKILL) throw Error('Set PRESENTATION_SKILL_DIR to the presentations skill directory; see teaching/README.md.');
+if(!SKILL) throw Error('Set PRESENTATION_SKILL_DIR to the presentations skill directory; see teaching/source/BUILD.txt.');
 const RUNTIME_PYTHON=process.env.PYTHON_EXECUTABLE||'python3';
 const {resolvePresentationFont,applyPresentationChartFont,finalizePresentation}=await import(pathToFileURL(path.join(SKILL,'container_tools/artifact_tool_utils.mjs')));
 const FONT=resolvePresentationFont(),MONO='Menlo';
@@ -121,18 +121,22 @@ function introDiagram(slide,kind){
   paragraphs(slide,['Measure waveform shifts','dt.cc + catalogue + stations'],80,455,325,26,17);
   paragraphs(slide,['Estimate consistent relative arrival times','theta + timing uncertainties'],495,455,325,26,17);
   paragraphs(slide,['Relocate events using a velocity model','Relative positions + origins'],910,455,300,26,17);
-  text(slide,'current','This block',82,620,320,34,24,C.orange,true);
-  text(slide,'later','Later course blocks',495,620,700,34,24,C.muted);
+  text(slide,'current','Friday',82,620,320,34,24,C.orange,true);
+  text(slide,'later','Saturday',495,620,700,34,24,C.muted);
  }
 }
 
 for(let i=0;i<slides.length;i++){
  const d=slides[i],n=i+1;const slide=presentation.slides.add();slide.background.fill=C.bg;
- text(slide,'title',d.title,64,50,1152,90,d.cover?54:41,C.ink,true);
+ text(slide,'title',d.title,64,44,1152,88,d.hero?43:39,C.ink,true);
  text(slide,'slide-number',String(n).padStart(2,'0'),1155,668,60,26,18,C.muted);
- text(slide,'section-label','DDCorr · '+(d.section||'DDCORR'),64,673,1000,23,16,C.muted);
+ 
  let notes=d.notes||'';
- if(d.diagram){introDiagram(slide,d.diagram);}
+ async function addPlot(rel,box){const data=await fs.readFile(path.join(REPO,rel));return slide.images.add({blob:new Uint8Array(data).buffer,contentType:'image/png',alt:d.alt||d.title,position:box,fit:'contain'});}
+ if(d.hero){await addPlot(d.hero,{left:70,top:140,width:1150,height:282});paragraphs(slide,d.body,74,453,1120,26,10);}
+ else if(d.sideImage){await addPlot(d.sideImage,{left:52,top:145,width:630,height:480});paragraphs(slide,d.body,713,158,515,25,22);}
+ else if(d.mathImage){await addPlot(d.mathImage,{left:65,top:136,width:1150,height:135});paragraphs(slide,d.body,80,302,1110,26,18);}
+ else if(d.diagram){introDiagram(slide,d.diagram);}
  else if(d.cover){paragraphs(slide,d.body,64,230,1050,34,28);text(slide,'course',d.subtitle||'DDCorr.jl teaching package',64,600,1100,40,24,C.teal,true);}
  else if(d.code){
    paragraphs(slide,d.body,64,154,1152,d.size||28,14);
@@ -170,7 +174,6 @@ for(let i=0;i<slides.length;i++){
  noteRows.push(`# ${n}. ${d.title}\n\n${(d.body||[]).join('\n\n')}\n\n${d.command?'```sh\n'+d.command+'\n```\n\n':''}${d.equation?'Equation: '+d.equation+'\n\n':''}${notes}\n`);
 }
 await fs.writeFile(path.join(HERE,'code_index.json'),JSON.stringify(sourceIndex,null,2));
-await fs.writeFile(path.join(REPO,'teaching/LECTURE_NOTES.md'),'# DDCorr.jl lecture notes\n\nThe PowerPoint contains editable text, commands and tables; equations, scientific figures and source excerpts are PNG images with source included. Code excerpts are images of the exact source listed below.\n\n'+noteRows.join('\n---\n\n'));
 await fs.writeFile(path.join(HERE,'presentation.json'),JSON.stringify(presentation.toProto()));
 const draft=path.join(HERE,'candidate.pptx');await(await PresentationFile.exportPptx(presentation)).save(draft);
 for(let i=0;i<presentation.slides.items.length;i++){

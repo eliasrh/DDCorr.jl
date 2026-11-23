@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """Make inspectable event/pick/station tables from documented source formats.
 
-This selects metadata, not good correlations. Receipts retain source hashes and
-selection parameters. Read docs/DATA_DISCOVERY.md before choosing a service.
+The s1 command extracts origins and magnitudes from Ágústsdóttir et al. (2019),
+Data Set S1. It writes events.csv for download_sac.py. That catalogue contains
+no station arrivals, so its picks.csv contains column names only. For another
+dataset, use the quakeml command to read a QuakeML event and arrival catalogue.
+
+From DDCorr.jl, run .venv/bin/python scripts/prepare_tables.py MODE --help.
+For PowerShell, use .\\.venv\\Scripts\\python.exe. Results and source receipts go to --output.
 """
 import argparse, csv, datetime as dt, json, math, re, sys
 from pathlib import Path
@@ -75,11 +80,22 @@ def station_rows(path,start,end,network,channel,near_lat,near_lon):
     return rows
 
 def main(argv=None):
-    p=argparse.ArgumentParser(description=__doc__); sub=p.add_subparsers(dest='mode',required=True)
-    for name in ('s1','quakeml','events','stations'):
-        a=sub.add_parser(name);a.add_argument('--output',type=Path,required=True);a.add_argument('--start',required=True);a.add_argument('--end',required=True)
-        a.add_argument('--limit',type=int,default=100 if name!='stations' else 12)
-        if name in ('s1','quakeml'): a.add_argument('--input',type=Path,required=True)
+    p=argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter); sub=p.add_subparsers(dest='mode',required=True)
+    modes = {
+        's1': 'Read the Bárðarbunga dike catalogue, Data Set S1, into events.csv.',
+        'quakeml': 'Read a local QuakeML file into events.csv and picks.csv.',
+        'events': 'Select earthquake origins in a time interval and geographic box.',
+        'stations': 'Select stations with active channels nearest to the given point.',
+    }
+    for name, purpose in modes.items():
+        a = sub.add_parser(name, help=purpose, description=purpose)
+        a.add_argument('--output', type=Path, required=True, help='Folder for the selected CSV tables and source receipt.')
+        a.add_argument('--start', required=True, help='Start of selection in UTC, inclusive for event origins.')
+        a.add_argument('--end', required=True, help='End of selection in UTC, exclusive for event origins.')
+        a.add_argument('--limit', type=int, default=100 if name != 'stations' else 12,
+                       help='Maximum number of events in chronological order or stations in order of distance.')
+        if name in ('s1','quakeml'):
+            a.add_argument('--input', type=Path, required=True, help='Local S1 text file or QuakeML file, according to mode.')
         else:
             a.add_argument('--input',type=Path,help='Read saved metadata instead of downloading')
             a.add_argument('--service',default='https://earthquake.usgs.gov' if name=='events' else 'https://service.earthscope.org')
@@ -137,9 +153,12 @@ def main(argv=None):
         write_csv(args.output/'events.csv',EVENT_FIELDS,selected)
         picks=[r for r in picks if r['event_id'] in labels];write_csv(args.output/'picks.csv',PICK_FIELDS,picks)
         receipt.update(event_count=len(selected),pick_count=len(picks))
-        if not picks: print('No observed picks in this source. picks.csv has only its header. Do not call predictions observations.')
+        if not picks: print('The selected catalogue supplies origins but no station arrivals. An empty picks.csv is expected.')
     atomic_json(args.output/('stations_receipt.json' if args.mode=='stations' else 'events_receipt.json'),receipt)
-    print(json.dumps(receipt,indent=2))
+    if args.mode == 'stations':
+        print(f"Wrote {len(selected)} channels from {len(stations)} stations to {args.output / 'stations.csv'}.")
+    else:
+        print(f"Wrote {len(selected)} events and {len(picks)} observed picks to {args.output}.")
 
 if __name__=='__main__':
     try: main()

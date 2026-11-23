@@ -23,12 +23,21 @@ end
 "Load the small public configuration plus documented advanced defaults."
 function load_config(path)
     path=abspath(path); isfile(path) || error("Configuration not found: $path")
-    cfg=TOML.parsefile(joinpath(@__DIR__,"defaults.toml"))
+    cfg=TOML.parsefile(joinpath(@__DIR__,"advanced.toml"))
     user=TOML.parsefile(path)
     advanced=pop!(user,"advanced",Dict{String,Any}())
     Set(keys(advanced)) ⊆ Set(["file"]) || error("Only advanced.file is supported")
     if haskey(advanced,"file")
-        merge_checked!(cfg,TOML.parsefile(normpath(joinpath(dirname(path),advanced["file"]))))
+        # Older run files can still supply an extra layer of overrides.
+        overrides=TOML.parsefile(normpath(joinpath(dirname(path),advanced["file"])))
+        if haskey(overrides,"downstream")
+            @warn "Ignoring the retired downstream settings. Configure DDSync and GraphSplit in their respective packages."
+            delete!(overrides,"downstream")
+        end
+        # Previously this duplicate S setting was always superseded by S.min_components.
+        s_phase=get(get(overrides,"phase",Dict()),"S",Dict())
+        pop!(s_phase,"min_components",nothing)
+        merge_checked!(cfg,overrides)
     end
     public=pop!(cfg,"interface")
     merge_checked!(public,user)
@@ -88,8 +97,6 @@ function validate_config(cfg)
     cfg["matrices"]["max_plot_events"]>0 && cfg["matrices"]["max_plot_groups"]>0 || error("Matrix plot limits must be positive")
     cfg["matrices"]["max_dense_events"]>0 || error("max_dense_events must be positive")
     cfg["matrices"]["max_dense_cells"]>0 || error("max_dense_cells must be positive")
-    cfg["downstream"]["ddsync_min_edges"]>=1 || error("ddsync_min_edges must be positive")
-    cfg["downstream"]["ddsync_min_sigma_s"]>0 || error("ddsync_min_sigma_s must be positive")
     cfg["diagnostics"]["max_closure_triangles"]>0 || error("max_closure_triangles must be positive")
     for ph in ("P","S")
         pc=cfg["phase"][ph]

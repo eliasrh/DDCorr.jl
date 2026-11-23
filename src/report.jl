@@ -138,7 +138,7 @@ function make_report(out,events,groups,rows,cfg)
     explicit=!isempty(plot["event_pairs"])
     explicit && length(examples)>cfg["diagnostics"]["max_requested_examples"] && error("Explicit selection needs $(length(examples)) figures; narrow example_stations/example_phases or raise diagnostics.max_requested_examples")
     if !explicit && length(examples)>maxex
-        examples=maxex==0 ? NamedTuple[] : examples[unique(round.(Int,range(1,length(examples);length=maxex)))]
+        examples=examples[spaced_indices(length(examples),maxex)]
     end
     matrix_names = cfg["matrices"]["enabled"] && cfg["matrices"]["plots"] ? matrix_figures(out,events,rows,cfg) : String[]
     plot["filters"] && filter_audit(out,cfg,candidates)
@@ -196,6 +196,6 @@ function make_report(out,events,groups,rows,cfg)
                 print(io,"<details><summary>$(escapehtml(name))</summary><img loading=\"lazy\" src=\"$name.png\" alt=\"Aligned waveforms and correlation\"></details>")
             end
         end
-        print(io,"""<h2>Files and conventions</h2><ul><li><a href="dt.cc">dt.cc</a>: travel time i minus j; weight mode $(escapehtml(cfg["output"]["weight"])).</li><li><a href="correlations.csv">Correlation audit</a>: signed r, lag, peak gap, SNR and components.</li><li><a href="catalog.txt">Catalogue</a> · <a href="stations.txt">Stations</a> · <a href="event_id_map.csv">ID map</a>.</li><li><a href="effective_config.toml">Effective settings</a> · <a href="run_summary.toml">Run summary</a> · <a href="group_summary.csv">Group decisions</a>.</li><li><a href="ddsync.toml">DDSync configuration</a> · <a href="graphsplit_inputs.toml">GraphSplit input fragment</a>.</li></ul><p>Parabolic lag interpolation improves grid resolution; it is not an uncertainty estimate. Correlation weights are not inverse timing variances. Review sparse support, competing peaks, near-identical traces and inconsistent cycles before interpreting relocated structures.</p></html>""")
+        print(io,"""<h2>Files and conventions</h2><ul><li><a href="dt.cc">dt.cc</a>: travel time i minus j; weight mode $(escapehtml(cfg["output"]["weight"])).</li><li><a href="correlations.csv">Correlation audit</a>: signed r, lag, peak gap, SNR and components.</li><li><a href="catalog.txt">Catalogue</a> · <a href="stations.txt">Stations</a> · <a href="event_id_map.csv">ID map</a>.</li><li><a href="effective_config.toml">Effective settings</a> · <a href="run_summary.toml">Run summary</a> · <a href="group_summary.csv">Group decisions</a>.</li></ul><p>Parabolic lag interpolation improves grid resolution; it is not an uncertainty estimate. Correlation weights are not inverse timing variances. Review sparse support, competing peaks, near-identical traces and inconsistent cycles before interpreting relocated structures.</p></html>""")
     end
 end

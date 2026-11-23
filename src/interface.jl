@@ -23,7 +23,7 @@ function write_run_guide(out,cfg,mode,status)
         TOML.print(io,Dict("mode"=>mode,"status"=>status,
             "excluded_stations"=>nexcluded,
             "configuration"=>cfg["configuration_source"],"sac_directory"=>cfg["input"]["sac_root"],
-            "directory_time_zone"=>"UTC","entry_point"=>status=="failed" ? "failure.txt" : mode=="inspect" ? "phase_readiness.csv" : "report.html");sorted=true)
+            "directory_time_zone"=>"UTC","entry_point"=>status=="failed" ? "failure.txt" : mode=="inspect" ? "phase_readiness.csv" : cfg["plots"]["enabled"] ? "report.html" : "run_summary.toml");sorted=true)
     end
     descriptions=Dict(
       "input_issues.csv"=>"Header problems. An empty table means none were found.",
@@ -33,7 +33,7 @@ function write_run_guide(out,cfg,mode,status)
       "phase_readiness.csv"=>"Pick and window availability; ready does not yet test SNR.",
       "inventory.csv"=>"Decoded SAC metadata, one row per file.",
       "event_id_map.csv"=>"event_id is the new integer; original_event_id is the folder label.",
-      "catalog.txt"=>"Origin and location, followed by the sequential event_id.",
+      "catalog.txt"=>"Origin and location, optional penultimate SAC magnitude, and final sequential event ID. See event_id_map.csv for magnitude availability.",
       "stations.txt"=>"Station coordinates; elevation in metres.",
       "dt.cc"=>"Accepted differential travel times for DDSync; no self-pairs.",
       "correlations.csv"=>"Accepted pairs with signed coefficient, lag, SNR and components.",
@@ -47,8 +47,6 @@ function write_run_guide(out,cfg,mode,status)
       "report_data.jls"=>"Internal Julia report data; not an input for students to edit.",
       "effective_config.toml"=>"The settings used for this run, including defaults and overrides.",
       "software_provenance.toml"=>"Julia version and source hashes.",
-      "ddsync.toml"=>"DDSync configuration, used from this result directory.",
-      "graphsplit_inputs.toml"=>"Input paths only; add a GraphSplit model/solver configuration.",
       "run_summary.toml"=>"Event/observation counts and timing conventions.",
       "run_info.toml"=>"Run type, completion status and input/configuration paths.",
       "matrices"=>"Open index.csv for sparse/dense filenames and matrix_plots.csv for PNG status.")

@@ -35,22 +35,42 @@ function group_fingerprint(entries,pc,cfg)
     end
     print(io,cfg["output"]["write_rejected_pairs"]); TOML.print(io,Dict("plots"=>cfg["plots"]))
     TOML.print(io,Dict("phase"=>pc,"preprocess"=>cfg["preprocess"],"quality"=>cfg["quality"]))
+    ctx=SHA.SHA2_256_CTX()
+    SHA.update!(ctx,take!(io))
     for (e,h) in entries
-        s=stat(h.path); digest=open(sha256,h.path); print(io,e.id,' ',e.origin,' ',e.latitude,' ',e.longitude,' ',channelkey(h),' ',h.path,' ',s.size,' ',bytes2hex(digest),'\n')
+        # SHA reads the SAC file in chunks. Flush one metadata record at a time.
+        digest=open(sha256,h.path)
+        println(io,e.id,' ',e.origin,' ',e.latitude,' ',e.longitude,' ',channelkey(h),
+                ' ',h.path,' ',filesize(h.path),' ',bytes2hex(digest))
+        SHA.update!(ctx,take!(io))
     end
-    bytes2hex(sha256(take!(io)))
+    bytes2hex(SHA.digest!(ctx))
 end
 
-function process_group(station,phase,entries,cfg)
-    pc=cfg["phase"][phase]; quality=cfg["quality"]
-    n_events=length(unique(e.id for (e,h) in entries)); pairs=n_events*(n_events-1)÷2
+"Budget a single station and phase using headers, before reading waveforms or cached results."
+function group_plan(station,phase,entries,cfg)
+    n_events=length(Set(e.id for (e,h) in entries))
+    pairs=binomial(n_events,2)
     budget=cfg["runtime"]["max_pairs_per_group"]
-    budget>0 && pairs>budget && error("$station $phase needs $pairs event pairs, above runtime.max_pairs_per_group=$budget. Use a smaller event set or raise the documented allowance deliberately.")
-    # Conservatively budget raw/filter/resampler temporaries plus cached windows.
-    fs=pc["sample_rate_hz"]; ncore=round(Int,diff(pc["window_s"])[1]*fs)+1; nlag=round(Int,pc["max_lag_s"]*fs)
+    budget>0 && pairs>budget && error("$station $phase has $n_events candidate events and $pairs possible pairs, above runtime.max_pairs_per_group=$budget. Select fewer events or increase the limit in src/advanced.toml.")
+
+    pc=cfg["phase"][phase]
+    fs=pc["sample_rate_hz"]
+    ncore=round(Int,(pc["window_s"][2]-pc["window_s"][1])*fs)+1
+    nlag=round(Int,pc["max_lag_s"]*fs)
     nfft=nextpow(2,2ncore+2nlag-1)
-    estimate=maximum((Int(h.ints[10]) for (e,h) in entries);init=0)*8*10 + length(entries)*(8*(ncore+4nlag+1)+32*(nfft÷2+1))
-    estimate>cfg["runtime"]["max_group_memory_mib"]*2^20 && error("$station $phase estimated work memory $(round(estimate/2^20;digits=1)) MiB exceeds runtime.max_group_memory_mib. Reduce events/windows or explicitly raise the planning allowance.")
+    longest=maximum((Int(h.ints[10]) for (e,h) in entries);init=0)
+    workers=min(Threads.nthreads(),max(0,n_events-1))
+    raw_trace_bytes=10*8*longest
+    prepared_trace_bytes=8*(ncore+4nlag+1)+32*(nfft÷2+1)
+    worker_bytes=16*(nfft÷2+1)+16*nfft+16*(2nlag+1)
+    bytes=raw_trace_bytes+length(entries)*prepared_trace_bytes+workers*worker_bytes
+    bytes>cfg["runtime"]["max_group_memory_mib"]*2^20 && error("$station $phase needs an estimated $(round(bytes/2^20;digits=1)) MiB for waveform preparation and FFT work areas, above runtime.max_group_memory_mib. Select fewer events, shorten the windows, or increase the allowance in src/advanced.toml.")
+    (;pairs,workers,bytes)
+end
+
+function process_group(station,phase,entries,cfg,plan=group_plan(station,phase,entries,cfg))
+    pc=cfg["phase"][phase]; quality=cfg["quality"]
     prepared=Dict{Int,Dict{String,CachedTrace}}(); issues=Tuple{String,String}[]
     for (e,h) in entries
         try
@@ -67,13 +87,14 @@ function process_group(station,phase,entries,cfg)
     end
     ids=sort(collect(keys(prepared))); n=length(ids)
     rows_by_i=[Observation[] for _ in 1:n]
-    count_by_i=[Dict{String,Int}() for _ in 1:n]
-    hist_by_i=[zeros(Int,40) for _ in 1:n]
-    rejects_by_i=[Tuple[] for _ in 1:n]
+    nw=min(plan.workers,max(0,n-1))
+    worker_counts=[Dict{String,Int}() for _ in 1:nw]
+    worker_hist=[zeros(Int,40) for _ in 1:nw]
+    keep_rejected=cfg["output"]["write_rejected_pairs"]
+    rejects_by_i=keep_rejected ? [Tuple[] for _ in 1:n] : Vector{Tuple}[]
     if n>=2
         sample=first(values(prepared[ids[1]]))
         # Allocate plans serially; worker tasks own their buffers even if tasks migrate.
-        nw=min(Threads.nthreads(),n-1)
         work=[CorrelationWorkspace(sample.nfft,sample.nlag) for _ in 1:nw]
         @sync for worker in 1:nw
             Threads.@spawn begin
@@ -102,7 +123,7 @@ function process_group(station,phase,entries,cfg)
                                 totalcurve ./= length(common)
                                 m=measure(totalcurve,pc,quality); measured=m; state=m.status
                                 bin=clamp(floor(Int,(m.cc+1)*20)+1,1,40)
-                                hist_by_i[ia][bin]+=1
+                                worker_hist[worker][bin]+=1
                                 if state=="accepted"
                                     # Individual component picks can differ slightly: each component
                                     # must have the same reduced pick difference before curve stacking.
@@ -117,8 +138,8 @@ function process_group(station,phase,entries,cfg)
                                 end
                             end
                         end
-                        count_by_i[ia][state]=get(count_by_i[ia],state,0)+1
-                        if cfg["output"]["write_rejected_pairs"] && state!="accepted"
+                        worker_counts[worker][state]=get(worker_counts[worker],state,0)+1
+                        if keep_rejected && state!="accepted"
                             push!(rejects_by_i[ia],(ids[ia],ids[ib],station,phase,state,
                                   measured===nothing ? NaN : measured.cc,measured===nothing ? NaN : measured.lag))
                         end
@@ -129,8 +150,8 @@ function process_group(station,phase,entries,cfg)
     end
     rows=reduce(vcat,rows_by_i;init=Observation[])
     counts=Dict{String,Int}()
-    for d in count_by_i,(k,v) in d;counts[k]=get(counts,k,0)+v;end
-    hist=reduce(+,hist_by_i;init=zeros(Int,40))
+    for d in worker_counts,(k,v) in d;counts[k]=get(counts,k,0)+v;end
+    hist=reduce(+,worker_hist;init=zeros(Int,40))
     # Only accepted observations qualify for pictures. Explicit requested pairs
     # use the same computed observations and curves as scientific outputs.
     examples=NamedTuple[]
@@ -158,11 +179,14 @@ end
 
 function write_inputs(events,results,out,cfg)
     open(joinpath(out,"catalog.txt"),"w") do io
-        # Numeric columns: Y M D h m seconds latitude longitude depth_km ID.
+        # Keep the original ten-column format when the entire archive lacks MAG.
+        include_mag=any(e->isfinite(e.magnitude),events)
         for e in events
             dt=unix2datetime(floor(e.origin)); secs=second(dt)+mod(e.origin,1)
-            @printf(io,"%04d %02d %02d %02d %02d %.6f %.7f %.7f %.4f %d\n",
-                year(dt),month(dt),day(dt),hour(dt),minute(dt),secs,e.latitude,e.longitude,e.depth,e.id)
+            @printf(io,"%04d %02d %02d %02d %02d %.6f %.7f %.7f %.4f ",
+                year(dt),month(dt),day(dt),hour(dt),minute(dt),secs,e.latitude,e.longitude,e.depth)
+            include_mag && print(io,Float32(e.magnitude),' ')
+            println(io,e.id)
         end
     end
     stations=Dict{String,Vector{Vector{Float64}}}()
@@ -213,54 +237,6 @@ function write_inputs(events,results,out,cfg)
     return rows
 end
 
-function downstream_configs(out,cfg)
-    write(joinpath(out,"ddsync.toml"),"""
-    # dt.cc contains $(cfg["output"]["weight"]=="cc_squared" ? "r^2" : "abs(r)"), so base_mode=cc applies it exactly once.
-    # Run the DDSync runner from this directory (DDSync paths are working-dir relative).
-    [io]
-    infile_dt = "dt.cc"
-    catalog_file = "catalog.txt"
-    tmpdir = "ddsync_tmp"
-    thetadir = "theta"
-    thetastd_dir = "thetastd"
-    metrics_file = "sync_metrics.txt"
-    out_dt_sync = "dt_sync.cc"
-    [weights]
-    base_mode = "cc"
-    # Small teaching graphs need this explicit edge-count setting.
-    # For large archives choose a minimum appropriate to each station/phase.
-    [robust]
-    MIN_EDGES = $(cfg["downstream"]["ddsync_min_edges"])
-    [std]
-    export = true
-    mode = "hutch"
-    probes = 512
-    batch = 64
-    min_sigma = $(cfg["downstream"]["ddsync_min_sigma_s"])
-    apply_min_sigma = true
-    [output]
-    write_dt_sync = true
-    station_field_width = 16
-    """)
-    write(joinpath(out,"graphsplit_inputs.toml"),"""
-    # Input fragment to merge into YOUR GraphSplit relocation configuration.
-    # A velocity model/travel-time table and relocation settings are still required.
-    # These files become available after DDSync runs in this directory.
-    [io]
-    catalog_file = "catalog.txt"
-    stations_file = "stations.txt"
-    theta_dir = "theta"
-    thetastd_dir = "thetastd"
-    output_dir = "graphsplit_output"
-    [catalog]
-    latitude_column = 7
-    longitude_column = 8
-    depth_column = 9
-    event_id_column = -1
-    origin_time_columns = [1,2,3,4,5,6]
-    """)
-end
-
 "Run the complete correlation workflow; source SAC files are never modified."
 function run(path;args=String[])
     start=time();cfg=load_config(path)
@@ -293,6 +269,9 @@ function run(path;args=String[])
         push!(get!(groups,(stationkey(h),phase),Tuple{Event,SACHeader}[]),(e,h))
     end
     check_example_budget(groups,cfg)
+    # Check every group's limits before filtering the first waveform. A cache
+    # hit is subject to the same preflight as a fresh calculation.
+    plans=Dict(key=>group_plan(key...,entries,cfg) for (key,entries) in groups)
     FFTW.set_num_threads(1);BLAS.set_num_threads(1)
     results=NamedTuple[];cache=cfg["runtime"]["cache_dir"];mkpath(cache)
     for ((station,phase),entries) in sort(collect(groups);by=first)
@@ -301,13 +280,18 @@ function run(path;args=String[])
         result=if cfg["runtime"]["resume"] && isfile(cachefile)
             println("  Reusing verified-content cached group");deserialize(cachefile)
         else
-            r=process_group(station,phase,entries,cfg)
-            serialize(cachefile*".tmp",r);mv(cachefile*".tmp",cachefile;force=true);r
+            r=process_group(station,phase,entries,cfg,plans[(station,phase)])
+            mktemp(cache) do tmppath,io
+                serialize(io,r)
+                close(io)
+                mv(tmppath,cachefile;force=true)
+            end
+            r
         end
         push!(results,result)
         println("  $(length(result.rows)) accepted; $(length(result.issues)) trace exclusions")
     end
-    rows=write_inputs(events,results,out,cfg);downstream_configs(out,cfg)
+    rows=write_inputs(events,results,out,cfg)
     write_matrices(out,events,rows,cfg)
     open(joinpath(out,"near_identity.csv"),"w") do io
         csvrow(io,"event_i","event_j","station","phase","cc_signed","lag_s","dt_s","interpretation")
@@ -319,6 +303,7 @@ function run(path;args=String[])
     serialize(joinpath(out,"report_data.jls"),(events=events,groups=results,rows=rows,cfg=cfg))
     summary=Dict("events"=>length(events),"sac_files"=>sum(length(e.headers) for e in events),
         "accepted_P"=>count(r->r.phase=="P",rows),"accepted_S"=>count(r->r.phase=="S",rows),
+        "catalog_has_magnitude_column"=>any(e->isfinite(e.magnitude),events),
         "event_pairs"=>length(unique((r.i,r.j) for r in rows)),"threads"=>Threads.nthreads(),
         "correlation_elapsed_s"=>time()-start,"julia_version"=>string(VERSION),
         "dt_convention"=>"(arrival_i-origin_i)-(arrival_j-origin_j); lag positive when B later relative to its pick",
