@@ -1,0 +1,45 @@
+{
+  "scientific_figures": {
+    "relative_shared_rays.png": "Schematic reference rays from two nearby sources to one station. The shaded region represents a broad velocity anomaly. The straight rays illustrate first-order common-path sensitivity.",
+    "relative_hayward_pair.png": {
+      "description": "The identical 16 earthquake IDs from the hypoDD example1 tables near El Cerrito. Both sections use one origin, azimuth 325°, identical axes and positive-down depths. The original location depths span 2.010 km, the relocated depths span 0.332 km.",
+      "tables": {
+        "hypoDD.loc": {
+          "source": "https://github.com/fwaldhauser/HypoDD/blob/fb40407fb768cbdc23a11e27bc841f5d4a98abb7/examples/example1/hypoDD.loc",
+          "sha256": "734c9315f317e9207145cc7f235d61d64967f7edc4182cc6f25ee4c222f9268f"
+        },
+        "hypoDD.reloc": {
+          "source": "https://github.com/fwaldhauser/HypoDD/blob/fb40407fb768cbdc23a11e27bc841f5d4a98abb7/examples/example1/hypoDD.reloc",
+          "sha256": "2f55b9acc76e01ef259aa08ab3159257732ede309a291a1683c83f48859f37d4"
+        }
+      },
+      "reference": "Waldhauser & Ellsworth (2000), https://doi.org/10.1785/0120000006. Example data from Felix Waldhauser’s hypoDD package, example1."
+    },
+    "relative_dysa_triangle.png": {
+      "station": "Z7.DYSA",
+      "phase": "P",
+      "observations_ms": [
+        [
+          1,
+          3,
+          93.89999999999999
+        ],
+        [
+          3,
+          5,
+          -61.6
+        ],
+        [
+          1,
+          5,
+          30.5
+        ]
+      ],
+      "source": "Iceland100/reference/dt.cc; arrow tail time minus head time."
+    },
+    "relative_kver_waveforms.png": "Iceland100, Z7.KVER, P, events 1 and 2. Julia export from teaching/source/export_kver.jl, plotted in units of each trace’s scaled amplitude.",
+    "relative_kver_correlation.png": "Same pair, station and phase as waveform figure. Julia symmetric finite-window correlation export. Highest sampled coefficient is 0.7998529 at +20 ms. DDCorr’s interpolated peak is +20.2 ms.",
+    "relative_subsample.png": "Illustrative continuous pulse sampled at integer times, and the same pulse delayed by one-tenth of a sample. Poupinet, Ellsworth & Fréchet (1984), https://doi.org/10.1029/JB089iB07p05719, reported time resolution about one order of magnitude finer than the digitization interval in their earthquake-doublet analysis."
+  },
+  "reproduction": "lecture_figures.py --repo PATH_TO_DDCORR --hayward EXAMPLE1_DIR --output ASSET_DIR. The two Hayward coordinate tables can be obtained at the pinned source links above."
+}

@@ -9,157 +9,169 @@ export const slides = [
     "section": "Friday workshop"
   },
   {
-    "kind": "framing",
-    "title": "What can two earthquakes tell us about each other?",
-    "rows": [
-      [
-        "A shared path",
-        "Two nearby earthquakes can send remarkably similar P or S pulses to the same station."
-      ],
-      [
-        "A measurable shift",
-        "Slide one pulse across the other. How far does it move before the shapes line up?"
-      ],
-      [
-        "A location constraint",
-        "Repeat the measurement at several stations. Different viewing directions help constrain the separation of the sources."
-      ]
+    "kind": "figure",
+    "section": "Friday workshop",
+    "title": "Two earthquakes recorded at one station",
+    "image": "field_pair.png",
+    "lead": "Station STAM recorded these S waves during the Bárðarbunga rifting sequence. Several crests and troughs appear in the same order on both traces.",
+    "body": [
+      "When two earthquakes produce similar waveforms, sliding one trace across the other lets us measure a small difference in arrival time. Differences measured at several stations constrain the separation of the earthquakes."
     ],
-    "notes": "Ask participants to point to each P pulse before discussing any locations. The two schematic records have a common time scale and a deliberate shift. The composition adapts the SlidesGPT opening, with editable labels and a waveform drawing.",
-    "sources": [
-      "https://science.nasa.gov/earth/earth-observatory/roiling-flows-on-holuhraun-lava-field-84316/"
-    ],
-    "section": "Friday workshop"
+    "notes": "The two earthquakes are events 28 and 45. Both traces are the east component. Zero on each trace is its predicted S arrival. Later slides use both horizontal components for the numerical S measurement."
   },
   {
     "kind": "agenda",
-    "title": "Friday in the classroom",
-    "rows": [
-      [
-        "10:00–10:50",
-        "Shared paths and relative earthquake locations"
-      ],
-      [
-        "10:50–11:05",
-        "Coffee"
-      ],
-      [
-        "11:05–12:00",
-        "How a waveform shift becomes a differential time"
-      ],
-      [
-        "12:00–12:45",
-        "Synthetic events with a known answer"
-      ],
-      [
-        "12:45–13:45",
-        "Lunch"
-      ],
-      [
-        "13:45–14:35",
-        "Get field recordings and run DDCorr"
-      ],
-      [
-        "14:35–15:15",
-        "Read the Iceland report and test a threshold"
-      ],
-      [
-        "15:15–15:30",
-        "Coffee"
-      ],
-      [
-        "15:30–16:50",
-        "Inside the correlator"
-      ],
-      [
-        "16:50–17:35",
-        "Change the filter or bring your own SAC"
-      ],
-      [
-        "17:35–18:00",
-        "Defend one measurement and save the results"
-      ]
-    ],
-    "notes": "The two morning science blocks include the seminar questions and the worked signed example. For the last 45-minute practical, learners may investigate the filter experiment or try their event files. Wrap up together at 17:35. Only the cross-correlation block is taught here. The two coffee breaks and lunch are included in the schedule.",
-    "section": "Friday workshop"
+    "title": "Friday’s workshop",
+    "notes": "Friday runs 10:00–18:00. The guided lab begins before lunch and resumes afterward. At 14:05 everyone opens the real Iceland report. The last two hours are open work with individual help and the clinic reference slides.",
+    "section": "Friday workshop",
+    "parts": [
+      {
+        "name": "Morning",
+        "slots": [
+          {
+            "time": "10:00–10:50",
+            "topic": "Relative earthquake locations",
+            "range": "4–13"
+          },
+          {
+            "time": "10:50–11:05",
+            "topic": "Coffee",
+            "range": ""
+          },
+          {
+            "time": "11:05–12:00",
+            "topic": "Waveform cross-correlation",
+            "range": "14–23"
+          },
+          {
+            "time": "12:00–12:45",
+            "topic": "Guided DDCorr lab",
+            "range": "24"
+          },
+          {
+            "time": "12:45–13:45",
+            "topic": "Lunch",
+            "range": ""
+          }
+        ]
+      },
+      {
+        "name": "Afternoon",
+        "slots": [
+          {
+            "time": "13:45–14:05",
+            "topic": "Continue the lab · Iceland recordings",
+            "range": "24"
+          },
+          {
+            "time": "14:05–14:55",
+            "topic": "Reading the Iceland report",
+            "range": "25–52"
+          },
+          {
+            "time": "14:55–15:10",
+            "topic": "Coffee",
+            "range": ""
+          },
+          {
+            "time": "15:10–16:00",
+            "topic": "How DDCorr measures a lag",
+            "range": "53–72"
+          },
+          {
+            "time": "16:00–18:00",
+            "topic": "Open clinic for your own SAC files",
+            "range": "73–85"
+          }
+        ]
+      }
+    ]
   },
   {
-    "title": "Where did the dike go?",
     "kind": "figure",
-    "notes": "Begin at the ice-covered Bárðarbunga caldera in panel A. Follow the earthquakes northeast toward Holuhraun, then examine the close-up in B. Ask the room where the width of the earthquake band is actually resolved. A cloud can combine fault geometry, source distribution and timing errors. Woods et al. colour earthquakes by the balance of high and low frequencies measured at station FLUR. Red indicates lower-frequency events. Green triangles are stations and the dark purple diamonds are ice cauldrons. These are panels A and B cropped from Figure 1, Woods et al. (2018), Earth and Planetary Science Letters, CC BY 4.0. Original authors retain credit. The overlying glacier is pale blue.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "Earthquakes traced the Bárðarbunga dike",
+    "lead": "In August 2014, magma propagated about 48 km from beneath Bárðarbunga toward the Holuhraun eruption site.",
+    "notes": "In the overview at left, follow the band of earthquakes northeast from the caldera. The detail at right shows earthquakes along the dike. A broad cloud can contain both geological structure and errors in individual earthquake locations. These are panels A and B of Woods et al. Figure 1 cropped from the open-access article, CC BY 4.0.",
     "image": "woods_fig1ab.png",
-    "lead": "In August 2014, magma travelled about 48 km beneath Iceland before erupting at Holuhraun.",
     "body": [
-      "The earthquakes trace part of the route. How finely can their locations distinguish neighbouring faults?"
+      "The earthquake locations outline the route. Resolving individual faults requires finer estimates of the distances between earthquakes."
     ],
-    "label": "Woods et al. (2018), Fig. 1A–B · CC BY 4.0",
+    "citation": [
+      {
+        "text": "Woods et al. (2018), Earth and Planetary Science Letters 490, 216–229, Fig. 1A–B. Cropped, CC BY 4.0.",
+        "url": "https://doi.org/10.1016/j.epsl.2018.03.020"
+      }
+    ],
     "sources": [
       "https://doi.org/10.1016/j.epsl.2018.03.020",
-      "https://opinvisindi.is/server/api/core/bitstreams/fe2cbdb7-aaf7-4359-b57e-e2eb4f3ac324/content#page=2",
-      "https://creativecommons.org/licenses/by/4.0/",
-      "https://doi.org/10.1029/2018JB016010"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+      "https://creativecommons.org/licenses/by/4.0/"
+    ]
   },
   {
-    "title": "Which earthquakes will we measure?",
     "kind": "figure",
-    "notes": "This is an original plot of event epicentres from Data Set S1, 16 to 31 August 2014. The map uses equal horizontal and vertical distance scales relative to 64.8° N, 17.0° W. Read colour first to see how activity generally extended northeast. Red outlines mark the first 100 S1 events after noon UTC on 23 August. They span 12:00:29.86 to 13:48:56.81. They were selected chronologically before examining waveform quality. Comparing this plot with the preceding paper figure also illustrates that catalogues and selections differ.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "The 100 earthquakes in the practical",
+    "lead": "The red circles identify 100 consecutive events on 23 August. The first occurred at 12:00 UTC and the last at 13:48 UTC.",
+    "notes": "The first origin is 12:00:29.86 and the last is 13:48:56.81 UTC. These are the first 100 catalogue rows after noon, selected by time. The coordinates come from Data Set S1 of Ágústsdóttir et al. The map frame uses equal horizontal and vertical distance scales.",
     "image": "seminar_s1_rift.png",
-    "lead": "We will use 100 consecutive events from the published Bárðarbunga catalogue on 23 August 2014.",
     "body": [
-      "The red outlines mark their epicentres within the wider August sequence. Each dot is a published location."
+      "The other dots show published earthquakes through the second half of August. Colour indicates date."
     ],
-    "label": "Ágústsdóttir et al. (2019), Data Set S1",
+    "citation": [
+      {
+        "text": "Ágústsdóttir et al. (2019), Journal of Geophysical Research: Solid Earth 124, 8331–8357, Data Set S1.",
+        "url": "https://doi.org/10.1029/2018JB016010"
+      }
+    ],
     "sources": [
       "https://doi.org/10.1029/2018JB016010"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+    ]
   },
   {
-    "title": "One earthquake, eleven listening stations",
     "kind": "figure",
-    "notes": "Trace a line from the small event cloud to KVER, then to STAM. The two stations view the source from different directions. Later we will return to exactly these stations and inspect vertical P and horizontal S records. A P wave carries compressional motion and usually arrives first. An S wave carries shear motion and travels more slowly. Arrival times depend on both the location and the origin time. Each station records its own ground motion. The class package contains three-component event cuts from these 11 Z7 stations, 3,300 files in all.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "Eleven stations recorded this sequence",
+    "lead": "Origin time is when an earthquake begins. The P travel time is the interval from that origin until the P wave reaches a station.",
+    "notes": "This map uses the 100 event coordinates and the 11 stations with three-component recordings. For each source, the arrival time at a station equals the origin time plus the travel time. P and S waves travel at different speeds. Each station and phase supplies a separate timing measurement.",
     "image": "seminar_network.png",
-    "lead": "A seismometer measures motion at a known point. Its record contains the origin time plus the travel time through the Earth.",
     "body": [
-      "When earthquakes are close together, the same phase can have a recognisable shape at one station across several events."
+      "The red dots mark the earthquakes. The green triangles are stations that recorded them. KVER and STAM view the source region from different directions."
     ],
-    "label": "Z7 station metadata and 100 S1 hypocentres",
     "sources": [
-      "https://doi.org/10.1029/2018JB016010"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+      "https://doi.org/10.1029/2018JB016010",
+      "https://doi.org/10.7914/SN/Z7_2010"
+    ]
   },
   {
-    "title": "Why do nearby earthquakes share travel-time errors?",
     "kind": "figure",
-    "notes": "Use the instructor’s ray diagram. Trace P from i and m to the same station k. Identify a portion near the receiver where the separation of the rays is small. A slow layer there adds nearly the same delay to both. Subtraction suppresses that shared error and retains sensitivity to the different segments near the sources. The approximation weakens with increasing separation, different ray branches or rapid lateral variations. Ray paths for different phases need not coincide, so compare P with P and S with S. Diagram from Elías Rafn Heimisson’s FAPESP lecture.",
-    "image": "seminar_fapesp_rays.png",
-    "lead": "At a common station, nearby sources send waves through much of the same rock.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "The two P waves travel through nearly the same rock",
+    "lead": "Both P waves pass through the same slow region on their way to the station.",
+    "notes": "The lines are straight reference rays in an illustrative vertical section. The shaded region is much wider than the separation of the rays there. The absolute prediction for each event can be biased by a similar path delay. Source separation, different phases or a rapid change in structure can make the delays differ.",
+    "image": "relative_shared_rays.png",
     "body": [
-      "A slow layer near the receiver can delay both arrivals by nearly the same amount. Subtracting the two times largely cancels that delay."
+      "If a velocity model misses that region, it predicts both arrivals too early. The common part of the delay cancels when we subtract the travel times."
     ],
-    "label": "Instructor’s FAPESP ray diagram · Waldhauser & Ellsworth (2000)",
     "sources": [
       "https://doi.org/10.1785/0120000006"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+    ]
   },
   {
-    "title": "What is a double difference?",
     "kind": "table",
-    "notes": "Read down the two event columns before reading across. Times here are illustrative travel times after subtracting the two catalogue origins. One persistent model bias of about 0.30 s affects this station. The predicted difference is 0.08 s, leaving 0.04 s of differential misfit. The inversion uses derivatives of predicted travel time with respect to east, north and depth, and can solve relative origin-time corrections as well. Iteration updates the hypocentres, re-predicts the times and reduces the residuals across all the accepted observations.",
-    "lead": "First subtract two event times at one station. Then compare the observed difference with the predicted difference.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "The double-difference residual",
+    "lead": "For a pair at one station, subtract the second event’s P travel time from the first. Do the same for the model predictions.",
+    "notes": "A travel time here means phase time measured from its event origin. In this numerical illustration both events are delayed relative to their predictions. Much of that delay disappears in the pair difference. The residual is (4.42−4.30)−(4.10−4.02)=0.04 s. Absolute origin errors also contribute and can be estimated in the relocation.",
     "rows": [
       [
         "P travel time",
-        "Event i",
-        "Event j",
-        "i minus j"
+        "Event 1",
+        "Event 2",
+        "Event 1 − event 2"
       ],
       [
-        "Observed",
+        "Measured",
         "4.42 s",
         "4.30 s",
         "+0.12 s"
@@ -169,1412 +181,1487 @@ export const slides = [
         "4.10 s",
         "4.02 s",
         "+0.08 s"
-      ],
-      [
-        "Observed minus predicted",
-        "+0.32 s",
-        "+0.28 s",
-        "+0.04 s"
       ]
     ],
     "body": [
-      "The relocation adjusts event positions and origin times to reduce residuals like this across many stations."
+      "Here the measured difference exceeds the prediction by 0.04 s. Relocation adjusts the event positions and origin times to reduce these residuals across stations."
     ],
-    "label": "Illustrative times · Waldhauser & Ellsworth (2000)",
     "sources": [
       "https://doi.org/10.1785/0120000006"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+    ]
   },
   {
-    "title": "A single station sees one direction of separation",
     "kind": "figure",
-    "notes": "Two sources have identical origin times and are separated east–west by 100 m, i east of j. Place a station 20 km away and vary only its bearing. Compute distance divided by the uniform P speed of 6 km/s. To the east, i has the shorter path, so its travel time minus j’s is negative. To the west, the difference reverses. To the north and south the distances are identical. An unknown difference in the origin times would add a common offset. Four nearby stations on the same side can give similar constraints. Opposing azimuths help distinguish the horizontal components, and depth also depends on takeoff angles and the velocity model.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "Station direction controls the time difference",
+    "lead": "Event i lies 100 m east of event j. For a station to the east, the P wave from i travels a shorter distance.",
+    "notes": "This calculation places two sources at the same depth and stations on a horizontal circle of 20 km radius. It uses the difference of the two distances divided by a uniform P-wave speed. A single differential time constrains one projection of the displacement. Different station directions add independent constraints.",
     "image": "seminar_azimuth.png",
-    "lead": "Consider two earthquakes 100 m apart east–west. Which station would see the largest P travel-time difference?",
     "body": [
-      "At 6 km/s the difference ranges from about −17 to +17 ms. A station due north sees zero."
+      "At 6 km/s, event i minus event j is −16.7 ms to the east and +16.7 ms to the west. A station due north of the midpoint is equally distant from the sources."
     ],
-    "label": "Calculated example · stations at 20 km range",
     "sources": [
       "https://doi.org/10.1785/0120000006"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+    ]
   },
   {
-    "title": "Poupinet et al. timed the same wave train twice",
     "kind": "figure",
-    "notes": "This classic experiment used a magnitude 1.7 and a magnitude 2.0 earthquake on the Calaveras Fault, before and after the 1979 Coyote Lake earthquake. The events produced nearly identical records at common stations. The authors compared short windows throughout the seismograms in the frequency domain. The progressively larger lag at some stations suggested a decrease in average shear-wave speed of about 0.2%. Their reported timing resolution was about an order of magnitude finer than the digitisation interval. The line shown here illustrates a uniform 0.2% time stretch, rather than reproducing field observations. Coda means the scattered, gradually decaying wave train after the direct arrivals.",
-    "image": "seminar_poupinet.png",
-    "lead": "A pair of similar California earthquakes let Poupinet, Ellsworth and Fréchet track a tiny delay through the coda.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "Double differences sharpen the Hayward Fault section",
+    "lead": "Waldhauser and Ellsworth used differential times to bring out narrow bands of seismicity on the northern Hayward Fault.",
+    "notes": "The method paper analysed 346 earthquakes near Berkeley and El Cerrito. These panels use the same 16 event IDs from the author’s separate El Cerrito example, example1, which includes catalogue and waveform P and S differences. The x coordinate is distance along azimuth 325° with one origin and the same axis scale in both panels. Depth is positive down. The printed ranges are the maximum minus the minimum depths in the corresponding files. They describe the spread of the fitted hypocentres.",
+    "image": "relative_hayward_pair.png",
     "body": [
-      "A uniform 0.2% stretch would accumulate 10 ms in 5 s and 40 ms in 20 s. The earthquake records preserved enough waveform detail to resolve delays smaller than one sample."
+      "In the published hypoDD example near El Cerrito, the same 16 earthquakes span 2.01 km in depth before relocation and 0.33 km afterward. Both sections use identical axes."
     ],
-    "label": "Poupinet, Ellsworth & Fréchet (1984) · illustrative time stretch",
-    "sources": [
-      "https://doi.org/10.1029/JB089iB07p05719"
+    "citation": [
+      {
+        "text": "Waldhauser & Ellsworth (2000). A double-difference earthquake location algorithm: Method and application to the northern Hayward Fault, California. BSSA 90, 1353–1368.",
+        "url": "https://doi.org/10.1785/0120000006"
+      },
+      {
+        "text": "Plotted data: Waldhauser, hypoDD example 1, El Cerrito catalogue and relocated coordinates.",
+        "url": "https://github.com/fwaldhauser/HypoDD/tree/fb40407fb768cbdc23a11e27bc841f5d4a98abb7/examples/example1"
+      }
     ],
-    "section": "10:00   /   Why relative timing matters"
-  },
-  {
-    "title": "hypoDD sharpened the northern Hayward Fault catalogue",
-    "kind": "figure",
-    "notes": "Waldhauser and Ellsworth relocated 346 events near Berkeley and El Cerrito. Their Figure 9 compares the original Northern California Seismic Network locations, DD from catalogue observations, and DD from catalogue plus cross-correlation. Look at the depth sections in the original figure: including waveform timings defined nearly horizontal streaks. Here the horizontal position of each dot represents the timing residual. The catalogue-only experiment reduced its RMS residual from 125 to 41 ms. In the combined inversion, the RMS of the P waveform data fell from about 96 to 8.5 ms and S from about 147 to 8.5 ms. These are fit statistics, not distances or absolute location uncertainties. The 2000 paper presents the method; Waldhauser’s 2001 USGS report documents the hypoDD program.",
-    "image": "seminar_hypodd.png",
-    "lead": "Waldhauser and Ellsworth relocated 346 earthquakes near Berkeley and El Cerrito using pairs recorded at common stations.",
-    "body": [
-      "Adding waveform-derived differences brought out thin streaks in depth. In the combined inversion, the P and S waveform residuals fell to about 8.5 ms."
-    ],
-    "label": "Waldhauser & Ellsworth (2000), pp. 1363–1364",
     "sources": [
       "https://doi.org/10.1785/0120000006",
-      "https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_Ellsworth_BSSA2000.pdf#page=11",
+      "https://github.com/fwaldhauser/HypoDD/tree/fb40407fb768cbdc23a11e27bc841f5d4a98abb7/examples/example1",
       "https://doi.org/10.3133/ofr01113"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+    ]
   },
   {
-    "title": "Which structures emerge after relocation?",
     "kind": "figure",
-    "notes": "The U.S. Geological Survey hypoDD report shows the same 1997 Long Valley caldera seismic crisis in map view before and after double-difference relocation. Look first at the dense group left of centre. Then follow the eastward branch. Which features become narrower and which remain diffuse? Approximately 10,000 earthquakes were analysed. The original joint hypocentre determination (JHD) locations are on the left; hypoDD locations are on the right. The two axes have the same scales. Figure 1, Waldhauser (2001), U.S. Geological Survey Open-File Report 01-113, p. 4. This is the USGS author’s own publication figure, cropped from the original page. No third-party figure credit is indicated.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "Relocation reveals fault traces at Long Valley",
+    "lead": "In the 1997 Long Valley caldera sequence, several narrow alignments appear in the relocated map.",
+    "notes": "The original USGS figure compares joint hypocentre determinations at left with double-difference locations at right, for about 10,000 earthquakes in the Long Valley sequence. These are map views. The horizontal and vertical axes are distance in kilometres.",
     "image": "hypodd_long_valley.png",
-    "lead": "In the 1997 Long Valley caldera sequence, hypoDD brought fault-scale lineations into focus.",
     "body": [
-      "Compare the same California earthquakes on identical map axes. Trace one feature across the two panels and describe what changed."
+      "The two panels cover the same area. The elongated band across the centre and its offshoots are easier to follow after relocation."
     ],
-    "label": "Waldhauser (2001), Fig. 1 · U.S. Geological Survey",
+    "citation": [
+      {
+        "text": "Waldhauser (2001). hypoDD: A program to compute double-difference hypocenter locations. USGS Open-File Report 01-113, Fig. 1.",
+        "url": "https://doi.org/10.3133/ofr01113"
+      }
+    ],
     "sources": [
-      "https://doi.org/10.3133/ofr01113",
-      "https://pubs.usgs.gov/of/2001/0113/pdf/hypoDD.pdf#page=4"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+      "https://doi.org/10.3133/ofr01113"
+    ]
   },
   {
-    "title": "How similar must two waveforms be?",
-    "kind": "table",
-    "notes": "Schaff and colleagues tested the precision of waveform-derived relative times against catalogue phase differences in a streak of 243 Calaveras Fault earthquakes. Their quantitative tests showed improvement down to about 0.70 in normalised correlation and out to about 2 km of event separation for this dataset. The authors also tested the effect of window duration and empirical weighting. The same coefficient alone cannot specify an uncertainty in milliseconds. The shape of the correlation maximum, bandwidth, signal-to-noise ratio and comparison with other stations matter. In the practical, use the figures and reports to decide what changes when you accept a wider range of values.",
-    "lead": "Schaff et al. tested waveform timing against catalogue picks on a streak of 243 California earthquakes.",
-    "rows": [
-      [
-        "Their test",
-        "Calaveras Fault result"
-      ],
-      [
-        "Lowest correlation with demonstrated improvement",
-        "About 0.70"
-      ],
-      [
-        "Largest tested separation showing improvement",
-        "About 2 km"
-      ]
-    ],
-    "body": [
-      "Their result is an empirical reference for choosing a threshold. A different network can give a different precision at the same coefficient."
-    ],
-    "label": "Schaff et al. (2004) · California field test",
-    "sources": [
-      "https://doi.org/10.1785/0120020238"
-    ],
-    "section": "10:00   /   Why relative timing matters"
-  },
-  {
-    "title": "GrowClust builds clusters from the best-linked pairs",
     "kind": "figure",
-    "notes": "Trugman and Shearer used differential times, cross-correlation coefficients and reference locations to grow clusters and relocate their members together. Pairs supported by more or stronger correlations can anchor early joins. A trial relative shift of two existing clusters must explain the differential times between their members. Their paper examined the Spanish Springs and Sheldon, Nevada, earthquake sequences. The illustrated section is an original plot of the Spanish Springs example output distributed by the authors. Plot the same 717 members of cluster ID 1 in east versus depth before and after relocation. Identical axes and equal spatial scales preserve the shape of the group. Discuss why a weakly linked pair can still be an earthquake pair even when it cannot be placed in a well-constrained cluster. GrowClust is an alternative downstream method. It helped establish why a correlation measurement should retain its station, phase, pair, sign and quality.",
-    "lead": "Trugman and Shearer used repeated waveform shapes to decide which earthquake pairs to fit together first.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "GrowClust relocates groups of similar earthquakes",
+    "lead": "GrowClust ranks event pairs by waveform similarity. It joins groups when their relative positions fit the measured differential times.",
+    "notes": "The plot uses initial and relocated coordinates from the same 717 rows of the authors' Spanish Springs reference output for cluster 1. GrowClust builds a hierarchy by testing whether two candidate clusters can join while fitting their intercluster measurements. The method naturally emphasizes well-correlated pairs.",
     "image": "seminar_growclust.png",
     "body": [
-      "Each trial join must fit the differential times between the two groups. The sections show the same 717 Spanish Springs events before and after relocation."
+      "The sections show the same 717 Spanish Springs earthquakes from one cluster in the authors’ example."
     ],
-    "label": "Trugman & Shearer (2017) · authors’ Spanish Springs example",
+    "citation": [
+      {
+        "text": "Trugman & Shearer (2017). GrowClust: A hierarchical clustering algorithm for relative earthquake relocation, with application to the Spanish Springs and Sheldon, Nevada, earthquake sequences. SRL 88, 379–391.",
+        "url": "https://doi.org/10.1785/0220160188"
+      }
+    ],
     "sources": [
       "https://doi.org/10.1785/0220160188",
-      "https://github.com/dttrugman/GrowClust",
       "https://github.com/dttrugman/GrowClust/blob/53226cf7662ab5bab5db87138d1ae63227d4ba63/EXAMPLE/OUT/out.growclust_cat"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+    ]
   },
   {
-    "title": "What will our measurements feed?",
     "kind": "table",
-    "notes": "Use one comparison throughout the table. Two P recordings at KVER provide a lag. The lag and the two time markers provide a differential travel time; other accepted KVER P pairs form a graph. DDSync fits these pairwise differences as a set of relative event times for this station and phase. GraphSplit combines synchronized times from many stations, initial locations and predicted travel times to solve for locations. The Friday computational work ends with DDCorr, its diagnostics and export. Cite DDSync as the 2026 journal paper by Heimisson and Yu and GraphSplit as Heimisson’s 2026 ESS Open Archive preprint. GitHub sources are separate from the publications.",
-    "lead": "The same event IDs follow the measurements from waveforms to a relocated catalogue.",
+    "section": "10:00   /   Relative earthquake locations",
+    "title": "How DDCorr measurements enter a relocation",
+    "lead": "A differential time links two earthquake IDs at one station for one phase.",
+    "notes": "DDCorr supplies the waveform-derived observations studied today. DDSync estimates one relative time per event within a connected group for a given station and phase. GraphSplit combines the synchronized observations with modelled travel times from multiple stations. The two papers below describe those separate methods. Their software repositories are listed in the references.",
     "rows": [
       [
-        "Stage",
-        "Question",
-        "Result"
+        "Program",
+        "Input",
+        "Output"
       ],
       [
         "DDCorr",
-        "How far apart are matching P or S arrivals?",
-        "Differential times with station, phase and weight"
+        "Event-cut waveforms and phase times",
+        "Differential times and weights"
       ],
       [
-        "DDSync",
-        "Do the measured time differences agree around the graph?",
-        "Relative times for each station and phase"
+        "DDSync\nHeimisson & Yu (2026)",
+        "Differential times for event pairs at one station and phase",
+        "Consistent relative times and uncertainties"
       ],
       [
-        "GraphSplit",
-        "Which event positions best explain those times?",
-        "A relocated catalogue"
+        "GraphSplit\nHeimisson (2026)",
+        "Synchronized times, initial locations and a velocity model",
+        "Relocated hypocentres and origin times"
       ]
     ],
-    "label": "DDCorr · DDSync (Heimisson & Yu, 2026) · GraphSplit (Heimisson, preprint)",
+    "citation": [
+      {
+        "text": "Heimisson & Yu (2026). DDSync: Graph-based denoising of differential travel-time observations with applications to pick reconstruction and path-difference tomography. Seismological Research Letters. doi:10.1785/0220260086",
+        "url": "https://doi.org/10.1785/0220260086"
+      },
+      {
+        "text": "Heimisson (2026). GraphSplit: Sparse double-difference earthquake relocation from synchronized differential-time graphs. ESS Open Archive, preprint. doi:10.22541/essoar.15009811/v1",
+        "url": "https://doi.org/10.22541/essoar.15009811/v1"
+      }
+    ],
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl",
       "https://doi.org/10.1785/0220260086",
-      "https://github.com/eliasrh/DDSync",
       "https://doi.org/10.22541/essoar.15009811/v1",
+      "https://github.com/eliasrh/DDSync",
       "https://github.com/eliasrh/GraphSplit.jl"
-    ],
-    "section": "10:00   /   Why relative timing matters"
+    ]
   },
   {
-    "title": "A timing graph can check the measurements",
     "kind": "figure",
-    "notes": "Nodes are earthquake events. Use a single station and phase throughout the graph. Each directed edge represents dᵢⱼ = time at i minus time at j. In the Iceland Z7.DYSA P data the path from 1 to 5 through 3 gives +93.9 − 61.6 = +32.3 ms. The direct observation gives +30.5 ms, a mismatch of +1.8 ms. Multiple independent paths make inconsistency visible; a single triangle alone does not identify which edge caused the mismatch. DDSync fits one relative time per event so its fitted differences agree around loops. The common zero point of each connected component is arbitrary. Graph image from Elías Rafn Heimisson’s FAPESP slide 9. Read solid arrows as measurements and the dashed arrow as an implied difference.",
-    "image": "fapesp_graph.png",
-    "lead": "At Z7.DYSA, two paths through the P measurements connect events 1 and 5.",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "Two P waveforms at the same station",
+    "lead": "These are two earthquakes recorded on the vertical component at Z7.KVER. Zero on each trace is its predicted P arrival.",
+    "notes": "The phase marker is a stored time used to centre the analysis window. These Iceland data use predicted arrivals. On an archive with manual picks, the marker can instead be an observed pick. The two records were bandpass filtered at 2–14 Hz, resampled at 50 Hz, and scaled separately for display. The analysis window extends from −0.5 to +2.0 s relative to the marker. Event 1 is S1_009900 and event 2 is S1_009901.",
+    "image": "relative_kver_waveforms.png",
     "body": [
-      "Via event 3, the difference is +93.9 − 61.6 = +32.3 ms. Directly, it is +30.5 ms. DDSync can use the 1.8 ms mismatch along with the other observations."
+      "The large pulse arrives later relative to its P marker in event 2. Cross-correlation measures the shift using the whole P window."
     ],
-    "label": "Iceland100 measured P differences · instructor’s FAPESP graph",
-    "sources": [
-      "https://doi.org/10.1785/0220260086",
-      "https://github.com/eliasrh/DDSync"
-    ],
-    "section": "10:00   /   Why relative timing matters"
-  },
-  {
-    "title": "What makes two seismograms look alike?",
-    "kind": "figure",
-    "notes": "These are actual Z7.STAM east-component S records for events 28 and 45 in the Iceland set. For each trace zero is its own S marker. A wave train is the sequence of several successive crests and troughs. Ask participants to identify two crests and a trough that are recognisable on both. Two nearby earthquakes may share propagation and instrument response at a given station, especially with similar source mechanisms. Different radiation patterns, source sizes, paths, noise or strong near-surface scattering can reduce similarity. The correlation signal can remain informative even if the very first deflection is hard to identify.",
-    "image": "field_pair.png",
-    "lead": "At one station, nearby sources with similar rupture mechanisms can produce the same sequence of crests and troughs.",
-    "body": [
-      "Find a feature common to these two S waves. How confidently could you mark its beginning on each trace?"
-    ],
-    "label": "Measured S waveforms · Z7.STAM, events 28 and 45",
-    "sources": [
-      "https://doi.org/10.1785/0120020238",
-      "https://doi.org/10.1029/2018JB016010"
-    ],
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "Measure a delay relative to each phase marker",
-    "kind": "figure",
-    "notes": "Both horizontal axes have already been reset relative to each event’s own P marker. Consider just the distinctive pulse shown. The corresponding feature in j sits 0.18 s farther to the right on the marker-centred axes. To overlay the recordings, shift the displayed j curve 0.18 s to the left. The sign describes the difference in the recorded pulse positions, not the direction of the plotting gesture. The original UTC separation of the two earthquakes can be minutes or years.",
-    "image": "lag_introduction.png",
-    "lead": "Set each event’s time axis to zero at its own P marker. Matching peaks can still occur at different times on those axes.",
-    "body": [
-      "Here the pulse in j is 0.18 s later. DDCorr reports a positive lag. Move j left by 0.18 s to see the match."
-    ],
-    "label": "Constructed waveform pair",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/src/signal.jl"
-    ],
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "How do we score each possible shift?",
-    "kind": "figure",
-    "notes": "Each row shows two short zero-mean sample sequences. Multiply the two amplitudes at the same horizontal position and sum across the window. Like signs make a positive contribution, opposite signs a negative one. In the first row the products partly cancel. In the second row each crest meets a crest and each trough meets a trough. A comparison at one shift yields one scalar. Repeating the comparison across shifts defines the lag curve. Mean removal and normalisation put different sizes of event on a common scale, as the next slide shows. The illustrative sequences have five entries and repeat one added end sample to make the before/after comparison self-contained.",
-    "image": "seminar_sample_products.png",
-    "lead": "At each shift, multiply the paired samples and add their products.",
-    "body": [
-      "Aligned crests and aligned troughs both contribute positively. Opposite signs reduce the sum."
-    ],
-    "label": "Five-sample illustration · waveform amplitudes and their products",
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "Discrete normalised cross-correlation",
-    "kind": "equation",
-    "notes": "Let n run from 1 through N samples in the fixed window. Let k be the signed trial shift in samples. At k, subtract the mean of the fixed x window from each x sample; subtract the mean of this particular y window from each y sample. Call the resulting vectors u and v(k). The denominator is the product of their Euclidean lengths, equal to the square root of the sum of squares for each window multiplied together. Normalising removes a positive amplitude scale factor: doubling every y sample doubles the numerator and its norm. The result lies from −1 to +1 for nonconstant inputs. A negative coefficient indicates reversed polarity. This equation describes one ordering. DDCorr’s symmetric finite-window implementation averages the two orderings of the traces.",
-    "equation": "r(k) = Σₙ uₙ vₙ(k) / [‖u‖ ‖v(k)‖]",
-    "lead": "For a shift k, compare the N samples in event i with the N samples starting k samples later in event j.",
-    "body": [
-      "u and v(k) are the two windows after subtracting each window’s mean. Each ‖ ‖ is the square root of the sum of the squared samples.",
-      "The result is +1 for identical shapes, 0 for zero net agreement and −1 for opposite shapes."
-    ],
-    "sources": [
-      "https://doi.org/10.1785/0120020238",
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/src/signal.jl"
-    ],
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "The lag curve identifies the best-fitting shift",
-    "kind": "figure",
-    "notes": "The left panel shows the same phase at the same station in two events aligned to their own predicted P markers. The right panel shows DDCorr’s measured coefficient as a function of signed residual lag. Positive lag means event 2’s waveform is later relative to its own marker. Identify the largest positive maximum. Here r = 0.79985 and the refined lag is +0.0202 s. Its height measures similarity. Its horizontal coordinate estimates timing. DDCorr computes the lag sums for all k with a fast Fourier transform and applies the local normalisation at each shift. The figure uses actual DDCorr waveforms and the symmetric coefficient curve, with a 2–14 Hz P band.",
-    "image": "kver_worked.png",
-    "lead": "The highest peak at Z7.KVER is near +20 ms. Its height, 0.800, measures how well the two P waveforms match.",
-    "body": [
-      "Read the lag from the horizontal axis and the coefficient from the vertical axis. They answer different questions."
-    ],
-    "label": "Measured vertical P records · Z7.KVER, events 1 and 2",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/src/signal.jl",
-      "https://doi.org/10.1029/2018JB016010"
-    ],
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "Does the measured lag actually align the waveforms?",
-    "kind": "figure",
-    "notes": "The same recorded, band-passed KVER waveforms are shown in both rows, zoomed to the same part of the signal. The lower dashed curve is event 2 sampled 20.2 ms later on its original axis, equivalent to moving the plotted trace earlier. Linear interpolation here is only for plotting a fractional shift; the lag is the DDCorr output, not estimated using the plotting interpolator. Locate a peak and a subsequent trough. Check whether the change improves both, rather than overemphasising an isolated large swing. Remaining differences are expected because the sources, paths and noise are not exactly equal.",
-    "image": "seminar_kver_alignment.png",
-    "lead": "Apply the measured +20.2 ms delay by shifting the displayed event 2 trace earlier.",
-    "body": [
-      "Inspect several crests and troughs. A plausible lag should improve the alignment across the chosen phase."
-    ],
-    "label": "Z7.KVER P · the same data before and after the shift",
-    "sources": [
-      "https://doi.org/10.1029/2018JB016010"
-    ],
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "Why can timing be finer than one sample?",
-    "kind": "figure",
-    "notes": "This separate real example comes from Z7.STAM S for events 28 and 45. At −20, 0 and +20 ms the signed coefficients are 0.5110, 0.7000 and 0.2735. The left neighbour is higher than the right, so the peak leans toward negative lags. Fitting a parabola locally puts its vertex at about −3.9 ms. Samples on many changing parts of a band-limited waveform respond to a small time shift. The resulting correlation maximum moves continuously, even though the evaluated lags are discrete. The estimate will vary with noise, bandwidth and the chosen window. Decimal places in the output do not supply an uncertainty.",
-    "image": "field_peak.png",
-    "lead": "At 50 samples/s the tested shifts are 20 ms apart. The neighbouring coefficients indicate where the maximum lies between them.",
-    "body": [
-      "At Z7.STAM, fitting a parabola through the three points nearest the maximum gives −3.9 ms."
-    ],
-    "label": "Z7.STAM S · measured three-point peak, events 28 and 45",
-    "sources": [
-      "https://doi.org/10.1029/JB089iB07p05719",
-      "https://doi.org/10.1785/0120020238",
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/src/signal.jl"
-    ],
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "Which of these high peaks should we trust?",
-    "kind": "figure",
-    "notes": "Give the room 30 seconds to choose the lag on each graph. Both constructed signal pairs have exactly the same 40 ms delay. One is a distinct pulse with a secondary feature. The other is a 10 Hz sinusoid. Its period is 100 ms, so peaks near −160, −60, +40 and +140 ms all score nearly one. Noise can make the wrong cycle win. This is a cycle skip. With true repeated oscillations, the data in that window cannot select the correct cycle without additional information. An appropriate window, useful bandwidth, plausible lag limit and a competing-peak check each test a different aspect of this problem.",
-    "image": "seminar_repeated_peaks.png",
-    "lead": "Both examples have a known delay of +40 ms. The 10 Hz wave repeats every 100 ms.",
-    "body": [
-      "A distinct arrival gives one clear maximum. Repeated cycles can give equally good matches at several lags."
-    ],
-    "label": "Controlled example · exact imposed shift +40 ms",
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "How does a lag become a differential travel time?",
-    "kind": "equation",
-    "notes": "For event i, Oᵢ is its catalogue origin time, pᵢ the phase marker time on an absolute axis, and mᵢ = pᵢ − Oᵢ is the marker measured from that origin. Define εᵢ as the displacement of the matched waveform feature from its marker. Similarly define εⱼ. A positive lag means ℓ = εⱼ − εᵢ > 0. Now the two origin-referenced feature times are mᵢ + εᵢ and mⱼ + εⱼ. Subtract them in i-minus-j order to get (mᵢ − mⱼ) − ℓ. SAC often stores p and O as offsets from a common reference instant; their subtraction still yields m. If an origin in the input catalogue is in error, that error remains available for a relocation to estimate. We do not interpret a wave-train lag as an independent absolute onset pick.",
-    "equation": "dᵢⱼ = (pᵢ − Oᵢ) − (pⱼ − Oⱼ) − ℓ",
-    "lead": "First measure each phase marker p from its own event origin O. Then correct their difference using the waveform lag ℓ.",
-    "body": [
-      "A positive ℓ means the waveform in j is later relative to its marker. Subtracting j’s time therefore subtracts ℓ."
-    ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/src/signal.jl",
-      "https://doi.org/10.1785/0120000006"
-    ],
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "Compute the KVER P observation",
-    "kind": "table",
-    "notes": "Ask students to subtract the two marker travel times before looking at the final row. The entries come from the actual Iceland100 KVER vertical SAC files and DDCorr result, rounded here to four decimal places in seconds. The catalogue origins differ by 54.98 s: 12:00:29.860 and 12:01:24.840 UTC. Origin-referencing removed this separation. The corrected travel time for i is approximately 3.5 ms shorter than for j when the supplied origins are used. The numbers demonstrate why writing the +20.2 ms correlation lag itself into dt.cc would give the wrong sign and value.",
-    "rows": [
-      [
-        "Measured or derived quantity",
-        "Time"
-      ],
-      [
-        "Event 1 P marker after its origin",
-        "2.7461 s"
-      ],
-      [
-        "Event 2 P marker after its origin",
-        "2.7294 s"
-      ],
-      [
-        "Residual lag, event 2 later than event 1",
-        "+0.0202 s"
-      ],
-      [
-        "(2.7461 − 2.7294) − 0.0202",
-        "−0.0035 s"
-      ]
-    ],
-    "lead": "Events 1 and 2 occurred almost 55 seconds apart. Their corrected P travel times differ by just a few milliseconds.",
-    "label": "Z7.KVER · actual SAC markers and DDCorr lag",
     "sources": [
       "https://doi.org/10.1029/2018JB016010",
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/src/signal.jl"
-    ],
-    "section": "11:05   /   Measuring a waveform shift"
+      "https://doi.org/10.7914/SN/Z7_2010"
+    ]
   },
   {
-    "title": "Read one observation exactly as relocation will",
-    "kind": "code",
-    "notes": "Read the header first. Its event order fixes the subtraction sign for every observation until the next #. Here the header’s third numeric entry is the standard zero origin-time-correction placeholder in this export. The next line identifies the network-qualified receiver, the travel-time difference in seconds, the weight and the phase. In this run r = 0.7998529 and r² = 0.6397647. This weight is a measure of waveform match under the configured weighting rule. It is not a standard deviation in seconds. If r² is printed the signed r is still recorded separately in correlations.csv. Keep event_id_map.csv to identify the original SAC folders.",
-    "command": "# 1 2 0.0\nZ7.KVER  -0.0035  0.639765  P",
-    "lead": "The pair header sets the event order. Each following row belongs to one station and phase.",
-    "body": [
-      "At station Z7.KVER, event 1 minus event 2 is −0.0035 s for P. This run writes r² as the weight."
-    ],
-    "label": "Iceland100/reference/dt.cc · event pair 1, 2",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl",
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/src/signal.jl"
-    ],
-    "section": "11:05   /   Measuring a waveform shift",
-    "codeLabel": "EXCERPT FROM dt.cc"
-  },
-  {
-    "title": "Before opening the code, try reversing the pair",
-    "kind": "activity",
-    "notes": "Give participants one minute in pairs. Answer: the lag becomes −20.2 ms, the differential time changes to +3.5 ms, and the coefficient remains approximately 0.800. Under a symmetric measurement, swapping i and j reverses the lag curve about zero; its peak height stays the same. The weight is therefore unchanged. Ask them to confirm the units on their answers and explain aloud why moving a late trace left in a figure corresponds to a positive reported lag in the original order. Carry these checks into the first synthetic run, where the construction gives the expected sign independently.",
-    "lead": "For the KVER P measurement, swap events 1 and 2. What will change?",
-    "rows": [
-      [
-        "Original order, event 1 then event 2",
-        "Predict event 2 then event 1"
-      ],
-      [
-        "Lag = +20.2 ms",
-        "?"
-      ],
-      [
-        "Differential travel time = −3.5 ms",
-        "?"
-      ],
-      [
-        "Coefficient = 0.800",
-        "?"
-      ]
-    ],
-    "body": [
-      "Predict each sign before looking at a software output."
-    ],
-    "label": "One-minute pair exercise",
-    "section": "11:05   /   Measuring a waveform shift"
-  },
-  {
-    "title": "Open START HERE on GitHub",
-    "kind": "break",
-    "lead": "Open the guide on GitHub or in the student package. Keep it beside the slides for the commands and return points.",
-    "notes": "Project this slide and explicitly pause. On GitHub open docs/START_HERE.md, or open the same file in the student package. Everyone should find Lab A before continuing. Complete Before class now if necessary. The slides explain the observations and mark a return point after each task.",
-    "body": [
-      "github.com/eliasrh/DDCorr.jl   →   docs   →   START_HERE.md",
-      "Begin with Lab A. Return when the six synthetic event folders exist."
-    ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-a"
-    ],
-    "label": "Lab A · Start here",
-    "section": "12:00   /   Lab A   ·   Synthetic earthquakes"
-  },
-  {
-    "title": "Set up two folders and check Julia",
-    "kind": "code",
-    "lead": "Extract DDCorr.jl and Iceland100 beside one another inside a folder you can write to.",
-    "notes": "Both ZIPs come from the instructor. The code alone is also available from GitHub using Code → Download ZIP or git clone; rename the extracted DDCorr.jl-main directory to DDCorr.jl if needed. In Finder or File Explorer open the DDCorr.jl folder, the one containing Project.toml and bin, and open a terminal there. The commands work in Terminal or PowerShell. Allow several minutes for the first installation. Project.toml lists the packages DDCorr uses. The Julia environment and the Python environment are independent.",
-    "command": "julia --version\njulia --project=. -e 'using Pkg; Pkg.instantiate(); using DDCorr'",
-    "body": [
-      "Use Julia 1.12.3 for the classroom run.",
-      "When Julia returns to the terminal prompt without an error, continue."
-    ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#before-class"
-    ],
-    "section": "12:00   /   Lab A   ·   Synthetic earthquakes",
-    "codeLabel": "IN YOUR TERMINAL"
-  },
-  {
-    "title": "Generate earthquakes with known arrival times",
-    "kind": "code",
-    "lead": "A built-in generator writes real SAC-format files with controlled arrival times.",
-    "notes": "Run the command for the installed Python. This exercise uses only the standard library. The program creates examples/synthetic/sac and writes truth_pairs.csv with the known inter-event travel-time differences. The supplied markers have timing errors on purpose. The traces contain noise and five events also contain signals. Ask everyone to find the event folders and the truth file before showing the result.",
-    "command": "python3 scripts/make_synthetic.py",
-    "commandWindows": "py -3.12 scripts/make_synthetic.py",
-    "body": [
-      "Open examples/synthetic/sac. Find six event folders.",
-      "Five contain P and S pulses. Event 905 contains only noise."
-    ],
-    "section": "12:00   /   Lab A   ·   Synthetic earthquakes",
-    "codeLabel": "IN YOUR TERMINAL"
-  },
-  {
-    "title": "Inspect first, then measure the synthetic data",
-    "kind": "code",
-    "lead": "Inspection checks whether the named arrival fields and waveform windows are available.",
-    "notes": "Confirm the first command reports six valid events. Open phase_readiness.csv from the printed inspect directory. Ask why a noise trace can pass these checks: its metadata and time span are valid. Run the second command, which also filters and measures the waveforms. Save the printed correlate directory. Each measurement belongs to a pair of different events observed at the same station and phase.",
-    "command": "julia --project=. bin/ddcorr.jl DDCorr.toml --inspect\njulia --project=. --threads=2 bin/ddcorr.jl DDCorr.toml",
-    "body": [
-      "The first command should find 6 events.",
-      "The second should keep 80 measurements. Open its report.html."
-    ],
-    "section": "12:00   /   Lab A   ·   Synthetic earthquakes",
-    "codeLabel": "IN YOUR TERMINAL"
-  },
-  {
-    "title": "How late is the second pulse?",
-    "kind": "figure",
-    "lead": "At station XX.S01, put each vertical trace on its own P-marker clock.",
-    "notes": "Output IDs 1 and 2 represent original event folders 1201 and 17. The top panel compares both records at their supplied markers. The second blue/orange pair reuses the same processed samples after moving event 2 left by 0.2247 s. A positive lag means that on marker-relative clocks event j needs a shift to the left to align with event i. It says nothing by itself about which earthquake happened first in calendar time. Ask students to identify the same pair of peaks in both panels.",
-    "image": "lab_synthetic_alignment.png",
-    "body": [
-      "The second pulse sits 0.2247 s later on these axes.",
-      "Shifting it left brings the peaks and troughs together."
-    ],
-    "section": "12:00   /   Lab A   ·   Synthetic earthquakes"
-  },
-  {
-    "title": "Use the known difference to check the sign",
     "kind": "equation",
-    "lead": "The marker times, measured from each event’s own origin, are 4.216 s and 3.856 s.",
-    "notes": "Ask students to calculate the difference before revealing the answer. The marker estimate is positive because the first marker is later relative to its origin. Event 2 really arrives later relative to its own marker, so subtracting the residual correction reduces the difference. In dt.cc, positive here means the phase took longer to reach this station from event 1. The unrounded r is 0.984762 and its square is about 0.9698.",
-    "equation": "Δt₁₂ = (4.216 − 3.856) − 0.2247 = +0.1353 s",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "The correlation coefficient at a given lag",
+    "lead": "For positive k, compare each sample from event 1 with the sample k positions later in event 2. The correlation coefficient measures their similarity after each window’s mean is removed.",
+    "notes": "This is the usual normalized, mean-subtracted discrete cross-correlation, the Pearson correlation at lag k. A positive k compares fixed samples in event 1 with later samples in event 2. The numerator adds the products of the paired samples. The denominator scales by the two window energies. For constant windows the coefficient is undefined. DDCorr also computes the reverse ordering and averages the two coefficients at matching physical lags. The later processing section shows the two finite-window calculations.",
+    "equation": "r(k) = Σₙ uₙ vₙ(k) / [√(Σₙ uₙ²) · √(Σₙ vₙ(k)²)]",
+    "fraction": {
+      "lhs": "r(k) =",
+      "numerator": "Σₙ uₙ vₙ(k)",
+      "denominator": "√(Σₙ uₙ²) · √(Σₙ vₙ(k)²)"
+    },
     "body": [
-      "The generator set the true difference to +0.1350 s.",
-      "The recovered value is 0.0003 s larger."
-    ],
-    "section": "12:00   /   Lab A   ·   Synthetic earthquakes"
-  },
-  {
-    "title": "Check every measured row against the generator",
-    "kind": "activity",
-    "lead": "In START HERE, run the Lab A truth check for your operating system.",
-    "notes": "Use the commands in Lab A immediately after the successful synthetic run. The guide selects the newest synthetic correlate directory and passes it to scripts/check_synthetic.py with --max-error-s 0.001 --require-noise-isolated. The checker uses original event IDs, station and phase to match estimates to truth. Compare the error with the 0.02 s working sample interval. The result demonstrates accuracy on these generated data only. Continue in the guide at Lab B after discussing the check.",
-    "body": [
-      "Find passed, maximum_absolute_error_s and noise_control_accepted_observations.",
-      "Reference result: 40 P + 40 S, maximum error 0.0006 s, zero links to event 905.",
-      "Explain why one correct sign is a weaker test than 80 correct measurements."
+      "uₙ and vₙ(k) are the two mean-subtracted amplitudes at sample n. The sums run over the N samples in the window. Aligned crests and troughs both contribute positive products to the numerator.",
+      "The denominator removes the effect of amplitude scale. Identical shapes give r = +1, and identical shapes with opposite polarity give r = −1."
     ],
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-a"
-    ],
-    "section": "12:00   /   Lab A   ·   Synthetic earthquakes"
+      "https://doi.org/10.1785/0120020238"
+    ]
   },
   {
-    "kind": "break",
-    "title": "Keep the synthetic result open",
-    "lead": "Before lunch, find the row for events 1 and 2 at XX.S01, P. You should be able to explain the sign of its differential time.",
-    "body": [
-      "13:45   ·   Return to Start Here, Lab B, to collect the first real waveforms."
-    ],
-    "notes": "Allow an hour for lunch. Leave the synthetic folder and the deck open. The supplied Iceland100 archive lets everyone rejoin the field practical if network service is interrupted.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-b"
-    ],
-    "section": "12:45   /   Lunch"
-  },
-  {
-    "title": "Get five real events from the archive",
-    "kind": "activity",
-    "lead": "Open Lab B. The supplied event and station tables specify what to request.",
-    "notes": "These are the first five events in the classroom selection from Data Set S1 of Ágústsdóttir et al. (2019). Their identifiers preserve the original supplement row numbers, e.g. S1_009900. The exercise requests the three nearest eligible stations from the supplied channel table. The archive supplies station metadata and waveform samples. The script cuts a separate record around each event and writes it as SAC. The internet service is needed here; the Iceland100 practical uses the supplied local archive if the service is unavailable.",
-    "body": [
-      "Earthquake catalogue → event ID, origin time and coordinates.",
-      "Station metadata + miniSEED → event folders containing SAC files.",
-      "The requested cut runs from 25 s before to 70 s after each origin."
-    ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-b",
-      "https://doi.org/10.1029/2018JB016010"
-    ],
-    "section": "13:45   /   Lab B   ·   Archive recordings"
-  },
-  {
-    "title": "Install the waveform reader into this Python",
-    "kind": "code",
-    "lead": "Use the same Python executable to install ObsPy, check it and run the downloader.",
-    "notes": "The full commands for both systems are in Lab B. Python 3.12 must be installed before creating the environment. On a Mac or Linux use .venv/bin/python after creating .venv. In PowerShell use .\\.venv\\Scripts\\python.exe. No activation or administrator step is needed. The import check must print the version before the download. Installing the Julia packages or making an empty Python environment alone does not install ObsPy.",
-    "command": "python3.12 -m venv .venv\n.venv/bin/python -m pip install -r requirements-download.txt\n.venv/bin/python -c \"import obspy; print(obspy.__version__)\"",
-    "commandWindows": "py -3.12 -m venv .venv\n.\\.venv\\Scripts\\python.exe -m pip install -r requirements-download.txt\n.\\.venv\\Scripts\\python.exe -c \"import obspy; print(obspy.__version__)\"",
-    "section": "13:45   /   Lab B   ·   Archive recordings",
-    "codeLabel": "IN YOUR TERMINAL"
-  },
-  {
-    "title": "Download, then repeat the same request",
-    "kind": "code",
-    "lead": "The downloader writes SAC files below work/iceland_small/sac.",
-    "notes": "The supplied table selects stations HRIM, TOHR and FLUR. Our cached rehearsal has 5 event folders and 45 traces. Archive availability can change. Repeat the exact download command and inspect the printed number of new bytes. An unchanged successful request should use cached waveform and metadata files. Then run julia --project=. bin/ddcorr.jl examples/download/small.toml --inspect to check the event count. Return here when you can identify an actual station and event folder. On a service outage, inspect the supplied Iceland100 folder and continue to Lab C.",
-    "command": ".venv/bin/python scripts/download_example.py",
-    "commandWindows": ".\\.venv\\Scripts\\python.exe scripts/download_example.py",
-    "body": [
-      "Open an event folder and find the station and channel in a filename.",
-      "Repeat the command. How many new bytes did it need?"
-    ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-b"
-    ],
-    "section": "13:45   /   Lab B   ·   Archive recordings",
-    "codeLabel": "IN YOUR TERMINAL"
-  },
-  {
-    "title": "Move to the shared 100-event archive",
-    "kind": "table",
-    "lead": "Open Lab C. Everyone now works from the same Iceland100 folder.",
-    "notes": "These 100 selected catalogue entries span 12:00:29.86 to 13:48:56.81 UTC on 23 August 2014. The sequence comes from a dyke intrusion in Iceland. The supplied cuts allow everyone to examine the same signals, including pairs within fractions of a second. Twelve stations passed the original metadata selection, but STJA had no usable waveform cuts in the teaching archive. Reuse the full example even if the short download succeeded.",
-    "rows": [
-      [
-        "What to locate",
-        "In the supplied package"
-      ],
-      [
-        "Origin and event ID",
-        "100 catalogue entries on 23 August 2014"
-      ],
-      [
-        "Waveform files",
-        "100 events × 11 stations × 3 channels = 3,300"
-      ],
-      [
-        "Settings and independent checkpoint",
-        "Iceland100/DDCorr.toml and reference/report.html"
-      ]
-    ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-c",
-      "https://doi.org/10.1029/2018JB016010"
-    ],
-    "section": "13:45   /   Lab C   ·   Run Iceland100"
-  },
-  {
-    "title": "Locate the P and S fields on one real trace",
     "kind": "figure",
-    "lead": "Look up S1_009900 / Z7.HRIM / HHZ in Lab C, then run the header viewer.",
-    "notes": "The full command is julia --project=. bin/sac_info.jl ../Iceland100/sac/S1_009900/Z7.HRIM..HHZ.sac --plot ../Iceland100/first_trace.png. Read the A, T0, KA, KT0, O, B, channel and sample-rate fields. For this archive O = 0, B = −25 s, A = 2.597578 s and T0 = 4.45299 s. The slide plots the raw, unfiltered vertical counts. P_pred and S_pred were computed during preparation using 6.0 and 3.5 km/s. The source catalogue provides origins; it does not provide these phase arrivals. On your own files identify the dataset’s conventions.",
-    "image": "lab_hrim_markers.png",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "The peak gives the lag and the coefficient",
+    "lead": "At Z7.KVER, the highest coefficient is 0.800 at the +20 ms sample. Fitting the peak between samples gives a lag of +20.2 ms.",
+    "notes": "The plotted curve is the symmetric correlation of the two KVER P windows over ±0.5 s. The discrete peak is 0.7998529. DDCorr reports the sampled coefficient and refines the lag by fitting a parabola through the peak and its two neighbours. The full correlation row stores both results.",
+    "image": "relative_kver_correlation.png",
     "body": [
-      "A carries the numeric P time. KA gives its label, P_pred.",
-      "T0 carries the numeric S time. KT0 reads S_pred. Both are predictions."
+      "A positive lag means event 2’s P waveform arrives later than event 1’s on the marker-centred time axes."
+    ]
+  },
+  {
+    "kind": "figure",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "Applying the measured lag to the waveforms",
+    "lead": "The upper panel uses the two P markers as supplied. In the lower panel, event 2 has been shifted 20.2 ms earlier.",
+    "notes": "The two panels show the same portion of the two KVER records. Applying the measured lag shifts the second trace left for visual comparison. The display interpolates the plotted waveform on the common time grid. The estimated lag itself came from the correlation peak.",
+    "image": "seminar_kver_alignment.png",
+    "body": [
+      "The main crest and the trough that follows now line up. Smaller differences in amplitude and shape remain."
+    ]
+  },
+  {
+    "kind": "figure",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "Waveforms can resolve a fraction of a sample",
+    "lead": "For Iceland events 28 and 45 at STAM, the S correlation is sampled every 20 ms. Its maximum lies at the zero-lag sample. The neighbouring points place the fitted peak 3.9 ms earlier.",
+    "notes": "The plotted S measurement uses events 28 and 45 in Iceland. Poupinet et al. used a frequency-domain method on California doublets. Their published precision refers to those measurements. An interpolated peak gives a finer lag estimate than a grid search. Its uncertainty also depends on waveform similarity, bandwidth and noise.",
+    "image": "field_peak.png",
+    "body": [
+      "Poupinet, Ellsworth and Fréchet (1984) compared waveforms from two California earthquakes and reported timing resolution of about one-tenth of the sampling interval."
+    ],
+    "citation": [
+      {
+        "text": "Poupinet, Ellsworth & Fréchet (1984). Monitoring velocity variations in the crust using earthquake doublets: An application to the Calaveras Fault, California. JGR 89, 5719–5731.",
+        "url": "https://doi.org/10.1029/JB089iB07p05719"
+      }
     ],
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-c"
-    ],
-    "section": "13:45   /   Lab C   ·   Run Iceland100"
+      "https://doi.org/10.1029/JB089iB07p05719"
+    ]
   },
   {
-    "title": "Check whether the real records are ready",
-    "kind": "code",
-    "lead": "Open the printed inspect directory and read phase_readiness.csv.",
-    "notes": "Ask a student to state what the metadata check can and cannot establish. It checks selected phase headers, available time ranges and other header prerequisites; no waveform signal quality has yet been measured. Check input_issues.csv or station_exclusions.csv if relevant. Absolute and relative input paths are resolved against the TOML location. The TOML here already points to its sibling sac/ folder.",
-    "command": "julia --project=. bin/ddcorr.jl ../Iceland100/DDCorr.toml --inspect",
+    "kind": "figure",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "Repeated cycles can produce several plausible lags",
+    "lead": "On the 4–8 Hz vertical records from KVER, earthquakes 13 and 27 align almost equally well at +40 and +200 ms. The second alignment pairs one wave cycle with a different cycle.",
+    "notes": "The two local maxima are 0.82005 and 0.81762. The example was recalculated from the real event cuts in a narrower band. Later slides show the same pair with the usual 2–14 Hz P filter.",
+    "image": "iceland_competing_lags.png",
     "body": [
-      "Expect 100 valid event IDs and 3,300 waveform files in inventory.csv.",
-      "Use event_id_map.csv to identify the original folder for each integer ID."
-    ],
-    "section": "13:45   /   Lab C   ·   Run Iceland100",
-    "codeLabel": "IN YOUR TERMINAL"
+      "The two coefficients differ by only 0.0024. Keeping just the highest coefficient would conceal the ambiguity in the measured delay."
+    ]
   },
   {
-    "title": "Measure the 100 events and open your report",
-    "kind": "code",
-    "lead": "The correlate directory printed by DDCorr contains your baseline results.",
-    "notes": "Use the same terminal in DDCorr.jl. Record the printed folder in your notebook before launching another run. Open its report.html using Finder or File Explorer. Each new run has a timestamped folder. The supplied Iceland100/reference/report.html is the instructor checkpoint if the run is still finishing. Complete Lab C then return here. Lab D asks students to interpret this particular run.",
-    "command": "julia --project=. --threads=2 bin/ddcorr.jl ../Iceland100/DDCorr.toml",
+    "kind": "story",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "Waveform timing compared with catalogue picks",
+    "lead": "Schaff et al. (2004) compared travel-time differences from waveforms and catalogue picks for 243 earthquakes on the Calaveras Fault.",
+    "notes": "The authors estimated the relative precision of two data types for a closely spaced California sequence. They reported useful waveform-derived timings at coefficients as low as roughly 0.7 for this case. The full bibliographic reference and DOI are printed on this slide.",
     "body": [
-      "Find 2,412 P and 4,625 S observations.",
-      "Find the waveform examples, lag plots and station–phase matrices."
+      "In that sequence, waveform timing improved on picks even for some pairs with correlations near 0.70 and separations up to about 2 km.",
+      "The value 0.70 came from their comparison against local catalogue data. Other networks and frequency bands require their own evaluation."
+    ],
+    "citation": [
+      {
+        "text": "Schaff, D. P., Bokelmann, G. H. R., Ellsworth, W. L., Zanzerkia, E., Waldhauser, F., & Beroza, G. C. (2004). Optimizing correlation techniques for improved earthquake location. Bulletin of the Seismological Society of America 94(2), 705–721. doi:10.1785/0120020238",
+        "url": "https://doi.org/10.1785/0120020238"
+      }
     ],
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-c"
-    ],
-    "section": "13:45   /   Lab C   ·   Run Iceland100",
-    "codeLabel": "IN YOUR TERMINAL"
+      "https://doi.org/10.1785/0120020238"
+    ]
   },
   {
-    "title": "What do 7,037 observations represent?",
+    "kind": "equation",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "From the waveform lag to differential travel time",
+    "lead": "Let m₁ and m₂ be the P marker times measured from their own earthquake origins. Their difference is the initial estimate of the travel-time difference.",
+    "notes": "If p is the stored phase-marker time and O the origin, m=p−O on the same clock. Let ε denote the time of a corresponding waveform feature relative to its marker. The lag is ε₂−ε₁. The difference of the two origin-referenced arrivals is (m₁+ε₁)−(m₂+ε₂)=m₁−m₂−ℓ. The original time separation of the earthquakes does not enter this travel-time difference.",
+    "equation": "d₁₂ = (m₁ − m₂) − ℓ",
+    "body": [
+      "ℓ is the waveform lag in seconds, positive when event 2 is later on the marker-centred axes. Subtracting ℓ corrects the marker difference.",
+      "The resulting d₁₂ is the estimated P travel time of event 1 minus that of event 2 at this station."
+    ]
+  },
+  {
+    "kind": "code",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "The KVER P measurement in dt.cc",
+    "lead": "At KVER, the P markers fall 2.7461 s and 2.7294 s after the two origins. Subtract the measured +0.0202 s lag from their +0.0167 s difference.",
+    "notes": "The printed precision of the accepted row is four decimals for differential time and six for its weight. The input origins differed by 54.98 s in absolute UTC. The P travel times are compared after subtracting those origins. The calculation is (2.7461−2.7294)−0.0202=−0.0035 s. An output pair header may have more station or phase rows below it, sharing the same two IDs.",
+    "command": "# 1 2 0.0\nZ7.KVER  -0.0035  0.639765  P",
+    "codeLabel": "ICELAND100  /  dt.cc",
+    "body": [
+      "The P travel time to KVER is 0.0035 s shorter for event 1. The header gives the event IDs in subtraction order.",
+      "The station row gives the station, differential time in seconds, weight and phase. This run uses r² as the weight."
+    ]
+  },
+  {
+    "kind": "figure",
+    "section": "11:05   /   Waveform cross-correlation",
+    "title": "Two estimates of the P-time difference for events 1 and 5",
+    "lead": "At station Z7.DYSA, each arrow joins two earthquakes and gives their P travel-time difference in milliseconds (tail minus head).",
+    "notes": "All three edges are actual Z7.DYSA P measurements in the supplied dt.cc, converted from seconds to milliseconds. Adding d₁₃ to d₃₅ eliminates the event 3 term, so it should equal d₁₅ if the observations are consistent. A discrepancy measures inconsistency in this loop and cannot by itself identify which edge contains the error. The practical now begins with the SAC files and the DDCorr report.",
+    "image": "relative_dysa_triangle.png",
+    "body": [
+      "From 1 to 5 through 3, the measured difference is +93.9 − 61.6 = +32.3 ms. The direct measurement is +30.5 ms.",
+      "The two estimates differ by 1.8 ms. DDSync fits times to all the connected pairs at this station and phase."
+    ],
+    "sources": [
+      "https://doi.org/10.1785/0220260086"
+    ]
+  },
+  {
+    "section": "12:00   /   Guided DDCorr lab",
+    "title": "Open Start Here and follow the DDCorr lab",
+    "kind": "handoff",
+    "notes": "Keep this slide on screen throughout the guided lab. The synthetic run introduces the command and the event-folder layout. The figures will all be taught with the real Iceland recordings. The Iceland reference report provides a local fallback.",
+    "lead": "Open docs/START_HERE.md in the student package, or use the GitHub link below.",
+    "body": [
+      "Generate the small synthetic example and run DDCorr once.",
+      "Run the supplied Iceland100 data and open its report.html.",
+      "At 14:05, return to slide 25 with the Iceland report open."
+    ],
+    "link": {
+      "text": "Open the Start Here lab on GitHub",
+      "url": "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md"
+    }
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "The Iceland run uses its own settings and SAC directory",
     "kind": "table",
-    "lead": "Open Lab D. One event pair can give a separate observation at many stations and phases.",
-    "notes": "Ask students to find these numbers in the baseline report and run_summary.toml; use event_connectivity.csv for isolation. Separate horizontal channels can contribute to one combined S observation. Four events (54, 80, 90, 91) had no accepted measurements in this run. Isolated catalogued events can have weak or missing signals, poor station coverage or simply lack comparable neighbours. The report does not determine which explanation applies.",
+    "notes": "Both lab runs use bin/ddcorr.jl from the DDCorr.jl directory. Only the settings path changes. The --project=. option loads the project here; --threads=2 makes two Julia threads available. Paths in a TOML file are relative to that file’s directory.",
+    "lead": "The command takes the path to a TOML settings file. Each settings file names its own SAC directory and output directory.",
     "rows": [
       [
-        "Quantity",
-        "Baseline",
+        "",
+        "Synthetic example",
+        "Bárðarbunga example"
+      ],
+      [
+        "Settings used",
+        "DDCorr.jl/DDCorr.toml",
+        "Iceland100/DDCorr.toml"
+      ],
+      [
+        "Waveform folders",
+        "DDCorr.jl/examples/synthetic/sac",
+        "Iceland100/sac"
+      ],
+      [
+        "New results appear under",
+        "DDCorr.jl/results",
+        "Iceland100/results"
+      ]
+    ]
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "The Iceland report opens with a count of events and measurements",
+    "image": "report_iceland_header.png",
+    "lead": "The four boxes summarise 100 earthquake folders. An observation is one accepted measurement for an event pair at one station and phase.",
+    "body": [
+      "Four events have no accepted partner. They keep their IDs in catalog.txt. The report links to event_id_map.csv for the original folder names."
+    ],
+    "notes": "This is the actual header of Iceland100/reference/report.html. The 2,412 P plus 4,625 S observations give 7,037 station–phase measurements, distributed across 1,914 distinct event pairs. All the figures that follow use the same field run."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "The Iceland SAC header contains the phase times",
+    "kind": "figure",
+    "notes": "In Start Here, the header command for this exact file is julia --project=. bin/sac_info.jl ../Iceland100/sac/S1_009992/Z7.DYSA..HHZ.sac. The SAC reference instant coincides with the catalogue origin in this archive (O = 0). The S prediction can be stored in the header of a vertical trace; DDCorr normally measures S on the horizontal components. Source of the catalogue: Ágústsdóttir et al. (2019), Data Set S1. The SAC generator added straight-line predictions at 6.0 and 3.5 km/s. The figure shows the original raw samples.",
+    "lead": "This vertical recording belongs to event S1_009992 at station Z7.DYSA.",
+    "body": [
+      "The numeric SAC fields A and T0 contain the two times marked on the trace. Their labels P_pred and S_pred indicate predicted arrivals. DDCorr centres the P window on A here."
+    ],
+    "image": "lab_iceland_sac_markers.png",
+    "sources": [
+      "https://doi.org/10.1029/2018JB016010"
+    ]
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "The settings connect the SAC headers to the waveforms",
+    "kind": "table",
+    "notes": "Use the Iceland settings file that participants ran, not the repository’s top-level synthetic TOML. The 0.5 s lag is a correction around the two independently marked windows. DDCorr applies additional checks, including competing peaks and peaks at the boundary, before writing a measurement.",
+    "lead": "These entries in Iceland100/DDCorr.toml determine what DDCorr compares.",
+    "rows": [
+      [
+        "Setting",
+        "Iceland example",
+        "How DDCorr uses it"
+      ],
+      [
+        "P and S header fields",
+        "a and t0",
+        "Read the time around which each phase is expected."
+      ],
+      [
+        "P and S bands",
+        "2–14 Hz",
+        "Filter both recordings in the pair over the same frequencies."
+      ],
+      [
+        "P window",
+        "−0.5 to +2.0 s",
+        "Compare the vertical records around their P times."
+      ],
+      [
+        "S window",
+        "−0.5 to +3.0 s",
+        "Compare available horizontal records around their S times."
+      ],
+      [
+        "Lag and coefficient limits",
+        "±0.50 s and r ≥ 0.70",
+        "Search this lag interval and require the peak to reach the threshold."
+      ]
+    ]
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "The distribution of all measured peak coefficients",
+    "image": "report_candidate_peaks.png",
+    "lead": "In “Quality and connectivity”, the upper-left panel counts the highest sampled coefficient from each station–phase comparison that produced a correlation curve.",
+    "body": [
+      "Blue is P and orange is S. Both acceptance thresholds are 0.70, so the dashed lines coincide. Most measured peaks fall below that value in this run."
+    ],
+    "notes": "Each step covers a bin of width 0.05 in signed r. The vertical scale is the number of candidate event pairs summed over stations within each phase. A station–phase candidate that lacks shared usable components produces no coefficient and cannot appear. Moving the threshold would alter the retained fraction. This figure alone cannot identify genuine arrivals."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "The coefficients retained in the measurement file",
+    "image": "report_accepted_peaks.png",
+    "lead": "The upper-right panel of the same figure counts only rows written to correlations.csv. The horizontal axis is the signed coefficient for each accepted peak.",
+    "body": [
+      "The blue P and orange S bars start at 0.70. A tall bin near the cutoff contains many marginal matches. Opening a waveform example shows which part of the phase aligned."
+    ],
+    "notes": "P and S histograms overlay, with partially transparent colours. The bin width is 0.025 rather than the 0.05 used in the all-measured plot. Compare ranges and shapes; the different bin widths and vertical scales make bar heights across the two panels unsuitable for a direct rejection count. Group decisions provides the exact count."
+  },
+  {
+    "kind": "figure",
+    "title": "A higher P threshold removes links at every station",
+    "image": "iceland_p_threshold.png",
+    "lead": "Each dot counts the accepted P measurements at one Iceland station. Raising the minimum coefficient from 0.70 to 0.90 reduces the total from 2,412 to 233.",
+    "body": [
+      "At 0.70, 94 earthquakes have a P link to another event. At 0.90, only 49 do. The higher threshold costs station coverage as well as observations."
+    ],
+    "notes": "These counts are obtained by applying a stricter P coefficient cutoff to the accepted Iceland rows. Other acceptance settings and the S observations are held fixed. A high threshold alone does not establish the accuracy of a time shift.",
+    "section": "14:05   /   Reading the Iceland report"
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "Station coverage in the Iceland report",
+    "kind": "figure",
+    "notes": "The station labels in the figure are those from Network Z7. Eleven stations supplied records. The run summary contains 1,914 distinct pairs and four isolated events. P and S have separate windows and component requirements. The figure crops the “Accepted observations by station” panel directly from summary.png.",
+    "lead": "The report counts 2,412 accepted P observations and 4,625 accepted S observations from 100 earthquake folders.",
+    "body": [
+      "The bars in “Quality and connectivity” divide those observations by station. A pair recorded at several stations can contribute to several bars."
+    ],
+    "image": "lab_iceland_report_coverage.png"
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "The number of distinct partners for each earthquake",
+    "image": "report_degree.png",
+    "lead": "The event graph joins two earthquakes when at least one station and phase measured their differential time. The horizontal axis counts the distinct partners of each event.",
+    "body": [
+      "Several stations measuring the same pair add one partner. The four events at degree zero are isolated. The other 96 belong to one connected component."
+    ],
+    "notes": "Degree is an event property. The vertical axis counts events within each degree bin. The report header lists connected-component sizes 96, 1, 1, 1, 1. A component contains events linked by a path of accepted pairs; some events in a component may have no direct link to each other. event_connectivity.csv identifies each event and its degree. High degree alone says nothing about the number or azimuths of stations measuring those links."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "Why prepared event pairs were rejected",
+    "image": "report_outcomes.png",
+    "lead": "The lower-right panel totals the outcomes of station–phase comparisons after individual waveforms have passed preparation.",
+    "body": [
+      "Here 50,361 comparisons fell below the coefficient threshold, 893 peaked at the search boundary, and 124 lacked enough common components. Another 7,037 were accepted."
+    ],
+    "notes": "Each comparison receives one outcome. Candidate plots and outcome counts need not contain the same number, because some tested pairs never produce a correlation curve. group_summary.csv breaks these counts down by station and phase. The preceding trace exclusions, including weak filtered signals, are in preprocessing_issues.csv."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "When an S observation exists but P is missing",
+    "kind": "table",
+    "notes": "In this run, Z7.DYSA, events 1/2, S has dt_s = 0.0048 s and lag_B_later_s = −0.0897 s. The P input passed the header/window test, then fell below the minimum filtered RMS signal-to-noise ratio. The loss of a P observation affects that phase at that station. If a group has no accepted pairs after thresholding, group_summary.csv records its aggregate rejection reasons.",
+    "lead": "At Z7.DYSA, Iceland events 1 and 2 supplied an S measurement. The vertical record for event 2 had too little P signal above the background.",
+    "rows": [
+      [
+        "Stage",
+        "Where the result is recorded",
+        "Z7.DYSA example"
+      ],
+      [
+        "Read times and windows",
+        "phase_readiness.csv",
+        "The P marker and its window were available."
+      ],
+      [
+        "Prepare the waveform",
+        "preprocessing_issues.csv",
+        "Event 2, HHZ: below the minimum filtered signal-to-noise ratio."
+      ],
+      [
+        "Export the pair",
+        "correlations.csv",
+        "The S observation uses the two horizontal components."
+      ]
+    ]
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "A P-wave example at Z7.DYSA",
+    "kind": "figure",
+    "notes": "The two folders are S1_009992 and S1_009996. The shared component is Z7.DYSA..HHZ. Use the expanded example_01_Z7.DYSA_P in the report, or open the PNG of that name directly. The automatic gallery includes accepted examples from different parts of the coefficient distribution.",
+    "lead": "The first figure under “Accepted pair examples” shows events 93 and 97 at station Z7.DYSA.",
+    "body": [
+      "The orange P pulse arrives later than the blue one on the marker-centred axes. Moving it 0.0586 s earlier aligns the strongest positive peak. The later oscillations agree less closely."
+    ],
+    "image": "lab_iceland_report_alignment.png"
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "The bottom panel gives the lag for this P pair",
+    "kind": "figure",
+    "notes": "The bottom panel comes from the same Z7.DYSA P figure. The program retains the coefficient measured at the highest sampled value and uses the parabola to refine its lag. The title rounds the coefficient to 0.7. A positive lag means event 97 lies later on its P-marker-centred axis.",
+    "lead": "Each point on the curve gives the correlation coefficient for a possible shift between the two traces.",
+    "body": [
+      "The highest sampled coefficient is 0.70003 at +0.060 s. DDCorr fits a parabola through that sample and its two neighbours. The red line marks the fitted lag, +0.0586 s."
+    ],
+    "image": "lab_iceland_report_lag.png"
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "The measurement behind the figure",
+    "kind": "table",
+    "notes": "The column called lag_B_later_s uses B for the second event, j. The measured correction acts on waveform positions relative to each event’s own marker. The differential travel time also accounts for the two marker-minus-origin times. The CSV stores more decimal places for the coefficient and its weight. One observation qualifies across the whole network for this particular pair.",
+    "lead": "The “Correlation audit” link opens correlations.csv. The Z7.DYSA P row for events 93 and 97 contains these values.",
+    "rows": [
+      [
+        "CSV column",
+        "Value",
         "Meaning"
       ],
       [
-        "Event folders",
-        "100",
-        "Catalogue entries inspected"
+        "cc_signed",
+        "0.70003",
+        "Highest sampled correlation coefficient."
       ],
       [
-        "Event pairs with a measurement",
-        "1,914",
-        "Pairs linked at least once"
+        "lag_B_later_s",
+        "+0.0586 s",
+        "The matching feature in event 97 is later relative to its own P mark."
       ],
       [
-        "Station–phase observations",
-        "7,037",
-        "2,412 P and 4,625 S"
+        "dt_s",
+        "+0.2972 s",
+        "Estimated P travel time for event 93 minus that for event 97."
       ],
       [
-        "Events with no accepted pair",
-        "4",
-        "Still listed in the catalogue"
+        "weight",
+        "0.490046",
+        "r², the dimensionless similarity weight written to dt.cc."
       ]
     ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-d"
-    ],
-    "section": "14:35   /   Lab D   ·   Read the measurements"
+    "body": [
+      "The P markers occur 3.9916 s and 3.6358 s after the two origins. Their difference is +0.3558 s. Subtracting the fitted lag of +0.0586 s gives the exported +0.2972 s."
+    ]
   },
   {
-    "title": "Where did the other comparisons go?",
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "How the DYSA measurement is written in dt.cc",
+    "kind": "code",
+    "notes": "The third header value is the origin-time correction field, 0.0 in this export. The programme writes one station–phase row per accepted measurement. This example happens to have one row under its header. Other pairs can have many.",
+    "lead": "The “Files and conventions” section of report.html links directly to dt.cc. These are the two lines for the same pair.",
+    "body": [
+      "The header names events 93 and 97. The observation gives station, differential travel time in seconds, weight and phase.",
+      "event_id_map.csv links 93 to S1_009992 and 97 to S1_009996, the folders containing the original recordings."
+    ],
+    "command": "# 93 97 0.0\nZ7.DYSA       0.2972 0.490046 P",
+    "codeLabel": "dt.cc"
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "The two horizontal records behind an S example",
+    "image": "report_s_alignment.png",
+    "lead": "For STAM events 85 and 86, the orange S pulse appears earlier on its marker-centred axis. The fitted lag is −0.3416 s, so the displayed trace is shifted later.",
+    "body": [
+      "The figure shows the first shared horizontal component, HHE. The matching decision uses both HHE and HHN. Their component names and count appear in correlations.csv."
+    ],
+    "notes": "This is the actual Z7.STAM S gallery file example_11_Z7.STAM_S, with the first two panels shown. The row names original folders S1_009984 and S1_009985. A close overlay on the displayed component gives evidence about that component; the final correlation score and lag curve describe the average of the usable common components."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "The peak of a two-component S correlation",
+    "image": "report_s_curve.png",
+    "lead": "The lower panel of that STAM figure is the mean of the two horizontal correlation coefficients at every tested lag. Its highest sampled value is 0.997.",
+    "body": [
+      "The horizontal dashed line is the 0.70 acceptance threshold. The vertical dashed line marks the fitted lag. Here the selected peak is much higher than its strongest separate competitor."
+    ],
+    "notes": "The reported peak gap is about 0.850. It is a difference in coefficient, not a distance along the time axis. A similarly tall second peak provides an alternative alignment even when the largest coefficient is high. The footer gives the frequency band, minimum SNR among contributing records, input epicentral separation in km, and which component was drawn. [plots] examples = true enables the gallery."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "The station matrix shows which events are linked",
+    "kind": "figure",
+    "notes": "The image is the signed-coefficient panel of matrices/group_0001_Z7.DYSA_P.png. The two other panels display the signed differential time and lag. To find a measurement in correlations.csv, use the smaller ID first. The sparse matrix file named by matrices/index.csv lists those same accepted pairs for one station and phase.",
+    "lead": "Under “Station/phase matrices (PNG)”, open Z7.DYSA P. Each axis gives the integer event ID.",
+    "body": [
+      "The coloured cells show the pairs with an accepted P observation. Grey areas show gaps in coverage. To look up an exact pair, use correlations.csv with the smaller ID first."
+    ],
+    "image": "lab_iceland_report_matrix.png"
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "The differential-time matrix changes sign across the diagonal",
+    "image": "report_matrix_dt.png",
+    "lead": "In the middle matrix at Z7.DYSA P, the colour is the travel time of row event i minus that of column event j, in seconds.",
+    "body": [
+      "In row 93, column 97 the value is +0.2972 s. The reflected entry is −0.2972 s. Grey cells have no accepted differential time."
+    ],
+    "notes": "The centre of the colour bar denotes zero; red is positive and blue negative. Each station–phase matrix sets its own symmetric colour scale from its retained values. A stripe can identify an event systematically earlier or later than several partners, but also depends on the catalogue origin and available partners. The sparse matrix file, linked via matrices/index.csv, gives the exact numbers once per pair."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "The residual-lag matrix shows the marker correction",
+    "image": "report_matrix_lag.png",
+    "lead": "The right-hand matrix at Z7.DYSA P shows the fitted lag in seconds, measured on the two phase-marker-centred time axes.",
+    "body": [
+      "For row 93 and column 97, +0.0586 s means event 97’s matching pulse is later relative to its own marker. A row of similar signs can point to a systematically early or late marker."
+    ],
+    "notes": "Use the right-hand colour bar for lag; its scale differs from the differential-time panel. Reversing the event order reverses the sign. A pattern can also arise from waveform changes, systematic phase confusion or the event pairs available here. Inspect representative waveforms and header labels before changing any markers."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "The lag histogram summarises the accepted shifts",
+    "kind": "figure",
+    "notes": "This is the “Accepted residual lags after pick alignment” panel of summary.png. Counts refer to station–phase observations. Peaks rejected at the lag boundary do not enter this histogram. The group decisions table records those rejections.",
+    "lead": "In “Quality and connectivity”, the horizontal axis shows how far the second event’s waveform lies from alignment after the phase marks are set to zero.",
+    "body": [
+      "Most accepted shifts cluster near zero. The 0.0586 s P shift at DYSA contributes to a blue bin to the right of zero."
+    ],
+    "image": "lab_iceland_report_lags.png"
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
+    "kind": "figure",
+    "title": "Cycle consistency of the P and S times",
+    "image": "report_closure.png",
+    "lead": "For three events at one station and phase, add dt(i,j) and dt(j,k), then subtract dt(i,k). The result is the timing disagreement around that triangle, in seconds.",
+    "body": [
+      "The left panel pools P triangles and the right pools S triangles. Both distributions concentrate near zero. A broad tail identifies groups of measurements whose times disagree."
+    ],
+    "notes": "Each entry is a triangle of three accepted edges within one station and phase. The plot pools such triangles across the stations. A single triangle mismatch does not identify which edge is responsible. Errors shared by all edges connected to one event can cancel in the sum; closure measures consistency rather than independent timing accuracy. The plot covers ±0.5 s and its title reports sampled counts outside the view. Set [plots] closure = true to include it."
+  },
+  {
+    "section": "14:05   /   Reading the Iceland report",
     "kind": "table",
-    "lead": "At Z7.DYSA, 66 P waveforms survived preparation.",
-    "notes": "Open group_summary.csv and locate Z7.DYSA P. Compute 66 × 65 / 2 = 2,145 distinct pairs. The three outcome counts add to this number. In the preprocessing issues file, a failed waveform-level check such as low SNR happens before pair comparisons and can remove many potential measurements. A boundary peak is a warning that the optimum might be outside the permitted search interval; simply raising or widening a threshold is not a diagnosis.",
+    "title": "Reading timing differences smaller than the closure-plot bins",
+    "lead": "The linked closure table gives the 90th percentile of the absolute discrepancy separately for each station and phase.",
     "rows": [
       [
-        "Of 2,145 possible comparisons",
-        "Count",
-        "Interpretation"
+        "Station and phase",
+        "Triangles",
+        "90% had |discrepancy| at or below"
       ],
       [
-        "Accepted",
-        "800",
-        "Measured within the search interval"
+        "DYSA P",
+        "8,424",
+        "1.48 ms"
       ],
       [
-        "Below the r threshold",
-        "1,307",
-        "Peak similarity below 0.70"
+        "DYSA S",
+        "7,146",
+        "1.97 ms"
       ],
       [
-        "Peak at a search boundary",
-        "38",
-        "Optimum could lie beyond the searched lags"
+        "KVER P",
+        "2,187",
+        "2.35 ms"
+      ],
+      [
+        "TOHR S",
+        "3,475",
+        "4.09 ms"
       ]
     ],
-    "section": "14:35   /   Lab D   ·   Read the measurements"
+    "notes": "The plot’s histogram bins are 0.01 s wide. Read triangle_closure_summary.csv when differences of a few milliseconds collapse into the central bins. The table also records median absolute discrepancy and the fraction larger than 0.1 s. A row with few triangles provides little evidence about the full distribution. The maximum sample size is set per station and phase in the advanced settings."
   },
   {
-    "title": "Read a measurement that will enter dt.cc",
-    "kind": "code",
-    "lead": "Read the pair header first. It identifies the two integer catalogue IDs.",
-    "notes": "Use this row in Iceland100/reference/dt.cc or your new baseline. The 0.0 in the header is the exported origin-time correction field. Since Δt is travel time for event 1 minus that for event 2, the negative sign means event 1 had a 3.5 ms shorter estimated P travel time to KVER. The number in the third column is the squared correlation coefficient. Resolve the integer identifiers in event_id_map.csv. In correlations.csv, find the same row and distinguish lag from dt. In this example the P-window alignment lag and differential travel time are different values.",
-    "command": "# 1 2 0.0\nZ7.KVER -0.0035 0.639765 P",
-    "body": [
-      "−0.0035 s is the estimated P travel-time difference, event 1 minus event 2.",
-      "0.639765 is the weight r². Find the signed r and the lag in correlations.csv."
-    ],
-    "section": "14:35   /   Lab D   ·   Read the measurements",
-    "codeLabel": "EXCERPT FROM dt.cc"
-  },
-  {
-    "title": "Choose which correlations to inspect",
-    "kind": "code",
-    "lead": "Use a copy named Figures.toml beside the Iceland baseline. Edit its existing [plots] entries.",
-    "notes": "Follow Lab D for the copy and run commands. Keep original_event_pairs = []. By default DDCorr takes weak, middle and strong accepted observations within station and phase groups and samples that set to the max_examples limit. The default gallery therefore need not contain a specific weak pair. Explicit requests find the requested accepted pairs in the selected groups. Check example_selection.csv in the new correlate directory for file names, station, phase and IDs. Both target observations appear. Display the two supplied lesson images if time is short.",
-    "command": "event_pairs = [[44, 45], [28, 45]]\nexample_stations = [\"Z7.RODG\", \"Z7.STAM\"]\nexample_phases = [\"S\"]",
-    "body": [
-      "Find 44/45 at RODG and 28/45 at STAM.",
-      "Open their waveform and correlation-curve figures."
-    ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-d"
-    ],
-    "section": "14:35   /   Lab D   ·   Read the measurements",
-    "codeLabel": "TOML SETTINGS"
-  },
-  {
-    "title": "Do these two catalogue entries share a pulse?",
+    "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "lead": "At Z7.RODG, the S waveforms for events 44 and 45 have r = 0.99982.",
-    "notes": "Students have selected this row at RODG in Figures.toml; the baseline automatic gallery also includes it. First inspect the independently scaled, marker-centred alignment and the lag peak. Read the calendar origins in catalog.txt: 60 ms apart. The residual marker-centred lag is just +0.0003 s. Ask for the extra comparison that distinguishes a repeated source from two cuts of the same physical signal. Reveal the next slide after students propose plotting on the same UTC axis.",
-    "image": "real_strong.png",
+    "title": "The frequency response of the Iceland filters",
+    "image": "report_filter_gains.png",
+    "lead": "In the upper panels of “Filter audit”, frequency is in hertz and amplitude gain is the fraction of a sinusoid’s amplitude that survives filtering.",
     "body": [
-      "Their catalogue origins are 0.060 s apart.",
-      "What would you check before counting two separate earthquakes?"
+      "The P and S bands both span 2–14 Hz here. Gain is close to one inside the band and 0.5 at each corner. The dots show the measured gain of test tones passed through the same filter."
     ],
-    "section": "14:35   /   Lab D   ·   Read the measurements"
+    "notes": "The lines show the theoretical forward-and-reverse response at the original 100 Hz sampling rate of these traces. Applying the filter twice squares its single-pass amplitude gain. A final gain of 0.5 is approximately −6 dB. The tests in these panels characterize the filter used on the field recordings; the lower panels show the field data themselves. filter_tone_audit.csv gives exact expected and measured tone gains."
   },
   {
-    "title": "Put both cuts back on the same UTC clock",
+    "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "lead": "At RODG the east-component cuts start six samples apart at 100 Hz.",
-    "notes": "IDs 44 and 45 map to S1_009943 and S1_009944. Their unfiltered overlapping RODG HHE values match sample-for-sample across 9,495 samples. Their two predicted S times differ by about 0.000425 s on an absolute UTC clock. The figure uses raw counts in both panels so neither independent amplitude scaling nor a fitted lag produced that match. The cut records share the same samples and the predicted windows use the same pulse. Look for two distinct onsets on continuous data and independent stations before deciding how to handle the catalogue entries. A high r for two events separated in time would have a different interpretation.",
-    "image": "lab_duplicate_utc.png",
+    "title": "How the filters changed two recorded spectra",
+    "image": "report_field_spectra.png",
+    "lead": "These lower panels show short field recordings at TOHR. P uses event S1_009943 and S uses S1_009910. Grey is the recorded spectrum and colour shows the filtered spectrum.",
     "body": [
-      "All 9,495 overlapping raw counts agree, and both S markers fall on the same pulse.",
-      "Inspect other stations for distinct onsets before merging event IDs."
+      "Power spectral density describes power per unit frequency. In each panel, 0 dB is the maximum of that trace’s raw spectrum. Above 14 Hz the filtered power falls progressively below the raw power."
     ],
-    "section": "14:35   /   Lab D   ·   Read the measurements"
+    "notes": "A 10 dB reduction is a tenfold drop in power density; 20 dB is a hundredfold drop. Both curves in a panel share the same raw reference, so their vertical separation measures attenuation at each frequency. The two panels use different events and are independently referenced. Their absolute signal energies cannot be compared. DDCorr uses a tapered, overlapping-window Welch estimate from a window around each marker; the coloured spectrum is after filtering at the original SAC sampling rate. [plots] filters = true enables both filter rows."
   },
   {
-    "title": "Would you trust a pair just over the threshold?",
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "Near-identical records in the Iceland report",
     "kind": "figure",
-    "lead": "At Z7.STAM, events 28 and 45 have an S correlation of 0.700006.",
-    "notes": "Ask a partner to point out which section lines up and which does not. Its residual lag is −0.0039 s. Compare both horizontal channels and other peaks that might be competitive. This pair has eight accepted measurements at six stations. The same pair has r = 0.84175 at RODG S, and another measurement reaches 0.92963. Separate stations can have different travel-time differences. Agreement means physically consistent evidence across observations; equal raw lags at all stations are not required.",
-    "image": "real_weak.png",
+    "notes": "The report links to near_identity.csv near the top. Its reference run has 22 flagged station-phase rows across six pairs. For this row select event_i=44, event_j=45, station=Z7.RODG, phase=S. Under “Accepted pair examples”, example_09_Z7.RODG_S expands the DDCorr alignment relative to phase markers. The slide’s UTC comparison is a separate plot made from the source SAC records. The raw cuts start six samples apart at 100 Hz. Both catalogue IDs stay in the export. Independent onsets and observations at other stations are needed to decide whether the catalogue itself contains a duplicate.",
+    "lead": "In the Iceland report, “Near-identical arrival flags” opens a table of 22 observations. The Z7.RODG S row for events 44 and 45 has r = 0.99982.",
     "body": [
-      "Which cycles support the alignment? Where does the coda diverge?",
-      "Check the same pair at a second station before making your judgement."
+      "The waveform example is example_09_Z7.RODG_S. The plot here places the two original east-component cuts on one UTC clock. Their 9,495 overlapping samples are identical."
     ],
-    "section": "14:35   /   Lab D   ·   Read the measurements"
+    "image": "lab_duplicate_utc.png"
   },
   {
-    "title": "Read the matrix one station and phase at a time",
-    "kind": "figure",
-    "lead": "In a station–phase matrix, row i and column j identify an event pair.",
-    "notes": "Open matrices/matrix_plots.csv for PNG filenames and matrices/index.csv for machine-readable values. A coloured off-diagonal entry means the pair supplied an accepted correlation coefficient at that station and phase. The symmetric position corresponds to the same observation. The diagonal in the exported classroom figures is unmeasured because self-pairs are excluded. Grey can mean missing input, a preparation exclusion or a rejected measurement. Original event IDs are exposed by event_id_map.csv; consider how event ordering changes visual pattern. A family seen at several independent stations is more informative than a single bright patch.",
-    "image": "real_matrix.png",
-    "body": [
-      "Trace an event along one row to see its measured neighbours.",
-      "Use the group and preparation tables to investigate a grey cell."
-    ],
-    "section": "14:35   /   Lab D   ·   Read the measurements"
-  },
-  {
-    "title": "Read lag distributions in seconds",
-    "kind": "figure",
-    "lead": "Open the summary figure in the baseline report and compare the P and S distributions.",
-    "notes": "The lag axis reports residual correction between marker-centred windows. It is distinct from differential travel time and from the separation of the two earthquake origins. Only accepted interior peak measurements enter these distributions; rejected boundary candidates are in group_summary.csv. Ask students to locate a negative and a positive lag in correlations.csv, then explain the physical meaning of each on a marker-centred diagram. Their shape may reflect marker bias, noise, true differences in waveforms or the allowed search interval.",
-    "image": "real_lags.png",
-    "body": [
-      "Which side corresponds to event j arriving later relative to its marker?",
-      "Where would you look for peaks rejected at the search boundary?"
-    ],
-    "section": "14:35   /   Lab D   ·   Read the measurements"
-  },
-  {
-    "title": "Change only the P correlation threshold",
-    "kind": "code",
-    "lead": "Save the baseline settings as Iceland100/Threshold.toml. Change [P] min_cc from 0.70 to 0.90.",
-    "notes": "The copy commands are in Lab D. Check that [S] still has min_cc = 0.70. Keep filters, lag range, sample rate and station selection fixed. Before running, have everyone predict the direction of change in P support, S support and the number of different event pairs linked. Then run the command on the slide. Open the fresh report alongside the baseline. Return with the two numbers of P observations and one cost of the change.",
-    "command": "julia --project=. --threads=2 bin/ddcorr.jl ../Iceland100/Threshold.toml",
-    "body": [
-      "Predict the P count, S count and how many event pairs remain connected.",
-      "Which earthquakes could lose all P constraints?"
-    ],
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-d"
-    ],
-    "section": "14:35   /   Lab D   ·   Read the measurements",
-    "codeLabel": "IN YOUR TERMINAL"
-  },
-  {
-    "title": "How much P coverage did the stricter cut cost?",
+    "section": "14:05   /   Reading the Iceland report",
     "kind": "table",
-    "lead": "The stricter cut removed P links from many events as well as from many station–pair measurements.",
-    "notes": "Counts are from the supplied 100-event baseline and a P-only 0.90 experiment. Interpret the last row carefully: an event can retain multiple S constraints even if it has no surviving P link. A threshold changes what samples populate the graph, not only the average similarity. Students should use the comparison to select a reasonable threshold for their scientific objective, and record why. Return to the lecture for the data-processing methods after discussing these numbers.",
+    "title": "Choosing which figures appear in report.html",
+    "lead": "These switches in the run TOML control the report sections. Iceland100 enables all four groups below.",
     "rows": [
       [
-        "Count",
-        "P ≥ 0.70",
-        "P ≥ 0.90"
+        "TOML section and key",
+        "Figures it controls"
       ],
       [
-        "P observations",
-        "2,412",
-        "233"
+        "[plots] summary",
+        "Six panels on coefficients, lags, station coverage, event links and pair outcomes."
       ],
       [
-        "S observations",
-        "4,625",
-        "4,625"
+        "[plots] closure and filters",
+        "Triangle-consistency histograms and the filter response and waveform spectra."
       ],
       [
-        "Pairs linked by either phase",
-        "1,914",
-        "1,260"
+        "[plots] examples",
+        "Waveform overlays and their lag curves. max_examples limits the automatic gallery."
       ],
       [
-        "Events with at least one P link",
-        "94",
-        "49"
+        "[matrices] enabled and plots",
+        "Per-station, per-phase plots of coefficient, differential time and lag."
       ]
     ],
-    "section": "14:35   /   Lab D   ·   Read the measurements"
+    "notes": "The parent [plots] enabled switch requests report generation. The Iceland configuration enables each of the sections shown. [matrices] dense controls optional dense CSV exports separately. Empty event_pairs uses automatic selection from the weak, middle and strong accepted examples of each station and phase. Set explicit pairs and limit stations/phases if a specific illustration is needed. example_selection.csv records the actual IDs and filenames."
   },
   {
-    "kind": "break",
-    "title": "Where did this lag come from?",
-    "lead": "Reopen a waveform example. Follow the same samples from a SAC trace through filtering, a lag search and the choice of a peak.",
-    "body": [
-      "Keep your Iceland100 settings and report open."
-    ],
-    "notes": "Return after the 15:15–15:30 coffee break. Invite students to predict the first change DDCorr makes to the raw trace. By the end they should be able to identify the contributing windows and defend the selected lag.",
-    "section": "15:30   /   Inside the correlator"
+    "section": "14:05   /   Reading the Iceland report",
+    "title": "Files to keep for relocation",
+    "kind": "table",
+    "notes": "Keep report.html together with its figures and linked files by saving the whole run folder. effective_config.toml records the settings that produced it. The correlation work ends with this measurement set. Allow time for questions about students’ input conventions and output files.",
+    "lead": "Use the four files from a single completed correlation run. They share the same sequence of event IDs and station names.",
+    "rows": [
+      [
+        "File",
+        "Contents"
+      ],
+      [
+        "dt.cc",
+        "Differential travel times and weights, grouped by event pair."
+      ],
+      [
+        "catalog.txt",
+        "Origin time, starting hypocentre and sequential ID for each event."
+      ],
+      [
+        "stations.txt",
+        "Station identifiers, geographic coordinates and elevation."
+      ],
+      [
+        "event_id_map.csv",
+        "Correspondence between the integer IDs and the original event folders."
+      ]
+    ]
   },
   {
     "kind": "figure",
-    "title": "Which part of this record produced a lag?",
-    "lead": "Z7.KVER, event 1. The dashed line is its P marker.",
+    "title": "The P waveform used for correlation",
     "image": "method_raw_filtered.png",
+    "lead": "The vertical recording at KVER contains a P arrival superimposed on slower motion.",
     "body": [
-      "Both panels show the same three seconds. The 2–14 Hz filter changes which oscillations dominate.",
-      "DDCorr prepares each complete SAC cut once for this station and phase, then reuses the short arrival window in many comparisons."
+      "Both panels show the same three seconds of event 1, with amplitude in thousands of instrument counts. The dashed line marks its predicted P arrival. DDCorr filters the whole SAC trace before cutting the short window used for correlation."
     ],
-    "notes": "Return to the Iceland100 time series students have just correlated. Ask them to point to an oscillation shared between the two panels, then one that has weakened. The observed signal is in instrument counts. Vertical scale changes between panels. Each record is detrended and tapered before the frequency filter; this example isolates the difference visible around P. The archive uses predicted P and S markers, so zero on this axis is the expected phase time. The measured lag is a correction to the relative marker timing.",
+    "notes": "This is Z7.KVER..HHZ for event 1 in the Iceland catalogue. The horizontal coordinate is relative to the predicted P marker in SAC A. Both panels use the same recorded samples and amplitude units. Removing an offset and linear trend precedes the taper and the 2–14 Hz filter. A nearby event is processed in the same way before the two windows are compared. The Iceland configuration uses a vertical channel for P and horizontal channels for S.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L20-L46",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L78-L107"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L26-L36"
     ],
-    "section": "15:30   /   Inside the correlator"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "Why soften the two ends of a SAC cut?",
-    "lead": "A cut can begin in the middle of a wave, with a large first sample.",
+    "title": "Why taper the ends of a SAC trace?",
     "image": "method_taper.png",
+    "lead": "A short SAC file can start halfway through an oscillation. The abrupt start can produce an artificial oscillation when the signal is filtered.",
     "body": [
-      "Subtract the fitted straight line. Then multiply the samples at each end by a raised cosine, increasing smoothly from near zero to one at the left edge.",
-      "The gentler start reduces artificial oscillations when the filter encounters the edge. The class taper covers 2% of the cut at each end."
+      "DDCorr removes the mean and the fitted linear trend. It then reduces the amplitude smoothly over the first and last 2% of this cut. The middle of the trace keeps its amplitude."
     ],
-    "notes": "Read the right panel as a multiplier, from a nearly muted sample to a sample retaining its recorded amplitude. The middle of the cut has weight one. At the right end the weights decrease in reverse order. The short left panel is drawn from Z7.KVER event 1. A finite trace meets the filter's end treatment; a sudden jump can produce a transient that lasts several cycles. Tapering changes existing sample amplitudes. Later, FFT zero-padding appends extra array entries for a different mathematical reason.",
+    "notes": "The left panel zooms into the original beginning of the KVER cut, far from the P wave. The right panel shows the weight that multiplies each sample. The weight follows a half cosine from near zero at the first sample to one in the interior. The same operation is applied in reverse at the other end. Real data must extend past the analysis and noise windows by the configured filter margin, 5 s in this example. This helps keep filter transients outside the measured window.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L2-L36",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L23-L27"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L1-L16"
     ],
-    "section": "15:30   /   Inside the correlator"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "What does a 2–14 Hz filter do to a wave?",
-    "image": "phase_demo.png",
-    "lead": "Amplitude describes the height of a cycle. Phase describes where its peaks fall in time.",
+    "title": "Which frequencies survive the P bandpass?",
+    "lead": "This spectrum uses the KVER vertical recording from 0.5 s before to 3 s after the P marker. The shaded band extends from 2 to 14 Hz.",
     "body": [
-      "A single pass attenuates some frequencies and shifts different frequencies by different amounts.",
-      "Filter from start to end, reverse the result and filter again. After restoring the time order, the shifts cancel in the interior and the two attenuations multiply."
+      "At frequencies where the curves lie together, both versions of the waveform contain similar amplitudes. The green curve falls below the original spectrum outside the band. Those oscillations contribute less to the correlation."
     ],
-    "notes": "Open the gain plot first. The horizontal axis is frequency in cycles per second and the vertical axis is output amplitude divided by input amplitude. A gain of 0.5 means the oscillation is half as tall after one pass and about 0.25 as tall after two. Use the waveform panel to distinguish a change of height from a displacement of a crest. The two-pass amplitude response is |H(f)|² for ideal interior samples. Actual finite records have edges; DDCorr checks for five seconds of real data outside its analysis windows before filtering the complete record. A bandpass is useful when repeatable arrivals have appreciable energy in the chosen band relative to noise. The P and S settings are independent.",
+    "notes": "Both spectra come from the same samples of event 1. The dark line uses the detrended, tapered recording before the bandpass. The green line uses the entire-cut bandpassed waveform sampled over the same interval. Each ordinate is the square root of a Welch power spectral density, in counts per square root of hertz. Windowing a short signal causes spectral leakage, so this measured spectral ratio need not reproduce the mathematical response exactly at each frequency. The next slide shows the filter response itself. filter_audit.png in the completed report provides analogous spectra for the example recordings selected in that run.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L20-L36",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L85-L96",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L36-L47"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L19-L36"
     ],
-    "section": "15:30   /   Inside the correlator"
+    "image": "method_kver_spectrum.png",
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
-    "kind": "code",
-    "title": "Find the filter in the Julia code",
+    "kind": "figure",
+    "title": "Why filter in both time directions?",
+    "lead": "One pass can shift a wave crest in time. Filtering the reversed record a second time cancels the filter’s phase shift in the interior of the trace.",
+    "body": [
+      "The left panel shows how much each frequency is attenuated. The right panel shows how the actual KVER P wave looks after one pass and after both passes. The amplitudes change because each frequency has passed through the filter twice."
+    ],
+    "notes": "The left panel is the calculated response of the fourth-order Butterworth filter used at KVER. At each pass a sinusoid is scaled by |H(f)|. In the forward–reverse output it is scaled by |H(f)|², with zero net phase shift away from the ends. At 2 and 14 Hz the final amplitude gain is 0.5. The right panel uses the same field samples after the same detrend and taper. The first curve uses one forward pass, and the second is DDCorr’s actual forward–reverse output. The different amplitude response also contributes to their different shapes. The test tones in filter_tone_audit.csv independently verify the two-pass amplitude response.",
+    "sources": [
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L19-L30"
+    ],
+    "image": "method_kver_filter_direction.png",
+    "section": "15:10   /   How DDCorr measures a lag"
+  },
+  {
+    "kind": "figure",
+    "title": "Where DDCorr applies the filter",
     "image": "code-42.png",
-    "lead": "In src/signal.jl, taper! changes the samples and filtfilt applies the filter in both time directions.",
+    "lead": "detrend removes the fitted straight line and taper! softens the two ends. filtfilt applies the forward and reverse filter passes.",
     "body": [
-      "DDCorr.toml → [P] or [S] → band_hz sets the two frequency corners.",
-      "src/advanced.toml contains filter_order and trace_taper_fraction. DDCorr reads it automatically at startup."
+      "Set the P and S frequency bands separately with band_hz in DDCorr.toml. The taper fraction and filter order are in src/advanced.toml. effective_config.toml records the settings used in each result."
     ],
-    "notes": "Read the function names with the class. In taper! look for the multiplication of symmetric samples by the same weight. In the filtering call the digital filter is a fourth-order Butterworth design in the default configuration. It is represented as a series of short filters, each of order two or less, so its numerical coefficients remain manageable; applying them one after the other gives the intended filter. Trace damping at the edges, attenuation across the frequency axis and the marker-centred waveform window each have different jobs. Check the effective_config.toml in the result directory for the settings actually used.",
+    "notes": "The excerpt is taken from src/signal.jl. In lines 13–14, w is the multiplier for two samples at equal distances from the beginning and end of the trace. The function call on line 28 applies the taper after detrending the raw recording. On line 30, bandfilter constructs the selected digital bandpass and filtfilt applies it in both time directions. The implementation links identify the lines shown on screen.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L10-L37",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L1-L5",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L23-L46"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L11-L30"
     ],
-    "section": "15:30   /   Inside the correlator"
+    "citation": [
+      {
+        "text": "DDCorr.jl · src/signal.jl, lines 11–30",
+        "url": "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L11-L30"
+      }
+    ],
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "Why low-pass before keeping fewer samples?",
-    "image": "alias_demo.png",
-    "lead": "At 50 samples per second, a 38 Hz oscillation can produce the same recorded dots as a 12 Hz oscillation.",
+    "title": "Why filter before reducing the sampling rate?",
+    "lead": "At 50 samples per second, the highest resolvable frequency is 25 Hz. The KVER recording contains some energy above that frequency.",
     "body": [
-      "A 50 Hz grid can distinguish frequencies only up to 25 Hz. Faster motion can appear as a slower signal in the retained samples.",
-      "The resampler attenuates frequencies above the new limit before it makes the 50 Hz record. This is the anti-alias filter."
+      "The right panel shows two ways to halve the sampling rate of the same field recording. Simply keeping alternating samples folds higher frequencies into the retained spectrum. A low-pass filter suppresses that energy first. This prevents aliasing."
     ],
-    "notes": "Ask everyone to cover the lines and look only at the dots. The two illustrated cosines share the same values on the new grid because 38 = 50 − 12. Connecting the retained samples can therefore suggest 12 Hz even when the original motion was 38 Hz. Once sampled this way, the original frequency cannot be read from those dots. A filter must act before reducing the sample rate. DDCorr already bandpasses the signal; its resampler also applies its own low-pass treatment as part of the rate conversion. These stages specify the scientific comparison band and the sampling operation, respectively.",
+    "notes": "This illustration isolates the resampling operation on the recorded KVER signal before the 2–14 Hz bandpass. Both panels use the first six seconds after the P marker. The right panel magnifies the upper part of the new 0–25 Hz spectrum. It compares simple decimation with a low-pass polyphase resampler. For example, any 30 Hz component sampled at 50 Hz appears at 20 Hz. In the production sequence DDCorr has already attenuated much of the high-frequency energy with the phase bandpass. DSP.resample then supplies anti-alias filtering for the chosen rate change. These illustrated spectra are derived from earthquake data.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L20-L38"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L26-L36"
     ],
-    "section": "15:30   /   Inside the correlator"
+    "image": "method_kver_alias.png",
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "Compare the same seconds on the same grid",
+    "title": "The P window on the common 50 Hz grid",
+    "lead": "Each dot marks a sample on the same small part of the recorded KVER P wave. The instrument recorded every 10 ms. DDCorr uses 20 ms spacing in this run.",
+    "body": [
+      "A phase marker can lie between samples. DDCorr uses the two neighbouring amplitudes to estimate a value at each required time relative to that marker. Both events can then be compared at the same time offsets."
+    ],
+    "notes": "Both panels show the same SAC file and physical time interval. The left uses the bandpassed native samples and the right uses the actual DDCorr 50 Hz resampling output. Resampling gives a uniform interval in seconds. Interpolation onto the marker-relative comparison grid is a separate calculation. It permits equal-length windows to begin at a chosen time relative to each event’s phase, even when the SAC start times have different offsets. It does not improve the sampling bandwidth. DDCorr disallows an analysis rate above the native rate.",
+    "sources": [
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L31-L46"
+    ],
     "image": "method_resampling.png",
-    "lead": "Each dot is one sample from Z7.KVER, event 1. Both panels show the same part of its P wave.",
-    "body": [
-      "The native spacing is 10 ms at 100 Hz. The analysis spacing is 20 ms at 50 Hz.",
-      "A marker can fall between grid points. DDCorr uses the two adjacent samples to estimate the value at each required marker-relative time."
-    ],
-    "notes": "Point to the time of one crest. On the right only about half as many dots describe the same crest. The resampler filters and makes samples at the target rate; its delay compensation maintains the record time reference. The subsequent straight-line interpolation uses neighboring samples to put different events on the exact same grid relative to their own picks. This interpolation acts on the waveforms. Later we will interpolate the peak of a correlation curve, a different quantity. The target rate must also be supported by the source recordings.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L20-L46",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L85-L97"
-    ],
-    "section": "15:30   /   Inside the correlator"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "Measure background before asking two events to match",
-    "image": "method_signal_noise.png",
-    "lead": "The RMS amplitude is a measure of typical fluctuations about the window mean.",
-    "body": [
-      "SNR = RMS in the phase window ÷ RMS in the noise window. The noise window is 8 to 2 seconds before P, including for S.",
-      "At Z7.KVER the P ratios are 2.99 for event 1 and 1.81 for event 2. Both exceed the class minimum of 1.5."
-    ],
-    "notes": "Each trace and component passes through this screen before any pairwise comparison. A ratio of 1.81 means the phase window fluctuates with 1.81 times the background amplitude in that frequency band. The signal and noise windows both use mean-removed, filtered samples. For S, using a pre-S noise window could include P coda and make the background look artificially energetic. Point out that this implementation needs a usable pre-P noise anchor even when only an S measurement is sought. Show the SNR for the weaker trace as a separate property from waveform resemblance. Changes to bandpass settings can change which records enter each comparison.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L85-L107",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L23-L27"
-    ],
-    "section": "15:30   /   Inside the correlator"
-  },
-  {
-    "kind": "figure",
-    "title": "What exactly moves when the lag is 0.50 s?",
+    "title": "Which samples enter the P measurement?",
     "image": "method_windows.png",
-    "lead": "Conceptually, hold one P window fixed and compare equal-length segments from the other event.",
+    "lead": "The start and end of each P window are measured from that event’s own phase marker.",
     "body": [
-      "The core extends from −0.50 to +2.00 s around P. At 50 Hz, that is 126 samples including both endpoints.",
-      "A search of ±0.50 s needs 25 extra samples on either side and yields 51 candidate lags. Positive lag samples event 2 later relative to its marker."
+      "In this run each comparison uses 2.5 s, from 0.5 s before to 2 s after P. Event 2 also supplies 0.5 s on either side so its window can move through the allowed lags. The two bars on the right show two positions of that window."
     ],
-    "notes": "These are the exact Z7.KVER event 1 and 2 filtered windows. The horizontal bars indicate which part of each record is used. At k = 0 the event 2 segment spans −0.50 to +2.00 s. At k = +25 it spans 0.00 to +2.50 s. Every comparison contains 126 samples; the entire event 2 search interval requires 176 real samples. A lag curve places one similarity score at each candidate shift. The algorithm computes these scores together with a Fourier transform instead of sliding by hand. Here the extra 25 samples are real data on each side of the core; five seconds of filter margin and extra mathematical zeros for the transform serve separate purposes.",
+    "notes": "Time zero has a different absolute UTC time for each event. The archive supplied predicted P arrivals for this example. On the 50 Hz analysis grid, k = +25 means sampling event 2 half a second later relative to its marker while keeping event 1 fixed. The actual maximum for this pair is close to +20 ms. The 2.5 s interval includes 126 samples at 50 Hz when both ends are retained. DDCorr interpolates a marker-relative time falling between samples using its two neighbours. Both records need enough data for the phase window, lag search and filter margin.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L78-L96",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L123-L135"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L78-L100"
     ],
-    "section": "15:30   /   Inside the correlator"
-  },
-  {
-    "kind": "equation",
-    "title": "Compare shape even when one earthquake is larger",
-    "lead": "At each lag, take the Pearson correlation of the two equal-length segments.",
-    "equation": "r(k) = Σₙ (aₙ − ā)(bₙ₊ₖ − b̄ₖ) / √[Σₙ(aₙ − ā)² · Σₙ(bₙ₊ₖ − b̄ₖ)²]",
-    "body": [
-      "a is the fixed window, b is the shifted window, n counts samples, and k is the lag in samples. Each bar denotes its own window mean.",
-      "For samples [−1, 0, 1] and [4, 6, 8], subtracting their means leaves [−1, 0, 1] and [−2, 0, 2]. The shapes match, so r = 1."
-    ],
-    "notes": "Students can verify the dot product 4 and denominator √(2 × 8) = 4. Subtracting each mean removes a constant offset; dividing by the two window norms removes scale differences. Corresponding peaks yield positive sample products and matching troughs do too. Opposite polarity yields negative r. The default searches for positive peaks. The B mean and energy can change with lag because each candidate uses different samples. This coefficient also treats tiny but similarly shaped signals as similar, hence the earlier SNR requirement. The two directional finite-window correlations are averaged in the final definition.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L65-L75",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L123-L145"
-    ],
-    "section": "15:30   /   Inside the correlator"
-  },
-  {
-    "kind": "code",
-    "title": "How can an FFT calculate 51 scores together?",
-    "image": "code-44.png",
-    "lead": "For each lag, the numerator is a sum of sample-by-sample products.",
-    "body": [
-      "Reverse the fixed, mean-removed window. Convolving it with the extended record produces all the required product sums in one sequence.",
-      "DDCorr transforms both arrays, multiplies their spectra and transforms the product back. It divides each sum by the norms for that lag."
-    ],
-    "notes": "An FFT is an algorithm for the discrete Fourier transform. The convolution theorem makes convolution in time equivalent to multiplication of spectra followed by the inverse transform. DDCorr reverses the fixed core before transforming, converting cross-correlation into convolution. The fixed core sums to zero, so subtracting the moving segment’s mean would leave the numerator unchanged. Running sums and sums of squares supply that segment's lag-specific norm. The two multiplications shown compute opposite template choices. A worker reuses the Fourier transforms and its own temporary arrays over many pairs; only the final normalizing and combining loop runs over lag indices.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L65-L75",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L110-L135"
-    ],
-    "section": "15:30   /   Inside the correlator"
-  },
-  {
-    "kind": "code",
-    "title": "Why fill the end of an FFT array with zeros?",
-    "image": "code-43.png",
-    "lead": "The discrete Fourier transform treats an array as periodic. A short array lets the end wrap around and contribute at the start.",
-    "body": [
-      "The 126-sample core and 176-sample search record have 301 linear-convolution samples. DDCorr chooses a 512-sample FFT and appends zeros to each array.",
-      "The zeros prevent wraparound. The earlier taper weighted recorded samples at the cut ends. The 20 ms sampling interval stays the same."
-    ],
-    "notes": "Read nf = nextpow(2, ncore + length(ext) − 1), followed by reverse(core) and zeros. The shortest transform with no overlap of the linear convolution copies has length 126 + 176 − 1 = 301. Choosing 512 accommodates all of it efficiently. The code uses only the 51 entries that correspond to complete, equal-length overlapping windows. If the class asks why additional zeros do not create finer timing, point out that the array holds samples further along the same time grid. The separate sub-sample estimate comes from interpolating the peak later.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L65-L75",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L123-L135"
-    ],
-    "section": "15:30   /   Inside the correlator"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "Why calculate both event orders?",
+    "title": "Signal-to-noise ratio is measured before correlation",
+    "image": "method_signal_noise.png",
+    "lead": "The shaded windows show where DDCorr measures the P wave and background noise at KVER.",
+    "body": [
+      "It divides the root-mean-square amplitude around the phase marker by that of the noise 8 to 2 s before P. The ratios for events 1 and 2 are 2.99 and 1.81. Both pass the minimum of 1.5, so this pair can be compared."
+    ],
+    "notes": "The two RMS values are calculated from the filtered, demeaned samples in each window. The S measurement also uses noise preceding P, to avoid using the P coda as background for S. If a trace lacks that pre-P marker or has too little data around the noise window, it cannot supply this test. A low ratio excludes that trace from the corresponding station and phase group. preprocessing_issues.csv records the reason. minimum_snr in correlations.csv reports the smallest contributing ratio for the accepted observation.",
+    "sources": [
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L90-L107"
+    ],
+    "section": "15:10   /   How DDCorr measures a lag"
+  },
+  {
+    "kind": "figure",
+    "title": "The FFT gives the same correlation coefficients",
+    "image": "method_direct_fft.png",
+    "lead": "The circles show the correlation coefficient calculated directly at each shift. The line uses the fast Fourier transform (FFT) to evaluate the same sums of sample products.",
+    "body": [
+      "For KVER P the two calculations coincide at all 51 lags. DDCorr pads the arrays with zeros to keep the end of the record from wrapping round to the beginning. The lag spacing is still 20 ms."
+    ],
+    "notes": "Figure calculated from the two DDCorr-prepared KVER arrays for events 1 and 2. Both implementations use the same window-specific means and norms and average the two event orders. The fixed window has 126 samples and the extended search window has 176. Their full linear convolution needs 126 + 176 − 1 = 301 output samples. The code uses a 512-sample FFT, computes the convolution using a reversed fixed window and takes the 51 valid overlaps. Padding prevents periodic wraparound in this calculation. The physical taper multiplied real samples at the ends of the cut. Transforms prepared for an event can be reused when that event is compared with other earthquakes.",
+    "sources": [
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L65-L75"
+    ],
+    "section": "15:10   /   How DDCorr measures a lag"
+  },
+  {
+    "kind": "figure",
+    "title": "Where the FFT needs zeros",
+    "lead": "The KVER P window has 126 resampled amplitudes. Its comparison record has 176 so the window can shift by 25 samples either way.",
+    "body": [
+      "The FFT treats its input as periodic. DDCorr appends zeros to keep the end of each array from wrapping into its beginning. An array of 512 can contain all 301 samples of this convolution. Padding leaves the 20 ms analysis-grid spacing unchanged."
+    ],
+    "notes": "The upper panel shows the mean-removed, reversed event 1 window used for the correlation numerator. The lower panel shows the extended event 2 window in its original order. A linear convolution of arrays of lengths 126 and 176 has 126 + 176 − 1 = 301 values. DDCorr selects the next power of two, here 512, for its FFT length. The shaded array values are numerical padding. Earlier, the SAC taper multiplied measured samples at the two edges to smooth the transition into filtering. The requested seismic time window must contain real measurements throughout.",
+    "sources": [
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L64-L75"
+    ],
+    "image": "method_kver_zero_padding.png",
+    "section": "15:10   /   How DDCorr measures a lag"
+  },
+  {
+    "kind": "figure",
+    "title": "Why DDCorr uses both event orders",
     "image": "method_window_order.png",
-    "lead": "For complete sequences, exchanging events reverses the lag axis. Fixed pick windows introduce a second choice: whose window stays centred?",
+    "lead": "Fixing event 86 keeps its P window centred on its marker. Fixing event 97 keeps a slightly different part of the P wave in the comparison.",
     "body": [
-      "At +460 ms for Z7.DYSA P, fixing event 86 gives 0.644. Fixing 97 and reversing its lag axis gives 0.811.",
-      "The two segments include different edge samples and use their own means and amplitudes. DDCorr averages both scores to give 0.728 at this lag."
+      "Both curves use the same lag convention on the plot. At +460 ms their coefficients are 0.644 and 0.811. DDCorr uses their mean, 0.728, at that lag."
     ],
-    "notes": "Use the left panel to show that peaks generally align, then the right panel to show their actual height difference. If x and y are full sequences, their ordinary correlation satisfies Rxy(k) = Ryx(−k). Here, when A is fixed, A is always cut at its pick while B varies. When B is fixed, the A cut varies instead. The crop, mean and norm are all defined on the selected segment, making these two distinct estimates. This difference is present regardless of computing direct sums or the FFT. Averaging the estimates on a common signed-lag axis guarantees that changing the event labels reverses the averaged curve.",
+    "notes": "This example uses Z7.DYSA P, events 86 and 97. With finite analysis windows, fixing the other waveform can include or exclude edge samples. Each local window also has its own mean and norm. The reverse-order result is reflected onto the original lag axis before averaging. This makes the coefficient unchanged when the event order is reversed and makes the lag change sign when there is a unique peak. This is a feature of the window definition and applies to both direct and FFT calculations.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L123-L135"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L123-L135"
     ],
-    "section": "15:30   /   Inside the correlator"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "How do two horizontal components yield one S lag?",
-    "image": "method_horizontal_stack.png",
-    "lead": "Z7.STAM, events 28 and 45. Compare east with east and north with north.",
+    "title": "Two horizontal recordings yield one S measurement",
+    "image": "method_stam_s_peak.png",
+    "lead": "At STAM each event has an east and a north recording. DDCorr correlates east with east and north with north, then averages their coefficients at each lag.",
     "body": [
-      "At each lag, take the mean of the available component coefficients. Then pick the peak of that mean curve.",
-      "At zero sample lag, east gives 0.673 and north 0.727. Their mean, 0.700006, passes the 0.70 threshold."
+      "For events 28 and 45, the mean reaches 0.700 at the zero-lag sample. A parabola fitted through that sample and its neighbours places the peak at −3.9 ms. The output reports the sampled coefficient and the interpolated lag."
     ],
-    "notes": "Show the horizontal alignment of the two x axes. The numbers are component scores at the same winning grid point. The per-component preparation requires sufficient SNR. The combined curve, rather than each individual coefficient, is tested against min_cc. With min_components = 1 a single common usable horizontal may suffice; with two available the program uses both. Setting 2 requires both to pass preparation. Channel names and sensor orientations must match across events, and the reduced marker differences must agree within 0.001 s across contributing channels. Two traces with identical channel endings but different orientations are not interchangeable. The eventual dt is the mean reduced-marker difference minus this single refined lag.",
+    "notes": "These are baseline Z7.STAM S data for events 28 and 45. At zero lag the E and N coefficients are 0.67314 and 0.72687. The reported mean of 0.700006 meets the minimum signed coefficient 0.70. Only after computing this mean does DDCorr choose a peak. The next sample on either side is 20 ms away. With the default quadratic fit, the estimated position of the crest is about 3.86 ms before zero. The station-phase row in correlations.csv lists two contributing components, lag_B_later_s = −0.0039 s, dt_s = +0.0307 s and cc_signed = 0.700006. The report's waveform panel shows the first common component. The correlation curve and row use both.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/pipeline.jl#L105-L135",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L29-L34"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L139-L169"
     ],
-    "section": "15:30   /   Inside the correlator"
-  },
-  {
-    "kind": "figure",
-    "title": "Locate the crest between sampled lags",
-    "image": "method_subsample.png",
-    "lead": "For the same S pair, the three measured scores at −20, 0 and +20 ms are 0.511, 0.700 and 0.273.",
-    "body": [
-      "A parabola through those three points has its highest point 3.86 ms before zero. DDCorr exports a lag of −0.0039 s.",
-      "The coefficient remains the measured 0.7000. Four printed decimal places describe rounding; estimating the timing error requires additional evidence."
-    ],
-    "notes": "Call the left, centre and right sampled scores a, b and c. The fitted vertex is δ = (a − c) / [2(a − 2b + c)] samples from the centre. Using these values gives δ = −0.193 sample and δ/50 = −0.00386 s. The centre can itself be many samples away from zero; the parabola refines its position locally. Interpolation is meaningful when the peak is smooth and well identified. Here differential_time is approximately +0.0307 s because the reduced-marker difference is about +0.0268 s and the refined lag is negative. Show students that they can find the exact calculation in src/signal.jl.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L146-L173"
-    ],
-    "section": "15:30   /   Inside the correlator"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "table",
-    "title": "Which checks decide whether a lag enters dt.cc?",
-    "lead": "The class configuration tests the best signed peak on each station–phase curve.",
+    "title": "When only one horizontal component is available",
+    "lead": "DDCorr compares components recorded by both earthquakes. At KATT, events 1 and 5 share one usable east component for S.",
+    "body": [
+      "correlations.csv gives the channel names and ncomponents for each measurement. Requiring two components would remove the single-component observations, even when their waveforms agree."
+    ],
+    "notes": "Across the Iceland baseline, 3,973 of the 4,625 S observations have two contributing horizontal components and 652 have one. The station-phase logic intersects the components available for the two events after preparation and the signal-to-noise check. There must be at least min_components common components and consistent marker times. The KATT example has one common HHE component and a signed coefficient of 0.71515. A single usable horizontal at one event and a different sole horizontal at its partner cannot form a common component. The default S min_components = 1 permits one, while 2 requires a usable common pair. This choice affects coverage across both stations and events.",
+    "sources": [
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/pipeline.jl#L101-L151"
+    ],
     "rows": [
       [
-        "Status",
-        "Trigger in the class settings",
-        "Where to look"
+        "S measurement",
+        "Common components",
+        "Output coefficient"
+      ],
+      [
+        "KATT · events 1 and 5",
+        "E with E",
+        "0.715"
+      ],
+      [
+        "STAM · events 28 and 45",
+        "E with E and N with N",
+        "0.700"
+      ]
+    ],
+    "section": "15:10   /   How DDCorr measures a lag"
+  },
+  {
+    "kind": "table",
+    "title": "What sub-sample refinement changes in the output",
+    "lead": "For STAM events 28 and 45, the highest sampled coefficient occurs at zero lag. Its two neighbours put the fitted peak 3.9 ms earlier.",
+    "body": [
+      "The search still covers ±0.50 s. Refinement changes the position assigned to the chosen peak. The output coefficient, the squared-coefficient weight and the acceptance checks use the sampled peak."
+    ],
+    "notes": "The unfitted values follow directly from the same DDCorr curve and unchanged SAC markers. Event 28 minus 45 has a marker-related time difference of approximately +0.026803 s. With zero sampled lag, the exported dt is +0.0268 s. Subtracting a fitted lag of −0.0038597 s gives +0.0307 s. This demonstrates what subsample = true does. It cannot move the solution to another cycle outside the neighbourhood of the maximum or extend the allowed search. Numerical interpolation also does not supply an uncertainty estimate.",
+    "sources": [
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L139-L169"
+    ],
+    "rows": [
+      [
+        "Same STAM S observation",
+        "Sampled maximum",
+        "With peak refinement"
+      ],
+      [
+        "Signed coefficient",
+        "0.700006",
+        "0.700006"
+      ],
+      [
+        "Lag",
+        "0.0000 s",
+        "−0.0039 s"
+      ],
+      [
+        "Travel-time difference",
+        "+0.0268 s",
+        "+0.0307 s"
+      ]
+    ],
+    "section": "15:10   /   How DDCorr measures a lag"
+  },
+  {
+    "kind": "table",
+    "title": "Which station and phase measurements enter dt.cc?",
+    "lead": "After the waveforms pass the signal-to-noise test, DDCorr evaluates the peak of the correlation curve.",
+    "rows": [
+      [
+        "Outcome in group_summary.csv",
+        "What happened in this run"
       ],
       [
         "boundary",
-        "Winner is at either end of the search",
-        "Lag range and the two markers"
+        "The largest coefficient was at the end of the lag search."
       ],
       [
         "low_cc",
-        "Peak is below 0.70",
-        "Signal, noise and waveform shape"
+        "The largest coefficient was below 0.70."
       ],
       [
         "ambiguous_peak",
-        "Another peak is close in height",
-        "Spacing and height of competing peaks"
+        "Another peak was too close in height to the largest one."
       ],
       [
         "accepted",
-        "Peak passes all three checks",
-        "Alignment, other stations, event timing"
+        "The measurement passed all three checks."
       ]
     ],
-    "notes": "DDCorr checks these statuses from top to bottom, so a boundary peak gets that label even when its height is small. Define an independent competitor as a local maximum more than 0.04 s from the winner in these settings. DDCorr requires a 0.10 gap for P or 0.08 for S. With no positive competing peak, it uses zero as the comparison score. Data problems can also occur earlier (e.g., inadequate SNR or too little recorded data) and a post-correlation check can reject component timing disagreement. At Z7.DYSA, our baseline P group has 66 prepared events and 2,145 pairs. Of these, 800 passed, 1,307 were low_cc and 38 ended at the boundary. Use the instructor figure on the next slide for an actual rejected pair: automatic examples in the report are drawn from accepted observations.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L138-L170",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/pipeline.jl#L119-L145",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L29-L47"
+    "body": [
+      "DDCorr writes one dt.cc row for an accepted station and phase measurement. The same event pair can pass at another station even if this measurement fails."
     ],
-    "section": "15:30   /   Inside the correlator"
+    "notes": "These outcomes are tested in the order shown. In the Iceland baseline, P requires a 0.10 difference between distinct peaks and S requires 0.08. The second peak must be a different local maximum outside the 0.04 s exclusion around the first. The default seeks positive correlations. If a comparison has insufficient common components, it can be excluded before a curve exists. The optional rejected_pairs.csv lists the reason for an individual tested pair if write_rejected_pairs is enabled.",
+    "sources": [
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L139-L169"
+    ],
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "Is a peak at the search limit the true maximum?",
+    "title": "A maximum at the end of the search",
     "image": "method_boundary.png",
-    "lead": "Z7.DYSA P, events 29 and 41. Both searches find r = 0.764 at the sampled shift −500 ms.",
+    "lead": "The P waves from events 29 and 41 at DYSA produce a peak near −0.50 s.",
     "body": [
-      "With a ±500 ms search the highest sample sits on the left edge. Its neighbor beyond the edge is unknown, so DDCorr rejects it.",
-      "Extending the search to ±700 ms reveals both sides. Interpolation gives −496 ms, and this pair passes."
+      "The ±0.50 s search ends at the highest sample, so DDCorr flags boundary. With the search extended to ±0.70 s, the curve falls on both sides of the peak. The fitted lag is −0.496 s."
     ],
-    "notes": "Have students make the decision with the right-hand panel covered. Expanding the search is a diagnostic if the markers and real data support it. A peak at the edge could continue to rise or could turn downward. In this recorded example, measurements further to the left reveal that the peak turns down. Wider searches can also introduce competing arrivals or cycles, so this example makes a case for inspecting marker errors and the correlogram before changing max_lag_s for an entire dataset. These two curves were recomputed using the class code and the same pair. The smaller search includes the exact winning value shown in both plots.",
+    "notes": "Both panels use the same SAC records. Only the allowed lag range is changed. The highest sampled coefficient is 0.764 in both cases. In the first panel the record gives no information on the untested side of the maximum within the chosen search range. In the wider search the peak also passes the coefficient and competing-peak criteria. Widening the search for a whole catalogue exposes many other peaks too. For this particular pair, the wider curve demonstrates why a boundary rejection occurred.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L85-L94",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L146-L169"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L146-L169"
     ],
-    "section": "15:30   /   Inside the correlator"
-  },
-  {
-    "kind": "table",
-    "title": "Plan the work one station and phase at a time",
-    "lead": "A group means all usable P recordings at one station, or all usable S recordings there.",
-    "rows": [
-      [
-        "Events sharing a group",
-        "Potential event pairs"
-      ],
-      [
-        "50",
-        "1,225"
-      ],
-      [
-        "100",
-        "4,950"
-      ],
-      [
-        "1,000",
-        "499,500"
-      ]
-    ],
-    "body": [
-      "With n events the group has n(n − 1)/2 possible pairs. max_pairs_per_group checks that upper bound from SAC headers.",
-      "max_group_memory_mib budgets space for waveform preparation, retained windows and worker buffers. Dense matrices and figures also need room."
-    ],
-    "notes": "Settings for these limits are in src/advanced.toml; the primary options are in DDCorr.toml. The default pair bound is 2,000,000 and the group work budget is 1,024 MiB. Planning uses header-eligible events before the waveform data for the group are read. Once records have been filtered and checked for a usable arrival, the actual number of comparable events may be smaller. In the field example, 66 prepared P records at Z7.DYSA yield 66 × 65 / 2 = 2,145 candidate pairs. Accepted rows are retained, and optional dense outputs require separate space; bytes in the guard are an estimate for the named operations. Sparse matrix exports contain accepted edges. A thousand-event group can be tested on a subset first and the projected pair cost checked before scaling.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/pipeline.jl#L50-L99",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L49-L66",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L110-L117"
-    ],
-    "section": "15:30   /   Inside the correlator"
-  },
-  {
-    "kind": "break",
-    "title": "Change the filter or use your own earthquakes",
-    "lead": "With Iceland100, test what happens when you narrow the P band. With your own event cuts, inspect the headers and make a first run.",
-    "body": [
-      "17:35   ·   Regroup with one measurement and the evidence you used to judge it."
-    ],
-    "notes": "Invite learners to take one of the two routes. The Iceland option has complete worked answers. The personal archive route starts at the slide “Bring a cut SAC dataset of your own”. Pair up if useful. Finish with an explanation of one actual observation.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-e"
-    ],
-    "section": "16:50   /   Choose a practical"
-  },
-  {
-    "kind": "activity",
-    "title": "Experiment: change the P band and predict the result",
-    "lead": "Run from DDCorr.jl. Put the copied settings beside Iceland100/DDCorr.toml so the same SAC paths still work.",
-    "body": [
-      "Duplicate ../Iceland100/DDCorr.toml as ../Iceland100/BandTest.toml. Under [P], change only band_hz to [4.0, 8.0].",
-      "Before running, predict which band will produce more accepted P measurements and which might more often align two different cycles.",
-      "Compare both run_summary.toml files. Record accepted P and S and check which setting changed in effective_config.toml."
-    ],
-    "command": "julia --project=. --threads=2 bin/ddcorr.jl ../Iceland100/BandTest.toml",
-    "notes": "Allow 15–20 minutes for a paired exercise. In Finder or Explorer duplicate the TOML (show file extensions). In macOS/Linux use cp ../Iceland100/DDCorr.toml ../Iceland100/BandTest.toml; in PowerShell use Copy-Item ../Iceland100/DDCorr.toml ../Iceland100/BandTest.toml. All three command paths are relative to DDCorr.jl. The Julia command on this slide works in either shell. The output directory receives a new timestamped run. If participants changed earlier class controls, start from the original distributed configuration or restore the baseline first. A narrower band can improve a waveform's signal-to-noise ratio, but fewer frequencies can also make different cycles look alike. Ask participants to distinguish accepted rows from unique pairs of events.",
-    "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L70-L94"
-    ],
-    "section": "16:50   /   Iceland100   ·   Bandpass experiment",
-    "codeLabel": "IN YOUR TERMINAL"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "figure",
-    "title": "The highest coefficient can belong to an ambiguous curve",
+    "title": "A narrower P band can leave two plausible lags",
     "image": "method_competition.png",
-    "lead": "Z7.KVER P, events 13 and 27. Look for the best peak and the strongest competing peak.",
+    "lead": "These two curves come from the same KVER P recordings, events 13 and 27. Only the frequency band changes.",
     "body": [
-      "At 2–14 Hz, the two peaks are 0.706 and 0.470. Their gap is 0.237, enough to accept the P lag.",
-      "At 4–8 Hz, peaks about 160 ms apart reach 0.820 and 0.818. The gap shrinks to 0.002, below the required 0.10."
+      "At 2–14 Hz one peak stands above its nearest competitor. At 4–8 Hz two peaks about 160 ms apart reach 0.820 and 0.818. The peak separation in height falls below 0.10, so DDCorr flags the narrower-band measurement as ambiguous."
     ],
-    "notes": "Show the predicted effect of a narrower passband: the signal has fewer distinguishable cycles. Use the plotted dots to read two actual local maxima on the broad and narrow band curves; only independent peaks count. At 4–8 Hz the highest sample is +40 ms and the nearly identical competitor +200 ms, about one cycle at 6.25 Hz. In the baseline the runner-up is at +220 ms. Raising min_cc would have increased the relative appeal of the less decisive narrow-band case if ambiguity were ignored. This is a rejected 4–8 Hz observation; it does not appear in that run’s accepted-only correlations.csv or automatic examples. Across the whole rerun 1,103 P candidate pairs receive the ambiguous_peak status against zero in the baseline.",
+    "notes": "In the broad band, the best peak is 0.706 and another is 0.470. Their difference, about 0.237, exceeds the configured P threshold. The broad-band lag is +0.0316 s, accepted. In the narrow band the higher peak is larger than before, but its advantage over a second cycle is only 0.0024. The diagnostic is the difference in peak height, not their separation in time. Narrow-band wave trains can repeat at approximately one period, making two shifts plausible. The comparison was completed in advance with the same raw recordings and settings apart from the P band.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L138-L169",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/advanced.toml#L36-L41"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L155-L169"
     ],
-    "section": "16:50   /   Iceland100   ·   Bandpass experiment"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "table",
-    "title": "What changed across all 100 events?",
-    "lead": "Count observations by station, phase and event pair, so that one pair at two stations counts twice.",
+    "title": "Effect of the P band on the differential-time measurements",
+    "lead": "Two completed runs used the same 100 earthquakes. The P band changed from 2–14 to 4–8 Hz. Every S setting stayed the same.",
     "rows": [
       [
-        "Measurement",
+        "Measurements in the 100-event run",
         "2–14 Hz P",
         "4–8 Hz P"
       ],
       [
-        "Accepted P",
+        "Accepted P observations",
         "2,412",
         "4,626"
       ],
       [
-        "Accepted in both P runs",
+        "P observations accepted in both",
         "1,945",
         "1,945"
       ],
       [
-        "Accepted P in this run only",
+        "P observations unique to this run",
         "467",
         "2,681"
       ],
       [
-        "Accepted S (same settings)",
+        "Accepted S observations",
         "4,625",
         "4,625"
       ]
     ],
     "body": [
-      "Among shared P observations, the median absolute lag change is 2.3 ms. Measurements gained or lost have no accepted counterpart."
+      "The narrower band admits additional pairs and loses others, including KVER 13/27. Comparing their curves shows which lags remain well resolved."
     ],
-    "notes": "The full field dataset was rerun with the only scientific change under [P]. S provides a built-in check: all 4,625 S keys and lags are identical between runs. Among the shared P observations, maximum absolute lag change is 19.0 ms. Distinguish the common subset (stability conditional on both filters accepting) from the gains and losses. Both SNR screening and the correlation curve change when the P band changes. To compare runs manually, use event_i, event_j, station, phase as the join key in correlations.csv. Ask the class to choose one newly accepted P observation and inspect aligned waveforms before endorsing the narrower band. The baseline results are in Iceland100/reference.",
+    "notes": "The observational unit is a station, phase and event pair. Shared rows were joined on all four identifiers. The median absolute difference in lag among the 1,945 shared P measurements is 2.3 ms. All 4,625 S rows retained exactly their original lags. The count of accepted pairs alone cannot establish timing accuracy. The KVER example explains why the shape of the peak matters.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L85-L107",
-      "https://github.com/eliasrh/DDCorr.jl/blob/26e6ae03caae6bdb15d657027229c3d0d194deb7/src/signal.jl#L138-L169"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/advanced.toml#L23-L68"
     ],
-    "section": "16:50   /   Iceland100   ·   Bandpass experiment"
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
-    "title": "Bring a cut SAC dataset of your own",
-    "kind": "activity",
-    "lead": "Open Lab E. Build a small test with at least two events recorded at a shared station.",
-    "notes": "Place a new MyData folder beside DDCorr.jl and Iceland100. Inside MyData create sac/, then one subdirectory per event. Place copies, or use an existing event-cut root by changing sac_dir. DDCorr reads waveform inputs and writes outputs to a separate directory. If students do not have their own archive, use the Iceland example to practise a P-only or component selection and compare with the baseline. The directory viewer prints the header for one representative file; inspect individual files in several folders.",
-    "command": "julia --project=. bin/sac_info.jl ../MyData/sac",
+    "kind": "table",
+    "title": "Choosing matrix output for a larger catalogue",
+    "lead": "At DYSA, DDCorr prepared 66 P records. There were 2,145 possible pairs among those records and 800 accepted measurements.",
     "body": [
-      "Use MyData/sac/<event ID>/<station channel>.sac.",
-      "Locate the origin, station and event coordinates, component codes and phase markers."
+      "The sparse export stores one row per accepted measurement. A dense matrix reserves a cell for every combination of event IDs. As the catalogue grows, the sparse file saves both storage space and memory."
     ],
+    "notes": "The matrix image and the numerical matrix export are separate outputs. For DYSA P, matrices/index.csv points to group_0001_edges.csv, whose columns include the two IDs, signed coefficient, differential time, lag and weight. The complete Iceland catalogue has 100 IDs, so a dense file for one quantity would require 100 × 100 cells for that station and phase. At 1,000 events it would require 1,000,000 cells. DDCorr groups observations by station and phase. It uses the header inventory to estimate the maximum number of event pairs and the memory required for full-trace filtering, retained windows and FFT workspaces before beginning that group. max_pairs_per_group and max_group_memory_mib in src/advanced.toml control these checks. The memory allowance is an estimate for the group and additional memory is needed for Julia, accepted measurements and plots. The relevant switches for the numerical output are [matrices] enabled, dense, max_dense_events and max_dense_cells. This lets students choose appropriate outputs for their own SAC archives.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md#lab-e"
+      "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/pipeline.jl#L49-L70"
     ],
-    "section": "16:50   /   Lab E   ·   Your SAC files",
-    "codeLabel": "IN YOUR TERMINAL"
+    "rows": [
+      [
+        "DYSA P output",
+        "What it contains"
+      ],
+      [
+        "group_0001_edges.csv",
+        "800 rows for accepted event pairs"
+      ],
+      [
+        "Optional dense coefficient matrix",
+        "100 × 100 cells for the full list of event IDs"
+      ]
+    ],
+    "section": "15:10   /   How DDCorr measures a lag"
   },
   {
-    "title": "Map your archive’s marker fields",
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "break",
+    "title": "Open clinic for your own SAC files",
+    "lead": "16:00–18:00  ·  Bring a sequence you want to correlate. We can look together at the waveforms, their timing information and a first DDCorr run.",
+    "notes": "Allow the whole two hours for open work. Keep this slide visible while participants choose their data and questions. The following slides can be projected individually as the corresponding issues arise. Anyone using Iceland100 can choose another station, phase or pair. If participants bring sensitive data, use the supplied field records for examples on the projector.",
+    "body": [
+      "The reference slides cover SAC headers, phase windows, missing data and selecting figures. The 100 Icelandic earthquakes are available for open exploration."
+    ]
+  },
+  {
+    "section": "16:00   /   Open clinic for your own SAC files",
     "kind": "code",
-    "lead": "Copy Iceland100/DDCorr.toml to MyData/DDCorr.toml. Read several SAC headers before editing.",
-    "notes": "Use numeric time-field names. The associated label tells you what the field means in this dataset. Ask the provider when the convention is ambiguous, and record whether the source is manual, predicted or automated. For example, an archive might store P in T8 and S in T9. With these confirmed, put t8 and t9 in the configuration; they are examples only. The viewer takes explicit --p-header and --s-header options to draw the same fields. O and arrival times share the SAC reference; use O correctly or differential times will be biased.",
-    "command": "[input]\nsac_dir = \"sac\"\np_pick_header = \"a\"\ns_pick_header = \"t0\"",
+    "title": "One folder holds the traces for one earthquake",
+    "lead": "Place MyData beside DDCorr.jl. Copy Iceland100/DDCorr.toml to MyData/DDCorr.toml. The input and output paths in that file are relative to MyData.",
+    "notes": "Use the existing event IDs as the folder names. The directory tree shows two real Iceland IDs and one station as a concrete example. DDCorr scans the files directly inside each event folder and reads the event and station metadata from their SAC headers. Network, station, location and channel identify the trace. An existing archive can stay where it is: set sac_dir to its absolute path and set directory to a writable location for results.",
+    "command": "MyData/DDCorr.toml\nMyData/sac/S1_009992/Z7.DYSA..HHZ.sac\nMyData/sac/S1_009996/Z7.DYSA..HHZ.sac",
+    "codeLabel": "Example file layout",
     "body": [
-      "Replace a and t0 with the verified numeric fields in your files.",
-      "Check whether the waveforms contain both the arrival and pre-P noise window."
-    ],
-    "section": "16:50   /   Lab E   ·   Your SAC files",
-    "codeLabel": "IN YOUR TERMINAL"
+      "Use event-cut binary SAC files. At least two events need recordings of the same phase on a shared, compatible station component. DDCorr reads the SAC files in place."
+    ]
   },
   {
-    "title": "Trace a missing result to its cause",
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "code",
+    "title": "Read the phase times from a SAC header",
+    "lead": "Run the header viewer from DDCorr.jl. A file path opens that trace. A directory path opens one example and prints its filename.",
+    "notes": "The first command works with your MyData/sac folder. The second opens an actual trace in the supplied field data. The viewer prints a table of A and T0–T9 with each slot’s label. Repeat on several events and station components to establish the archive convention. SAC stores times relative to a reference timestamp defined by its NZ fields. The event origin is that reference plus O. A phase time measured from the earthquake origin is the numeric marker minus O.",
+    "command": "julia --project=. bin/sac_info.jl ../MyData/sac\njulia --project=. bin/sac_info.jl ../Iceland100/sac/S1_009992/Z7.DYSA..HHZ.sac",
+    "codeLabel": "From the DDCorr.jl directory",
+    "body": [
+      "For this DYSA trace, A = 3.991571 s has label P_pred. T0 = 6.842693 s has label S_pred. O = 0, so those times are also seconds after origin."
+    ]
+  },
+  {
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "code",
+    "title": "Map the time fields in MyData/DDCorr.toml",
+    "lead": "Choose the numerical slots that contain the P and S times in your archive. One P/S mapping applies to every file in the run.",
+    "notes": "A, T0 through T9 are time fields; KA, KT0 through KT9 are descriptive text fields written by the data producer. For example, a manual P time stored in T8 with label Pm requires p_pick_header = \"t8\". A time label alone does not indicate whether a pick was reviewed, calculated or automatically estimated, unless the producer documents that convention. The parser normalizes field names to lowercase. DDCorr stores results and a copy of its effective settings under each new timestamped result folder.",
+    "command": "[input]\nsac_dir = \"sac\"\np_pick_header = \"a\"\ns_pick_header = \"t0\"\n\n[output]\ndirectory = \"results\"",
+    "codeLabel": "Existing input and output sections",
+    "body": [
+      "The Iceland files use the positions A and T0. If your P time is in T8, use \"t8\" for p_pick_header. Leave your original SAC headers intact."
+    ]
+  },
+  {
+    "section": "16:00   /   Open clinic for your own SAC files",
     "kind": "table",
-    "lead": "Run Lab E inspection, then correlate. Start your diagnosis where the record disappeared.",
-    "notes": "Commands: julia --project=. bin/ddcorr.jl ../MyData/DDCorr.toml --inspect then julia --project=. --threads=2 bin/ddcorr.jl ../MyData/DDCorr.toml. Look first at the printed results directory, then inspection and run diagnostics. A missing phase can leave other phases usable, subject to their component and noise requirements. A conflicting station can be excluded while other stations continue in this edition; look in station_exclusions.csv. A correlation requires two prepared waveforms from different events for the same station and phase.",
+    "title": "Which components can contribute to a pair?",
+    "lead": "DDCorr compares matching components at the same station. The two events can contribute a P observation, an S observation, or both.",
+    "notes": "The default P data are vertical traces and default S data horizontal traces, using CMPINC with a default 10° tolerance and a code-suffix fallback if inclination is missing. Like-named channels must have compatible sensor orientation. The default noise_pick_header is auto, which selects the configured P marker on each contributing trace for the pre-P noise measurement. For S, two usable common horizontal channels can contribute a mean correlation curve; S.min_components = 2 demands both. A missing S marker excludes that S trace but does not discard an otherwise valid vertical P measurement. DDCorr does not create new phase picks.",
     "rows": [
       [
-        "What happened?",
-        "Where to check"
+        "Observation",
+        "What the two events must share"
       ],
       [
-        "No event or station recognized",
-        "inventory.csv, input_issues.csv, station_exclusions.csv"
+        "P",
+        "A usable vertical component with a P time on each trace."
       ],
       [
-        "Phase or required time window missing",
-        "phase_readiness.csv"
+        "S",
+        "A usable horizontal component with an S time on each trace. The default noise window also needs its P time."
       ],
       [
-        "Trace failed conditioning or SNR",
-        "preprocessing_issues.csv"
-      ],
-      [
-        "Prepared pair failed lag or r test",
-        "group_summary.csv"
+        "One horizontal available",
+        "With [S] min_components = 1, that common component can supply S by itself."
       ]
-    ],
-    "section": "16:50   /   Lab E   ·   Your SAC files"
+    ]
   },
   {
-    "title": "Finish with a defensible measurement",
-    "kind": "activity",
-    "lead": "Pick one pair and explain how its measured waveforms support your interpretation.",
-    "notes": "Ask each student for a brief verbal or written result. A useful answer names the dataset, station, phase and two event IDs, reports coefficient, lag with units, and exported difference, then identifies the particular cycles or independent observations supporting the decision. Ask them to identify one reason for doubt and one datum that could resolve it. Optional solution check: case 44/45 raw windows share the same UTC pulse. Case 28/45 at STAM barely passes and has eight accepted observations at six stations. See items 1–5 of teaching/SOLUTIONS.txt for the field and synthetic checks.",
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "code",
+    "title": "Choose the frequency band and time window for the phase",
+    "lead": "Use a band in which the arrivals have visible signal above the background. Set the window in seconds relative to the phase marker.",
+    "notes": "These P values come directly from the Iceland baseline. Edit the lines in the existing [P] section and set different values in [S] where appropriate. Keep the upper filter corner below half the chosen analysis sampling rate. Input traces must support the selected analysis rate. If phase markers are less accurate than the chosen search half-width, genuine matches can fall at its edge or outside it. A longer search can also find unrelated cycles. Inspect the actual waveforms and the lag curve in the report while deciding how wide a search is useful for this archive.",
+    "command": "[P]\nband_hz = [2.0, 14.0]\nwindow_s = [-0.5, 2.0]\nmax_lag_s = 0.5\nsample_rate_hz = 50.0",
+    "codeLabel": "P settings used in Iceland100",
     "body": [
-      "Report r, the marker-centred lag and the exported Δt, with units.",
-      "Show one waveform feature supporting the measurement and one source of doubt.",
-      "Explain how a different threshold would change coverage."
+      "Here P includes 0.5 s before the marker and 2.0 s after it. DDCorr tests shifts up to 0.5 s in either direction between the marker-centred waveforms. The S window can include a longer wave train."
+    ]
+  },
+  {
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "figure",
+    "title": "The cut must contain background and signal",
+    "lead": "The Iceland settings measure background 8 to 2 seconds before P. Each phase window also needs samples for the lag search and filtering.",
+    "notes": "The figure is calculated from the SAC P and S markers of the actual DYSA file in S1_009992 (3.991571 and 6.842693 seconds after origin) and the Iceland configuration. Coloured bars cover the core windows, pale ends the 0.5-second lag search on each side. The horizontal lines include five seconds of real filter padding on either side of the union of the pre-P noise and phase-search windows. For S the required cut is about −9.01 to +15.34 s relative to origin. The actual record runs from −25 to +70 s. These are dataset settings, not minimum lengths that apply everywhere.",
+    "image": "clinic_cut_requirements.png",
+    "body": [
+      "The thin lines mark the minimum recorded span for each phase in this example. If an event cut is too short, phase_readiness.csv identifies the affected trace."
+    ]
+  },
+  {
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "table",
+    "title": "When a station or phase is missing",
+    "lead": "Follow the record from its header to the comparison. Files in each run directory show where DDCorr excluded it.",
+    "notes": "With the workshop defaults, a station whose coordinates conflict across files is excluded for every event and both phases; the rest of the stations can continue. The advanced file contains the latitude/longitude and elevation tolerances. A genuine station move can justify separately identified epochs. A typo should be corrected in a working copy from authoritative metadata. EVDP is a separate event header; confirm its units with the data supplier. The advanced [input] depth_unit switch accepts \"m\" or \"km\", and catalog.txt uses kilometres. Mixed or corrupted per-event required headers can stop the run under strict_headers, separately from the default station-skip policy.",
+    "rows": [
+      [
+        "What happened",
+        "Where to look",
+        "What to check"
+      ],
+      [
+        "A station disappears across events",
+        "station_exclusions.csv and station_epochs.csv",
+        "Coordinates and elevation for that network/station code."
+      ],
+      [
+        "One phase is missing",
+        "phase_readiness.csv",
+        "Phase marker, P noise anchor, component and trace length."
+      ],
+      [
+        "The header passed but the waveform failed",
+        "preprocessing_issues.csv",
+        "The filtered signal-to-noise ratio for that component."
+      ],
+      [
+        "A tested pair failed the lag checks",
+        "group_summary.csv",
+        "Counts by reason for that station and phase."
+      ]
+    ]
+  },
+  {
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "code",
+    "title": "Inspect the archive and open its first report",
+    "lead": "The inspection checks headers and time windows. A correlation run then reads the samples, measures the lags and writes a separate results folder.",
+    "notes": "Both commands run from the DDCorr.jl folder with a copy of the input-specific settings at ../MyData/DDCorr.toml. Inspection writes inventory.csv, event_id_map.csv, phase_readiness.csv and any issues in a timestamped inspect_ directory. Correlation writes to a new correlate_ directory. Open report.html with the operating system’s file browser. An empty gallery can reflect zero accepted observations or a plotting switch. If using the Iceland data without changing settings, continue directly from the supplied reference report.",
+    "command": "julia --project=. bin/ddcorr.jl ../MyData/DDCorr.toml --inspect\njulia --project=. --threads=2 bin/ddcorr.jl ../MyData/DDCorr.toml",
+    "codeLabel": "From the DDCorr.jl directory",
+    "body": [
+      "Open report.html in the printed correlate_… folder. effective_config.toml records this run’s input paths, filters, thresholds and figure settings."
+    ]
+  },
+  {
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "code",
+    "title": "Request figures for a named pair",
+    "lead": "In the existing [plots] section, use original event folder names to request a particular waveform alignment and lag curve.",
+    "notes": "This exact request selects P at DYSA for two real Iceland event folders. Both are present in the example_selection.csv and correlations.csv of the reference run. The public TOML also accepts integer event_pairs; use only one pair selection convention per run. The original ID map is essential when folder names look like integers or when running different subsets. The automatic gallery samples accepted weak, middle and strong observations across station/phase groups. An explicit request can identify an unavailable pair; the selection table records what was plotted. Run DDCorr using the edited copy and open the newly printed result.",
+    "command": "[plots]\nenabled = true\nexamples = true\nevent_pairs = []\noriginal_event_pairs = [[\"S1_009992\", \"S1_009996\"]]\nexample_stations = [\"Z7.DYSA\"]\nexample_phases = [\"P\"]",
+    "codeLabel": "Existing figure settings",
+    "body": [
+      "For the Iceland data, these folders map to IDs 93 and 97. For your archive, substitute a pair, station and phase from correlations.csv. example_selection.csv lists the requested figures."
+    ]
+  },
+  {
+    "section": "16:00   /   Open clinic for your own SAC files",
+    "kind": "table",
+    "title": "Export station-by-station correlation measurements",
+    "lead": "A station–phase matrix uses the event IDs on both axes. Choose a list of accepted event pairs or a square table, depending on the analysis.",
+    "notes": "With [matrices] enabled = true and dense = false, the program writes accepted edges and an index by station/phase. The sparse group files include both IDs, the coefficient, lag and differential time without allocating a square table. plots = true under [matrices] and enabled = true under [plots] allow matrix PNGs subject to max_plot_events and max_plot_groups. Optional dense tables require enabled = true and dense = true, subject to max_dense_events and max_dense_cells. Each phase group has separate coefficient, lag and differential-time tables. The upper-triangle observation order is the smaller integer ID first. Reflecting a coefficient keeps its sign, whereas reversing the event order changes the sign of lag and dt.",
+    "rows": [
+      [
+        "Wanted output",
+        "Setting in [matrices]",
+        "Where DDCorr writes it"
+      ],
+      [
+        "Accepted pairs with coefficient, lag and dt",
+        "enabled = true",
+        "matrices/index.csv points to each sparse edge file."
+      ],
+      [
+        "A station/phase matrix figure",
+        "plots = true",
+        "matrices/matrix_plots.csv lists the PNGs when plots are enabled."
+      ],
+      [
+        "Square coefficient, lag and dt tables",
+        "dense = true",
+        "The dense CSV columns are named in matrices/index.csv. NA marks unmeasured cells."
+      ]
+    ]
+  },
+  {
+    "kind": "table",
+    "title": "How the Iceland event folders were made",
+    "lead": "The archive stores continuous station recordings. A catalogue supplies the origin of each earthquake so the downloader can request a short recording around it.",
+    "rows": [
+      [
+        "Input",
+        "How it becomes a SAC event cut"
+      ],
+      [
+        "Earthquake catalogue",
+        "Data Set S1 supplies the origin time, latitude, longitude and depth for each event."
+      ],
+      [
+        "Station and channel metadata",
+        "The Z7 inventory identifies the channel and supplies its station coordinates and elevation."
+      ],
+      [
+        "Waveform service",
+        "EarthScope returns the requested time interval at each available channel as miniSEED."
+      ],
+      [
+        "Event SAC files",
+        "The downloader writes the trace, origin, coordinates and predicted P and S markers into one SAC per component."
+      ]
     ],
+    "notes": "In this example the theoretical times come from a constant-speed teaching model. The archive waveforms and starting catalogue are independently sourced. The supplied 100-event archive is already cut.",
     "sources": [
-      "https://github.com/eliasrh/DDCorr.jl/blob/main/teaching/SOLUTIONS.txt"
+      "https://doi.org/10.1029/2018JB016010",
+      "https://doi.org/10.7914/SN/Z7_2010"
     ],
-    "section": "17:35   /   Discuss and save the measurements"
+    "section": "16:00   /   Open clinic for your own SAC files"
   },
   {
-    "title": "Keep the baseline files together",
-    "kind": "table",
-    "lead": "Save these four files from one 100-event correlate folder for later work.",
-    "notes": "This is the end of the DDCorr practical. Preserve the baseline settings and the printed directory as well. Running a threshold experiment gives another, valid output set that should be labelled separately. The future use of graph consistency and double-difference relocation motivates these data products; students can finish today by explaining a measured differential time and tracing it back to its original SAC files.",
-    "rows": [
-      [
-        "File",
-        "What you can recover"
-      ],
-      [
-        "dt.cc",
-        "Event pair, station, phase, differential time and weight"
-      ],
-      [
-        "catalog.txt",
-        "Origin, starting position and integer event ID"
-      ],
-      [
-        "stations.txt",
-        "Coordinates of the stations used by the workflow"
-      ],
-      [
-        "event_id_map.csv",
-        "The original SAC folder for each integer ID"
-      ]
+    "kind": "code",
+    "title": "Download five real events at three Z7 stations",
+    "lead": "For a fresh field example, follow “Optional archive download” in Start Here. Install ObsPy and run the downloader with the same Python environment.",
+    "command": ".venv/bin/python -m pip install -r requirements-download.txt\n.venv/bin/python scripts/download_example.py",
+    "commandWindows": ".\\.venv\\Scripts\\python.exe -m pip install -r requirements-download.txt\n.\\.venv\\Scripts\\python.exe scripts/download_example.py",
+    "body": [
+      "The example writes event folders under work/iceland_small/sac. Completed matching archive requests are reused from work/download_cache."
     ],
-    "section": "17:35   /   Discuss and save the measurements"
+    "notes": "First create .venv in DDCorr.jl as shown in the optional download section of Start Here. The upper box shows macOS/Linux, the lower box PowerShell. Downloaded SAC files share the event-folder layout of the local field archive. This optional clinic example needs internet access.",
+    "section": "16:00   /   Open clinic for your own SAC files"
   },
   {
-    "kind": "references",
-    "title": "Papers behind the measurements",
-    "rows": [
-      [
-        "Poupinet, Ellsworth & Fréchet (1984)",
-        "Timing earthquake doublets on the Calaveras Fault",
-        "10.1029/JB089iB07p05719"
-      ],
-      [
-        "Waldhauser & Ellsworth (2000)",
-        "The double-difference relocation algorithm",
-        "10.1785/0120000006"
-      ],
-      [
-        "Waldhauser (2001)",
-        "hypoDD program and user guide",
-        "10.3133/ofr01113"
-      ],
-      [
-        "Schaff et al. (2004)",
-        "Choosing and evaluating correlation measurements",
-        "10.1785/0120020238"
-      ],
-      [
-        "Trugman & Shearer (2017)",
-        "GrowClust hierarchical relocation",
-        "10.1785/0220160188"
-      ]
+    "kind": "bibliography",
+    "title": "Waveform timing",
+    "entries": [
+      {
+        "authors": "Poupinet, G., Ellsworth, W. L., & Fréchet, J. (1984)",
+        "detail": "Monitoring velocity variations in the crust using earthquake doublets: An application to the Calaveras Fault, California. Journal of Geophysical Research 89(B7), 5719–5731.",
+        "doi": "https://doi.org/10.1029/JB089iB07p05719",
+        "url": "https://doi.org/10.1029/JB089iB07p05719"
+      },
+      {
+        "authors": "Schaff, D. P., Bokelmann, G. H. R., Ellsworth, W. L., Zanzerkia, E., Waldhauser, F., & Beroza, G. C. (2004)",
+        "detail": "Optimizing correlation techniques for improved earthquake location. Bulletin of the Seismological Society of America 94(2), 705–721.",
+        "doi": "https://doi.org/10.1785/0120020238",
+        "url": "https://doi.org/10.1785/0120020238"
+      }
     ],
-    "notes": "Select a DOI to open its publication. Software repositories appear separately below.",
+    "notes": "Published references and DOI links.",
     "sources": [
       "https://doi.org/10.1029/JB089iB07p05719",
-      "https://doi.org/10.1785/0120000006",
-      "https://doi.org/10.3133/ofr01113",
-      "https://doi.org/10.1785/0120020238",
-      "https://doi.org/10.1785/0220160188"
+      "https://doi.org/10.1785/0120020238"
     ],
-    "section": "Further reading"
+    "section": "References"
   },
   {
-    "kind": "references",
-    "title": "The Iceland example and its downstream methods",
-    "rows": [
-      [
-        "Woods et al. (2018)",
-        "Long-period seismicity at Bárðarbunga",
-        "10.1016/j.epsl.2018.03.020"
-      ],
-      [
-        "Ágústsdóttir et al. (2019)",
-        "Earthquake catalogue and faulting at Bárðarbunga",
-        "10.1029/2018JB016010"
-      ],
-      [
-        "Heimisson & Yu (2026)",
-        "DDSync · graph synchronization of differential times",
-        "10.1785/0220260086"
-      ],
-      [
-        "Heimisson (2026), preprint",
-        "GraphSplit · graph-based relative relocation",
-        "10.22541/essoar.15009811/v1"
-      ]
+    "kind": "bibliography",
+    "title": "Relative earthquake relocation",
+    "entries": [
+      {
+        "authors": "Waldhauser, F., & Ellsworth, W. L. (2000)",
+        "detail": "A double-difference earthquake location algorithm: Method and application to the northern Hayward Fault, California. Bulletin of the Seismological Society of America 90(6), 1353–1368.",
+        "doi": "https://doi.org/10.1785/0120000006",
+        "url": "https://doi.org/10.1785/0120000006"
+      },
+      {
+        "authors": "Waldhauser, F. (2001)",
+        "detail": "hypoDD: A program to compute double-difference hypocenter locations. U.S. Geological Survey Open-File Report 01-113.",
+        "doi": "https://doi.org/10.3133/ofr01113",
+        "url": "https://doi.org/10.3133/ofr01113"
+      },
+      {
+        "authors": "Trugman, D. T., & Shearer, P. M. (2017)",
+        "detail": "GrowClust: A hierarchical clustering algorithm for relative earthquake relocation, with application to the Spanish Springs and Sheldon, Nevada, earthquake sequences. Seismological Research Letters 88(2A), 379–391.",
+        "doi": "https://doi.org/10.1785/0220160188",
+        "url": "https://doi.org/10.1785/0220160188"
+      }
     ],
-    "notes": "Select a DOI to open its publication. Software repositories appear separately below.",
+    "notes": "Published references and DOI links.",
+    "sources": [
+      "https://doi.org/10.1785/0120000006",
+      "https://doi.org/10.3133/ofr01113",
+      "https://doi.org/10.1785/0220160188"
+    ],
+    "section": "References"
+  },
+  {
+    "kind": "bibliography",
+    "title": "Bárðarbunga and the Iceland recordings",
+    "entries": [
+      {
+        "authors": "Woods, J., Donaldson, C., White, R. S., Caudron, C., Brandsdóttir, B., Hudson, T. S., & Ágústsdóttir, T. (2018)",
+        "detail": "Long-period seismicity reveals magma pathways above a laterally propagating dyke during the 2014–15 Bárðarbunga rifting event, Iceland. Earth and Planetary Science Letters 490, 216–229.",
+        "doi": "https://doi.org/10.1016/j.epsl.2018.03.020",
+        "url": "https://doi.org/10.1016/j.epsl.2018.03.020"
+      },
+      {
+        "authors": "Ágústsdóttir, T., Winder, T., Woods, J., White, R. S., Greenfield, T., & Brandsdóttir, B. (2019)",
+        "detail": "Intense seismicity during the 2014–2015 Bárðarbunga-Holuhraun rifting event, Iceland, reveals the nature of dike-induced earthquakes and caldera collapse mechanisms. Journal of Geophysical Research: Solid Earth 124, 8331–8357.",
+        "doi": "https://doi.org/10.1029/2018JB016010",
+        "url": "https://doi.org/10.1029/2018JB016010"
+      }
+    ],
+    "notes": "Published references and DOI links.",
     "sources": [
       "https://doi.org/10.1016/j.epsl.2018.03.020",
-      "https://doi.org/10.1029/2018JB016010",
+      "https://doi.org/10.1029/2018JB016010"
+    ],
+    "section": "References"
+  },
+  {
+    "kind": "bibliography",
+    "title": "DDSync and GraphSplit",
+    "entries": [
+      {
+        "authors": "Heimisson, E. R., & Yu, Y. (2026)",
+        "detail": "DDSync: Graph-based denoising of differential travel-time observations with applications to pick reconstruction and path-difference tomography. Seismological Research Letters.",
+        "doi": "https://doi.org/10.1785/0220260086",
+        "url": "https://doi.org/10.1785/0220260086"
+      },
+      {
+        "authors": "Heimisson, E. R. (2026)",
+        "detail": "GraphSplit: Sparse double-difference earthquake relocation from synchronized differential-time graphs. ESS Open Archive, preprint, version 1.",
+        "doi": "https://doi.org/10.22541/essoar.15009811/v1",
+        "url": "https://doi.org/10.22541/essoar.15009811/v1"
+      }
+    ],
+    "notes": "Published references and DOI links.",
+    "sources": [
       "https://doi.org/10.1785/0220260086",
       "https://doi.org/10.22541/essoar.15009811/v1"
     ],
-    "section": "Further reading"
+    "software": [
+      {
+        "text": "DDSync software · github.com/eliasrh/DDSync",
+        "url": "https://github.com/eliasrh/DDSync"
+      },
+      {
+        "text": "GraphSplit software · github.com/eliasrh/GraphSplit.jl",
+        "url": "https://github.com/eliasrh/GraphSplit.jl"
+      }
+    ],
+    "section": "References"
   }
 ];

@@ -27,9 +27,19 @@ For the synthetic and header/UTC comparison plots, first generate the synthetic 
 
 The Python plotting environment needs NumPy, Matplotlib, SciPy and ObsPy.
 
-For the opening literature plots, obtain the full Data Set S1 catalogue (see START_HERE.md) and the Spanish Springs GrowClust reference output (pinned URL in seminar_provenance.json). Generate the KVER samples, then substitute your two downloaded file paths:
+For the wider Iceland maps and the GrowClust example, obtain the full Data Set S1 catalogue (see START_HERE.md) and the Spanish Springs GrowClust reference output (pinned URL in seminar_provenance.json). Generate the KVER samples, then substitute your two downloaded file paths:
 
     julia --project=. teaching/source/export_kver.jl ../Iceland100
     python teaching/source/seminar_figures.py --workshop .. --s1 S1.txt --growclust spanish_springs.out --out teaching/assets
 
-PROVENANCE.json and seminar_provenance.json give figure credits and underlying data. The Julia code excerpt PNGs show exact lines in src/signal.jl and the corresponding slides link to that source. Detailed reproduction of existing reference plots uses export_examples.jl, workshop_figures.py and make_figures.py in this folder.
+PROVENANCE.json, seminar_provenance.json and lecture_provenance.json give figure credits and underlying data. lecture_figures.py reproduces the new shared-path, matched Hayward locations, waveform, lag, subsample and timing-graph illustrations. The pinned Hayward input files are listed in lecture_provenance.json. measurement_figures.py plots the direct/FFT comparison and the S correlation peak. Run each script with --help or consult its usage header. The Julia code excerpt PNGs show exact lines in src/signal.jl and the corresponding slides link to that source. Detailed reproduction of existing reference plots uses export_examples.jl, workshop_figures.py and make_figures.py in this folder.
+
+The classroom plot walkthrough uses only the 100-event Iceland field report and its data. Its filter audit also shows the filter response measured with calibration sinusoids. The legacy synthetic figure utilities above are only needed when rebuilding earlier figures. The real-data examples in the Friday edition can also be reproduced from the field and method exports above:
+
+    python teaching/source/measurement_figures.py work/method-curves teaching/assets
+    python teaching/source/field_filter_figures.py work/field-trace work/method-curves teaching/assets
+    python teaching/source/lag_figure.py work/method-curves teaching/assets/iceland_competing_lags.png
+    python teaching/source/threshold_figure.py ../Iceland100/reference teaching/assets/iceland_p_threshold.png
+    python teaching/source/clinic_windows.py ../Iceland100 teaching/assets/clinic_cut_requirements.png
+
+For the panels in the report walkthrough, open ../Iceland100/reference/report.html. Summary and closure panels come from the figures linked under Quality and connectivity and Cycle consistency. The two P and S matrix examples come from the station/phase section. The field spectra and filter-response measurements appear in the Filter audit. The source filenames and the event, station and phase identifiers for waveform examples are given on the slides or in their notes.
