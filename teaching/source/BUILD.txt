@@ -1,30 +1,35 @@
-Rebuilding the instructor PowerPoint
+Rebuilding the editable Friday presentation
 
-Students can use the delivered PPTX directly. The authoring source is content.mjs.
-build.mjs uses @oai/artifact-tool and @napi-rs/canvas. It reads the DDCorr Julia
-source to make a fresh screenshot of each implementation excerpt. The two files
-use ES modules. Put the two Node dependencies on the module resolution path.
+Students use teaching/DDCorr_minicourse.pptx directly. All photographs and figures used by the builder are in teaching/assets. The slide text, links, section times and instructor notes are in teaching/source/content.mjs. The builder creates native text, editable tables and diagrams, and places scientific figures at their original aspect ratios.
 
-In the corresponding presentation-authoring runtime, set PRESENTATION_SKILL_DIR
-to the directory containing container_tools/artifact_tool_utils.mjs, set
-RUNTIME_NODE_MODULES to its dependencies, and set PYTHON_EXECUTABLE to the
-validation interpreter. From the repository root run:
+For an instructor build, install @oai/artifact-tool, @napi-rs/canvas and sharp on the Node module path. The following command, run from the repository root, writes work/slides-build/candidate.pptx:
 
-    node teaching/source/build.mjs --final
+    node teaching/source/build.mjs
 
-By default a private build goes under work/slides-build, and the validated
-presentation is teaching/DDCorr_minicourse_rebuilt.pptx. DDCORR_SLIDES_BUILD
-and DDCORR_SLIDES_OUTPUT can name new build and output paths.
+To render PNG previews as well, add --render. To run the publication checks, set PRESENTATION_SKILL_DIR to the presentation toolkit directory containing container_tools/artifact_tool_utils.mjs, RUNTIME_NODE_MODULES to the authoring runtime's modules, and PYTHON_EXECUTABLE to its Python interpreter. Then run:
 
-All figures used by the slide builder are in teaching/assets/. To regenerate
-the field plots from the supplied data on a machine with Julia and Python:
+    node teaching/source/build.mjs --final --render
+
+The validated file is teaching/DDCorr_minicourse.pptx. DDCORR_SLIDES_BUILD and DDCORR_SLIDES_OUTPUT can specify alternative paths.
+
+Regenerating the scientific figures
+
+From the repository root, with Iceland100 extracted alongside DDCorr.jl:
+
+    julia --project=. teaching/source/method_examples.jl ../Iceland100 work/method-curves
+    julia --project=. teaching/source/export_trace.jl ../Iceland100/sac/S1_009900/Z7.KVER..HHZ.sac work/field-trace
+    python teaching/source/method_figures.py work/method-curves work/field-trace teaching/assets
+
+For the synthetic and header/UTC comparison plots, first generate the synthetic SAC archive as in Start Here. Then run:
+
+    julia --project=. teaching/source/export_synthetic_windows.jl examples/synthetic/sac DDCorr.toml work/method-curves/synthetic.csv
+    python teaching/source/lab_figures.py ../Iceland100 work/method-curves/synthetic.csv teaching/assets
+
+The Python plotting environment needs NumPy, Matplotlib, SciPy and ObsPy.
+
+For the opening literature plots, obtain the full Data Set S1 catalogue (see START_HERE.md) and the Spanish Springs GrowClust reference output (pinned URL in seminar_provenance.json). Generate the KVER samples, then substitute your two downloaded file paths:
 
     julia --project=. teaching/source/export_kver.jl ../Iceland100
-    julia --project=. teaching/source/export_trace.jl ../Iceland100/sac/S1_009900/Z7.KVER..HHZ.sac teaching/source/figure_data/field_trace
-    python teaching/source/workshop_figures.py ../Iceland100
+    python teaching/source/seminar_figures.py --workshop .. --s1 S1.txt --growclust spanish_springs.out --out teaching/assets
 
-The plotting interpreter needs NumPy, Matplotlib and SciPy. Field examples in
-figure_data/real_figdata were exported by export_examples.jl. make_figures.py
-can regenerate the original window, taper, pair, lag and matrix illustrations
-from teaching/source/figure_data. Provenance for adapted figures is listed in
-PROVENANCE.json and in the PowerPoint speaker notes.
+PROVENANCE.json and seminar_provenance.json give figure credits and underlying data. The Julia code excerpt PNGs show exact lines in src/signal.jl and the corresponding slides link to that source. Detailed reproduction of existing reference plots uses export_examples.jl, workshop_figures.py and make_figures.py in this folder.

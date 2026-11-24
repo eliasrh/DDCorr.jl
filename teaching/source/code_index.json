@@ -1,6 +1,6 @@
 [
   {
-    "slide": 42,
+    "slide": 59,
     "file": "src/signal.jl",
     "ranges": [
       [
@@ -12,25 +12,11 @@
         30
       ]
     ],
-    "label": "src/signal.jl:13–14, 28–30"
+    "label": "src/signal.jl:13\u201314, 28\u201330",
+    "image": "code-42.png"
   },
   {
-    "slide": 43,
-    "file": "src/signal.jl",
-    "ranges": [
-      [
-        34,
-        35
-      ],
-      [
-        72,
-        74
-      ]
-    ],
-    "label": "src/signal.jl:34–35, 72–74"
-  },
-  {
-    "slide": 44,
+    "slide": 65,
     "file": "src/signal.jl",
     "ranges": [
       [
@@ -42,25 +28,23 @@
         133
       ]
     ],
-    "label": "src/signal.jl:126–129, 132–133"
+    "label": "src/signal.jl:126\u2013129, 132\u2013133",
+    "image": "code-44.png"
   },
   {
-    "slide": 45,
+    "slide": 66,
     "file": "src/signal.jl",
     "ranges": [
       [
-        151,
-        152
+        34,
+        35
       ],
       [
-        156,
-        156
-      ],
-      [
-        169,
-        169
+        72,
+        74
       ]
     ],
-    "label": "src/signal.jl:151–152, 156–156, 169–169"
+    "label": "src/signal.jl:34\u201335, 72\u201374",
+    "image": "code-43.png"
   }
 ]

@@ -3,188 +3,171 @@ import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {Presentation,PresentationFile} from '@oai/artifact-tool';
 import {createCanvas} from '@napi-rs/canvas';
+import sharp from 'sharp';
 import {slides} from './content.mjs';
 
-const SOURCE_DIR=path.dirname(fileURLToPath(import.meta.url));
-const REPO=path.resolve(SOURCE_DIR,'../..');
-const WORKSPACE=path.resolve(process.env.DDCORR_SLIDES_WORKSPACE||REPO);
-const HERE=path.resolve(process.env.DDCORR_SLIDES_BUILD||path.join(REPO,'work/slides-build'));
-const SKILL=process.env.PRESENTATION_SKILL_DIR;
-if(!SKILL) throw Error('Set PRESENTATION_SKILL_DIR to the presentations skill directory; see teaching/source/BUILD.txt.');
-const RUNTIME_PYTHON=process.env.PYTHON_EXECUTABLE||'python3';
-const {resolvePresentationFont,applyPresentationChartFont,finalizePresentation}=await import(pathToFileURL(path.join(SKILL,'container_tools/artifact_tool_utils.mjs')));
-const FONT=resolvePresentationFont(),MONO='Menlo';
-const C={ink:'#152A39',muted:'#4D606A',teal:'#007C83',orange:'#BC602A',bg:'#FCFCF9',line:'#CED8DA',light:'#EDF4F3'};
-const presentation=Presentation.create({slideSize:{width:1280,height:720}});
-const assets=path.join(HERE,'assets');await fs.mkdir(assets,{recursive:true});
-await fs.mkdir(path.join(HERE,'renders'),{recursive:true});
-const esc=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-const noteRows=[];const sourceIndex=[];const charts=[],tables=[];
-const measureContext=createCanvas(16,16).getContext('2d');
-function wrapText(value,width,size,font=FONT){
- measureContext.font=`${size}px "${font}"`;
- return value.split('\n').flatMap(p=>{const result=[];let current='';for(const word of p.split(' ')){const next=current?current+' '+word:word;if(current&&measureContext.measureText(next).width>width-70){result.push(current);current=word;}else current=next;}result.push(current);return result;});
+const here=path.dirname(fileURLToPath(import.meta.url)), repo=path.resolve(here,'../..');
+const assets=path.join(repo,'teaching/assets'), build=path.resolve(process.env.DDCORR_SLIDES_BUILD || path.join(repo,'work/slides-build'));
+const out=path.resolve(process.env.DDCORR_SLIDES_OUTPUT || path.join(repo,'teaching/DDCorr_minicourse.pptx'));
+const skill=process.env.PRESENTATION_SKILL_DIR, py=process.env.PYTHON_EXECUTABLE||'python3';
+const deck=Presentation.create({slideSize:{width:1280,height:720}}), ctx=createCanvas(10,10).getContext('2d');
+const p={ink:'#172E2C',green:'#254B44',paper:'#FAF8F1',white:'#FFFFFF',sep:'#CED3C7',rust:'#A23D28',gold:'#F8B17B',mint:'#A4D7C1',light:'#486258',dark:'#142E2C',chalk:'#EFF5ED',sand:'#EFDFBF'};
+const serif='Georgia', sans='Arial', mono='Menlo', tables=[], audit=[];
+let s,folio,section;
+const num=i=>String(i).padStart(2,'0');
+function box(name,x,y,w,h,fill){return s.shapes.add({name,geometry:'rect',position:{left:x,top:y,width:w,height:h},fill,line:{fill:'none',width:0}});}
+function text(name,txt,x,y,w,h,size,opt={}){
+ const sh=s.shapes.add({name,geometry:'textbox',position:{left:x,top:y,width:w,height:h},fill:'none',line:{fill:'none',width:0}});
+ sh.text=String(txt);sh.text.style={typeface:opt.font||sans,fontSize:size,color:opt.color||p.ink,bold:opt.bold||false,italic:opt.italic||false,verticalAlignment:'top',insets:0,autoFit:'none',wrap:'none',alignment:opt.align||'left'};
+ if(opt.href)sh.hyperlink={uri:opt.href,isExternal:true};return sh;
 }
+function width(t,size,font,bold){ctx.font=(bold?'bold ':'')+size+'px "'+font+'"';return ctx.measureText(t).width;}
+function wrap(t,w,sz,f=sans,b=false){return String(t).split('\n').flatMap(a=>{let line='';const v=[];for(const word of a.trim().split(/\s+/)){const next=line?line+' '+word:word;if(line&&width(next,sz,f,b)>w*.97){v.push(line);line=word;}else line=next;}v.push(line);return v;});}
+function flow(name,pars,x,y,w,h,opt={}){
+ const f=opt.font||sans,b=opt.bold||false,gap=opt.gap??14,leading=opt.leading||1.24;
+ let fs=opt.size||27, parts,used;
+ do{parts=pars.filter(v=>v!==null&&v!==undefined&&String(v).trim()).map(v=>wrap(v,w,fs,f,b));used=parts.reduce((a,v)=>a+v.length*fs*leading,0)+Math.max(0,parts.length-1)*gap;
+ if(used<=h||fs<=(opt.min||16))break;fs-=.5;}while(true);
+ if(used>h+3)audit.push({slide:folio,name,overflow:used-h});
+ const first=y;let k=0;for(const lines of parts){for(const line of lines){text(name+'-'+(++k),line,x,y,w,fs*1.48,fs,{...opt,font:f,bold:b});y+=fs*leading;}y+=gap;}return Math.max(0,y-gap-first);
+}
+function title(d,inverse=false){text('section',section.toUpperCase(),54,30,1160,28,15,{color:inverse?p.mint:p.rust,bold:true});
+ const n=flow('heading',[d.title],52,66,1170,112,{font:serif,size:46,min:36,leading:1.10,color:inverse?p.chalk:p.ink});return Math.max(145,68+n+12);}
+function footer(d,dark=false){const col=dark?'#ABC6B9':p.light;box('footer-rule',54,665,1172,1,dark?'#55766C':p.sep);
+ text('course-footer','DDCorr.jl    /    Waveform cross-correlation',54,678,680,26,15,{color:col});
+ text('number',String(folio).padStart(2,'0'),1162,674,64,28,18,{align:'right',color:col,bold:true});
+ const url=d.sources?.find(u=>u.includes('docs/START_HERE.md#'));
+ if(d.label&&d.image){const stamp=String(d.label);text('figure-credit',stamp,58,646,1165,21,15,{color:p.light,href:d.sources?.[0]});}
+ if(!url&&d.sources?.[0]){const article=d.sources.find(v=>v.includes('doi.org/'));const target=article||d.sources[0];text('source-link',article?'Read the cited paper':'Open source or implementation',711,675,408,28,16,{color:dark?p.mint:p.rust,align:'right',href:target});}
+ if(url)text('guide-link','Open this lab in Start Here',711,675,408,28,17,{color:dark?p.mint:p.rust,bold:true,align:'right',href:url});
+}
+function stroke(name,points,color,thick=3){
+ const xx=points.map(t=>t[0]),yy=points.map(t=>t[1]),x=Math.min(...xx),y=Math.min(...yy),w=Math.max(...xx)-x||1,h=Math.max(...yy)-y||1;
+ return s.shapes.add({name,geometry:'custom',position:{left:x,top:y,width:w,height:h},line:{fill:color,width:thick,style:'solid'},fill:'none',customPaths:[{width:w,height:h,commands:points.map(([px,py],i)=>i?{lineTo:{x:px-x,y:py-y}}:{moveTo:{x:px-x,y:py-y}})}]});
+}
+function framingWave(){
+ box('waveform-panel',55,194,531,427,p.dark);text('recording','Two P waves at one station',77,218,488,55,29,{font:serif,color:p.chalk});
+ const draw=(base,shift,col,name)=>{text('event-label',name,83,base-60,205,30,19,{color:col,bold:true});stroke('baseline',[[84,base],[554,base]],'#5E7970',1);
+ const pts=Array.from({length:222},(_,i)=>{let a=i-109-shift;return[84+i*2.12,base-46*(Math.sin(a*.25)*Math.exp(-a*a/560)+.4*Math.sin(a*.50+.6)*Math.exp(-a*a/240)+.19*Math.sin(a*.16)*Math.exp(-((a-35)**2)/750))];});stroke('pulse',pts,col,2.7);};
+ draw(349,0,p.mint,'Earthquake i');draw(479,13,p.gold,'Earthquake j');
+ stroke('guide-i',[[327,378],[327,406]],p.mint,1.8);stroke('guide-j',[[355,406],[355,434]],p.gold,1.8);
+ stroke('shift',[[327,405],[355,405]],p.chalk,2);text('lag','lag',374,386,95,39,23,{color:p.chalk,font:serif});
+ text('schematic','Schematic waveforms  /  time increases to the right',79,565,485,42,16,{color:p.mint});}
 
-function text(slide,name,txt,x,y,w,h,size=29,color=C.ink,bold=false,font=FONT){
- const s=slide.shapes.add({geometry:'textbox',name,position:{left:x,top:y,width:w,height:h},fill:'none',line:{fill:'none',width:0}});
- s.text=txt;s.text.style={fontSize:size,typeface:font,color,bold,insets:0,autoFit:'none',wrap:'square',verticalAlignment:'top'};return s;
+async function photo(rel,x,y,w,h,crop=false){const loc=path.join(assets,path.basename(rel)), bytes=await fs.readFile(loc),meta=await sharp(bytes).metadata();
+ let data=bytes,typ=meta.format==='jpeg'?'image/jpeg':'image/png';
+ if(crop){data=await sharp(bytes).resize(Math.round(w*1.5),Math.round(h*1.5),{fit:'cover',position:'centre'}).jpeg({quality:91}).toBuffer();typ='image/jpeg';}
+ else {const sc=Math.min(w/meta.width,h/meta.height),nw=meta.width*sc,nh=meta.height*sc;x+=(w-nw)/2;y+=(h-nh)/2;w=nw;h=nh;}
+ return s.images.add({name:'figure',blob:new Uint8Array(data).buffer,contentType:typ,alt:rel,position:{left:x,top:y,width:w,height:h},fit:'contain'});}
+function noteList(d){return (d.body||[]).filter(Boolean);}
+function paragraphs(d){return [d.lead,...noteList(d)].filter(Boolean);}
+function caption(d){return d.caption||'';}
+function sectionBreak(d){
+ s.background.fill=p.dark;text('section',d.section.toUpperCase(),64,53,700,36,19,{bold:true,color:p.mint});
+ const yy=152, hh=flow('heading',[d.title],61,yy,1130,196,{font:serif,size:63,min:48,color:p.chalk,leading:1.12});
+ flow('lead',[d.lead],66,yy+hh+35,1080,166,{size:32,min:28,color:p.chalk});
+ flow('activity',noteList(d),66,522,1100,113,{size:24,min:20,color:p.gold,gap:8});footer(d,true);
 }
-function paragraphs(slide,items,x=64,y=160,w=1150,size=29,gap=23){
- let cy=y;for(const p of items){const lines=wrapText(p,w,size);const h=lines.length*size*1.30+6;text(slide,`body-${cy}`,lines.join('\n'),x,cy,w,h,size);cy+=h+gap;if(cy-gap>654)throw Error(`Body overflow on slide ${presentation.slides.items.length}: ${cy-gap}`);}return cy;
+function agenda(d){
+ s.background.fill=p.paper;title(d);const halves=[['Morning',d.rows.slice(0,4)],['Afternoon',d.rows.slice(4)]];
+ for(let i=0;i<2;i++){const x=56+i*600;const [head,rows]=halves[i];text('half',head,x,166,520,53,39,{font:serif,color:p.rust});let y=231;
+ for(const [time,topic] of rows){box('rule',x,y-7,552,1,p.sep);text('time',time,x,y+4,147,34,20,{bold:true,color:p.green});
+ flow('topic',[topic],x+148,y+2,400,52,{size:22,min:18,gap:0});y+=65;}}
+ footer(d);
 }
-function command(slide,code,x,y,w,h,size=26){
- const box=slide.shapes.add({geometry:'rect',position:{left:x-15,top:y-14,width:w+30,height:h+24},fill:C.light,line:{fill:'none',width:0}});
- return text(slide,'command',code,x,y,w,h,size,C.ink,false,MONO);
+function nativeTable(d,y){
+ const ps=paragraphs(d);let top=y;if(d.lead){top+=flow('lead',[d.lead],56,y,1165,90,{size:25,min:20})+15;}
+ const data=d.rows.map(row=>row.map(String)),nc=data[0].length, nr=data.length, avail=646-top, bottom=noteList(d).length?Math.min(avail*.38,113):0;
+ const maxcol=Array.from({length:nc},(_,j)=>Math.max(...data.map(r=>Math.sqrt(2+r[j].length))));const sum=maxcol.reduce((a,b)=>a+b,0);
+ const widths=maxcol.map(x=>Math.round(x/sum*1164));
+ const table=s.tables.add({rows:nr,columns:nc,left:56,top,width:1164,height:Math.min(avail-bottom-10,(nr*64)+26),columnWidths:widths,values:data});
+ const fs=nr>7||nc>=5?20:23;table.cells.block({row:0,column:0,rowCount:nr,columnCount:nc}).assign({fill:p.white,textStyle:{fontSize:fs,typeface:sans,color:p.ink},margins:{left:10,right:8,top:4,bottom:3},anchor:'center'});
+ table.cells.block({row:0,column:0,rowCount:1,columnCount:nc}).assign({fill:p.green,textStyle:{fontSize:fs,typeface:sans,color:p.chalk,bold:true}});
+ table.borders.assign({fill:p.sep,width:1,style:'solid'});tables.push(folio);
+ if(bottom)flow('interpretation',noteList(d),58,646-bottom,1160,bottom,{size:24,min:19,gap:8});
 }
-function table(slide,data,widths,y=170,height=360){
- tables.push(presentation.slides.items.length);
- const t=slide.tables.add({rows:data.length,columns:data[0].length,left:64,top:y,width:1152,height,columnWidths:widths,values:data});
- t.cells.block({row:0,column:0,rowCount:data.length,columnCount:data[0].length}).assign({textStyle:{fontSize:24,typeface:FONT,color:C.ink},fill:C.bg,margins:{left:14,right:14,top:5,bottom:5},anchor:'center'});
- t.cells.block({row:0,column:0,rowCount:1,columnCount:data[0].length}).assign({fill:C.ink,textStyle:{fontSize:24,typeface:FONT,bold:true,color:'#FFFFFF'}});
- t.borders.assign({fill:C.line,width:1,style:'solid'});return t;
+function codeBlock(label,cmd,x,y,w,h){
+ let lines=String(cmd).split('\n'),size=28;while(size>12.5&&(Math.max(...lines.map(l=>width(l,size,mono,false)))>w-50||lines.length*size*1.27>h-53))size-=.5;
+ box('terminal',x,y,w,h,p.dark);text('command-label',label,x+20,y+11,w-40,24,15,{color:p.mint,bold:true});
+ lines.forEach((line,i)=>text('command-'+i,line,x+20,y+43+i*size*1.25,w-32,size*1.55,size,{color:p.chalk,font:mono}));
+ return size;
 }
-async function excerpt(spec,id){
- const full=await fs.readFile(path.join(REPO,spec.file),'utf8');const lines=full.split('\n');
- const selections=spec.ranges?spec.ranges:spec.anchors.map(a=>{let start=lines.findIndex(l=>l.includes(a[0]));if(start<0)throw Error('Missing source anchor '+a[0]+' in '+spec.file);return[start+1,start+(a[1]||5)];});
- const rendered=[];for(let j=0;j<selections.length;j++){if(j)rendered.push(['','…']);for(let k=selections[j][0];k<=selections[j][1];k++)rendered.push([k,lines[k-1]??'']);}
- const label=spec.file+':'+selections.map(r=>r.join('–')).join(', ');
- const html=`<!doctype html><meta charset="utf-8"><style>body{margin:0;background:#eff3f4;color:#152a39;font:22px/1.45 'Courier New',monospace;}main{padding:16px 18px;}header{font:18px Arial;color:#4d606a;margin-bottom:12px}.line{display:flex}.num{width:58px;flex:none;color:#7e9097;text-align:right;padding-right:18px}.code{white-space:pre-wrap;overflow-wrap:anywhere}</style><main><header>${esc(label)}</header>${rendered.map(([n,c])=>`<div class="line"><span class="num">${n}</span><span class="code">${esc(c)}</span></div>`).join('')}</main>`;
- const indent=Math.min(...rendered.filter(([n,c])=>n&&c.trim()).map(([n,c])=>c.match(/^\s*/)[0].length));
- const rows=[];for(const [n,c] of rendered){let rest=n?c.slice(indent):c;let first=true;while(rest.length>70){const prefix=rest.slice(0,70);let split=Math.max(prefix.lastIndexOf(' '),prefix.lastIndexOf(','),prefix.lastIndexOf('+'));if(split<30)split=70;else split+=1;rows.push([first?n:'',rest.slice(0,split)]);rest='  '+rest.slice(split).trimStart();first=false;}rows.push([first?n:'',rest]);}
- const h=56+rows.length*31;const canvas=createCanvas(2280,h*2);const ctx=canvas.getContext('2d');ctx.scale(2,2);ctx.fillStyle='#eff3f4';ctx.fillRect(0,0,1140,h);ctx.font='18px Arial';ctx.fillStyle=C.muted;ctx.fillText(label,18,26);ctx.font='24px Menlo';for(let j=0;j<rows.length;j++){ctx.fillStyle='#7e9097';ctx.fillText(String(rows[j][0]).padStart(4),18,55+j*31);ctx.fillStyle=C.ink;ctx.fillText(rows[j][1],95,55+j*31);}
- const img=path.join(assets,`code-${id}.png`);await fs.writeFile(img,canvas.toBuffer('image/png'));
- await fs.writeFile(path.join(assets,`code-${id}.html`),html);
- const source=rendered.map(([n,c])=>`${n}: ${c}`).join('\n');sourceIndex.push({slide:id,file:spec.file,ranges:selections,label});return{img,width:1140,height:h,label,source};
+function cmdSlide(d,y){
+ const cmds=[d.command,d.commandWindows].filter(Boolean),body=noteList(d);let cy=y;
+ if(d.lead){cy+=flow('purpose',[d.lead],54,cy,1170,80,{size:25,min:20})+12;}
+ const reserve=body.length?Math.min(169,Math.max(88,body.join(' ').length*.27)):0, space=648-reserve-cy-12;
+ const lens=cmds.map(c=>c.split('\n').length);const usable=space-12*(cmds.length-1), extra=usable-cmds.length*49,sum=lens.reduce((a,b)=>a+b,0);
+ cmds.forEach((c,i)=>{const h=Math.max(70,Math.min(usable,49+extra*lens[i]/sum,72+lens[i]*41));const label=cmds.length>1?(i?'WINDOWS POWERSHELL':'macOS / LINUX'):d.codeLabel||'COMMAND / SETTING';const actual=codeBlock(label,c,55,cy,1170,h);if(actual<=14)audit.push({slide:folio,smallCode:actual});cy+=h+12;});
+ if(body.length){const checkpointY=Math.min(cy+19,648-reserve);box('check-rule',57,checkpointY,50,3,p.rust);flow('checkpoint',body,59,checkpointY+20,1155,635-checkpointY,{size:27,min:19,gap:13});}
 }
-function nativeChart(slide,spec){
- charts.push(presentation.slides.items.length);
- const chart=slide.charts.add(spec.type||'scatter',{
- position:{left:64,top:spec.top||180,width:spec.width||1152,height:spec.height||330},
- categories:spec.categories,
- series:spec.series.map((s,i)=>({...s,line:s.line||{style:'solid',width:2.5,fill:[C.teal,C.orange,'#6C60A4','#7B8D94'][i]},marker:s.marker||{symbol:'none'},fill:[C.teal,C.orange,'#6C60A4','#7B8D94'][i]})),
- scatterOptions:{style:spec.style||'lineWithMarkers'},lineOptions:{smooth:false},
- hasLegend:spec.series.length>1,legend:{position:'bottom',overlay:false,textStyle:{fontSize:21,fill:C.muted}},
- xAxis:{title:{text:spec.xTitle,textStyle:{fontSize:23,fill:C.ink}},min:spec.xmin,max:spec.xmax,majorUnit:spec.xstep,numberFormatCode:spec.xFormat||'0.0',textStyle:{fontSize:21,fill:C.muted},majorGridlines:null,position:'bottom',tickLabelPosition:'low',crossesAt:spec.xmin||0},
- yAxis:{title:{text:spec.yTitle,textStyle:{fontSize:23,fill:C.ink}},min:spec.ymin,max:spec.ymax,majorUnit:spec.ystep||.5,numberFormatCode:spec.yFormat||'0.0',textStyle:{fontSize:21,fill:C.muted},majorGridlines:{style:'solid',width:1,fill:C.line},position:'left',tickLabelPosition:'low',crossesAt:spec.ymin||0},
- chartFill:C.bg,plotAreaFill:C.bg,chartLine:{width:0,fill:'none'},plotAreaLine:{width:0,fill:'none'},
- });applyPresentationChartFont(chart,{fontFamily:FONT});return chart;
-}
-
-// Editable scientific schematics. Coordinates and example times are illustrative.
-function stroke(slide,points,color=C.ink,width=3){
- const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);const x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x||1,h=Math.max(...ys)-y||1;
- return slide.shapes.add({geometry:'custom',position:{left:x,top:y,width:w,height:h},fill:'none',line:{fill:color,width,style:'solid'},customPaths:[{width:w,height:h,commands:points.map(([xx,yy],i)=>i?{lineTo:{x:xx-x,y:yy-y}}:{moveTo:{x:xx-x,y:yy-y}})}]});
-}
-function marker(slide,x,y,label,color=C.teal,station=false){
- const s=slide.shapes.add({geometry:station?'triangle':'ellipse',position:{left:x-10,top:y-10,width:20,height:20},fill:color,line:{fill:color,width:1}});
- text(slide,'marker-'+label,label,x-75,y+(station?-50:22),150,40,23,color,true);return s;
-}
-function introDiagram(slide,kind){
- if(kind==='single'){
-  stroke(slide,[[85,225],[735,225]],C.muted,2);
-  for(const [x,name] of [[145,'Station 1'],[405,'Station 2'],[680,'Station 3']]){stroke(slide,[[405,495],[x,225]],'#8CA1AB',3);marker(slide,x,225,name,C.ink,true);}
-  marker(slide,405,495,'Event',C.orange);
-  paragraphs(slide,['At each station, we measure a P or S arrival time.','We estimate the source position and origin time by matching measured and predicted arrivals.'],800,220,410,27,26);
-  text(slide,'equation','Arrival time = origin time + travel time',95,565,650,42,26,C.teal,true);
-  text(slide,'caption','Schematic ray paths; no measured geometry',95,618,650,28,19,C.muted);
- }
- if(kind==='shared'){
-  slide.shapes.add({geometry:'rect',position:{left:422,top:275,width:130,height:72},fill:'#EEE3DB',line:{fill:'#C49B7C',width:1}});
-  stroke(slide,[[255,500],[655,220]],C.teal,4);stroke(slide,[[310,500],[655,220]],C.orange,4);
-  marker(slide,255,500,'',C.teal);marker(slide,310,500,'',C.orange);
-  text(slide,'event-i','Event i',170,535,130,40,24,C.teal,true);text(slide,'event-j','Event j',330,535,130,40,24,C.orange,true);marker(slide,655,220,'Station',C.ink,true);
-  text(slide,'uncertain','Uncertain\nwave speed',85,285,245,75,25,C.muted);stroke(slide,[[310,320],[420,310]],C.muted,1.5);
-  text(slide,'shared-title','Nearly shared paths',120,190,420,42,29,C.ink,true);
-  paragraphs(slide,['Nearby events can send the same phase through nearly the same structures.','The resulting model error is partly shared. Taking a travel-time difference reduces that shared error.'],800,220,410,27,26);
-  text(slide,'caption','Schematic: the closer the sources, the more similar the paths can be',95,610,1100,36,23,C.muted);
- }
- if(kind==='difference'){
-  table(slide,[['At one station','Measured travel time','Predicted travel time'],['Event i','5.12 s','5.00 s'],['Event j','4.92 s','4.80 s'],['i minus j','0.20 s','0.20 s']],[330,411,411],170,260);
-  text(slide,'residual','Double difference = 0.20 − 0.20 = 0.00 s',95,450,1090,54,35,C.teal,true);
-  paragraphs(slide,['Both predictions are early by 0.12 s, so the shared error cancels here. Real paths share only part of their error. Relocation adjusts positions and origin times to reduce these residuals across many stations and event pairs.'],95,530,1100,25,14);
- }
- if(kind==='pipeline'){
-  const xs=[80,495,910];const names=['DDCorr','DDSync','GraphSplit'];
-  for(let k=0;k<3;k++){
-   text(slide,'stage-'+k,names[k],xs[k],185,300,55,38,C.teal,true);
-   if(k<2){stroke(slide,[[xs[k]+280,230],[xs[k]+370,230]],C.muted,3);stroke(slide,[[xs[k]+358,220],[xs[k]+370,230],[xs[k]+358,240]],C.muted,3);}
-  }
-  // A waveform pair, an event graph and a relative-location scatter are editable.
-  const wave=(x,y,color,phase)=>stroke(slide,Array.from({length:110},(_,i)=>[x+i*2.3,y+Math.sin((i-phase)*.48)*Math.exp(-(((i-52-phase)/23)**2))*27]),color,2.5);
-  wave(82,320,C.teal,0);wave(82,360,C.orange,5);
-  const pts=[[515,310],[610,285],[705,340],[635,395],[525,395]];
-  for(const [a,b] of [[0,1],[1,2],[2,3],[3,4],[4,0],[1,3],[0,3]])stroke(slide,[pts[a],pts[b]],'#A3B5BC',2);
-  pts.forEach(([x,y],i)=>slide.shapes.add({geometry:'ellipse',position:{left:x-7,top:y-7,width:14,height:14},fill:C.teal,line:{fill:C.teal,width:1}}));
-  stroke(slide,[[930,405],[1170,405]],C.muted,1.5);stroke(slide,[[930,405],[930,280]],C.muted,1.5);
-  for(const [x,y] of [[975,360],[1005,347],[1030,335],[1065,321],[1090,310],[1125,294]])slide.shapes.add({geometry:'ellipse',position:{left:x-5,top:y-5,width:10,height:10},fill:C.orange,line:{fill:C.orange,width:1}});
-  paragraphs(slide,['Measure waveform shifts','dt.cc + catalogue + stations'],80,455,325,26,17);
-  paragraphs(slide,['Estimate consistent relative arrival times','theta + timing uncertainties'],495,455,325,26,17);
-  paragraphs(slide,['Relocate events using a velocity model','Relative positions + origins'],910,455,300,26,17);
-  text(slide,'current','Friday',82,620,320,34,24,C.orange,true);
-  text(slide,'later','Saturday',495,620,700,34,24,C.muted);
+async function figSlide(d,y){
+ const desc=paragraphs(d), full=path.join(assets,path.basename(d.image)),m=await sharp(full).metadata();
+ const ratio=m.width/m.height,words=desc.join(' ').length;const rightText=ratio<2.05&&words>=38;
+ if(rightText){
+  const w=ratio<1.4?633:766, gap=31,start=55;
+  box('figure-paper',start,y,w,644-y,p.white);await photo(d.image,start+9,y+9,w-18,644-y-18);
+  box('annotation-rule',start+w+gap,y+8,51,4,p.rust);
+  const rx=start+w+gap;let cy=y+34;
+  if(d.lead)cy+=flow('interpretation',[d.lead],rx,cy,1225-rx,Math.min(176,(641-cy)*.52),{font:serif,size:28,min:20,color:p.green,leading:1.15})+17;
+  flow('read-figure',noteList(d),rx,cy,1225-rx,644-cy,{size:23,min:17,gap:12});
+ }else{
+  const h=words?Math.min(150,Math.max(73,words*.27+31)):0;
+  const fh=642-y-h;box('figure-paper',56,y,1168,fh,p.white);await photo(d.image,65,y+4,1150,fh-8);
+  if(words){box('caption-mark',56,650-h,5,h-13,p.rust);flow('read-figure',desc,77,646-h,1137,h-1,{size:24,min:18,gap:5,leading:1.12});}
  }
 }
-
-for(let i=0;i<slides.length;i++){
- const d=slides[i],n=i+1;const slide=presentation.slides.add();slide.background.fill=C.bg;
- text(slide,'title',d.title,64,44,1152,88,d.hero?43:39,C.ink,true);
- text(slide,'slide-number',String(n).padStart(2,'0'),1155,668,60,26,18,C.muted);
- 
- let notes=d.notes||'';
- async function addPlot(rel,box){const data=await fs.readFile(path.join(REPO,rel));return slide.images.add({blob:new Uint8Array(data).buffer,contentType:'image/png',alt:d.alt||d.title,position:box,fit:'contain'});}
- if(d.hero){await addPlot(d.hero,{left:70,top:140,width:1150,height:282});paragraphs(slide,d.body,74,453,1120,26,10);}
- else if(d.sideImage){await addPlot(d.sideImage,{left:52,top:145,width:630,height:480});paragraphs(slide,d.body,713,158,515,25,22);}
- else if(d.mathImage){await addPlot(d.mathImage,{left:65,top:136,width:1150,height:135});paragraphs(slide,d.body,80,302,1110,26,18);}
- else if(d.diagram){introDiagram(slide,d.diagram);}
- else if(d.cover){paragraphs(slide,d.body,64,230,1050,34,28);text(slide,'course',d.subtitle||'DDCorr.jl teaching package',64,600,1100,40,24,C.teal,true);}
- else if(d.code){
-   paragraphs(slide,d.body,64,154,1152,d.size||28,14);
-   const e=await excerpt(d.code,n),maxH=d.codeHeight||300,scale=Math.min(1,(1152/e.width),(maxH/e.height));
-   const w=e.width*scale,h=e.height*scale;const top=d.codeTop||325;
-   slide.images.add({blob:new Uint8Array(await fs.readFile(e.img)).buffer,contentType:'image/png',alt:`Exact source excerpt ${e.label}`,position:{left:64,top,width:w,height:h},fit:'contain'});
-   notes+=`\n\nImplementation: ${e.label}\n\nExact source excerpt:\n${e.source}`;
-   if(d.footer)text(slide,'code-caption',d.footer,64,637,1080,30,21,C.muted);
- }
- else if(d.actualPlot){
-  const buffer=new Uint8Array(await fs.readFile(path.join(REPO,d.actualPlot))).buffer;
-  slide.images.add({blob:buffer,contentType:'image/png',alt:'Actual DDCorr synthetic waveform alignment before and after the measured shift',position:{left:48,top:155,width:680,height:495},fit:'contain',crop:{left:.24,right:.23,top:.065,bottom:.365}});
-  slide.images.add({blob:buffer,contentType:'image/png',alt:'Actual DDCorr correlation curve for the same synthetic event pair',position:{left:748,top:155,width:490,height:230},fit:'contain',crop:{left:.24,right:.23,top:.65,bottom:.065}});
-  paragraphs(slide,d.body,758,400,460,25,14);
- }
- else if(d.image){
-  const imagePath=path.join(REPO,d.image);const buffer=await fs.readFile(imagePath);slide.images.add({blob:new Uint8Array(buffer).buffer,contentType:'image/png',alt:d.alt||d.title,position:d.position||{left:64,top:145,width:1152,height:430},fit:'contain'});if(d.body)paragraphs(slide,d.body,64,d.bodyY||590,1120,d.size||26,14);
- }
- else if(d.table){table(slide,d.table,d.widths,d.tableTop||170,d.tableHeight||360);if(d.body)paragraphs(slide,d.body,64,d.bodyY||555,1120,d.size||27,16);}
- else if(d.chart){nativeChart(slide,d.chart);paragraphs(slide,d.body,64,d.bodyY||535,1120,d.size||28,16);}
- else if(d.command){
-   const y=d.commandTop||160;command(slide,d.command,80,y,1118,d.commandHeight||240,d.codeSize||25);
-   if(d.body)paragraphs(slide,d.body,64,d.bodyY||445,1152,d.size||28,20);
- }
- else if(d.equation){
-   if(d.intro)paragraphs(slide,[d.intro],64,150,1152,28,10);
-   text(slide,'equation',d.equation,64,d.eqY||240,1150,d.eqH||140,d.eqSize||36,C.teal,true);
-   paragraphs(slide,d.body,64,d.bodyY||400,1152,d.size||28,20);
- }
- else if(d.columns){paragraphs(slide,d.columns[0],64,160,550,d.size||28,24);paragraphs(slide,d.columns[1],666,160,550,d.size||28,24);}
- else paragraphs(slide,d.body,64,160,1152,d.size||30,d.gap||30);
- if(d.link){const link=text(slide,'source-link',d.link,64,638,1130,27,18,C.teal);link.hyperlink={uri:d.link,isExternal:true};}
- if(d.sources)notes+='\n\nSources:\n'+d.sources.join('\n');
- slide.speakerNotes.text=notes;
- noteRows.push(`# ${n}. ${d.title}\n\n${(d.body||[]).join('\n\n')}\n\n${d.command?'```sh\n'+d.command+'\n```\n\n':''}${d.equation?'Equation: '+d.equation+'\n\n':''}${notes}\n`);
+function story(d,y){
+ const body=noteList(d), lead=d.lead||body.shift()||'';
+ if(!body.length){box('lead-mark',57,y+26,6,155,p.rust);flow('central-question',[lead],86,y+25,1085,366,{font:serif,size:45,min:30,color:p.green});}
+ else {const long=body.join(' ').length>550,lw=long?390:466,rx=lw+100;
+ box('lead-rule',55,y+16,62,4,p.rust);flow('premise',[lead],55,y+55,lw,590-y,{font:serif,size:36,min:24,color:p.green,leading:1.18});
+ box('divider',rx-28,y+12,1,620-y,p.sep);flow('explanation',body,rx,y+27,1210-rx,605-y,{size:28,min:19,gap:27});}
 }
-await fs.writeFile(path.join(HERE,'code_index.json'),JSON.stringify(sourceIndex,null,2));
-await fs.writeFile(path.join(HERE,'presentation.json'),JSON.stringify(presentation.toProto()));
-const draft=path.join(HERE,'candidate.pptx');await(await PresentationFile.exportPptx(presentation)).save(draft);
-for(let i=0;i<presentation.slides.items.length;i++){
- const slide=presentation.slides.items[i];const blob=await presentation.export({slide,format:'png',scale:1});
- await fs.writeFile(path.join(HERE,'renders',`slide-${String(i+1).padStart(2,'0')}.png`),new Uint8Array(await blob.arrayBuffer()));
- const layout=await slide.export({format:'layout'});await fs.writeFile(path.join(HERE,'renders',`slide-${String(i+1).padStart(2,'0')}.json`),await layout.text());
- console.log(`Rendered ${i+1}/${presentation.slides.items.length}`);
+function equations(d,y){let cy=y;
+ if(d.lead)cy+=flow('concept',[d.lead],57,cy,1150,94,{size:26,min:20,color:p.chalk})+18;
+ const eq=Array.isArray(d.equation)?d.equation:[d.equation];box('equation-rule',57,cy,67,4,p.gold);cy+=22;
+ if(String(d.equation).startsWith('r(k) =')){
+ const expanded=String(d.equation).includes('ā'), w=expanded?704:472, x=276;
+ text('coefficient','r(k)  =',72,cy+38,190,80,49,{font:serif,color:p.mint});
+ text('numerator',expanded?'Σₙ (aₙ − ā)(bₙ₊ₖ − b̄ₖ)':'Σₙ uₙ vₙ(k)',x,cy+2,w,65,44,{font:serif,color:p.mint,align:'center'});
+ box('fraction-bar',x,cy+64,w,2,p.mint);
+ text('denominator',expanded?'√[Σₙ (aₙ − ā)² · Σₙ (bₙ₊ₖ − b̄ₖ)²]':'‖u‖  ‖v(k)‖',x,cy+72,w,66,expanded?37:43,{font:serif,color:p.mint,align:'center'});
+ cy+=164;
+ }else{cy+=flow('equation',eq,56,cy,1163,Math.min(195,640-cy),{font:serif,color:p.mint,size:40,min:25,gap:9})+26;}
+ flow('terms',noteList(d),59,cy,1140,640-cy,{size:25,min:17,color:p.chalk,gap:12});
 }
-const montage=await presentation.export({format:'webp',montage:true,scale:.25});await fs.writeFile(path.join(HERE,'montage.webp'),new Uint8Array(await montage.arrayBuffer()));
+for(const [i,d] of slides.entries()){
+ s=deck.slides.add();s.background.fill=p.paper;folio=i+1;section=d.section||'Friday workshop';const inv=d.kind==='equation';
+ if(d.kind==='cover'){
+  s.background.fill=p.dark;await photo('holuhraun_landsat.jpg',663,0,617,720,true);
+  text('section','FRIDAY   /   10:00–18:00',54,56,540,31,18,{color:p.mint,bold:true});
+  flow('heading',['Measuring earthquake','travel-time differences'],51,137,603,220,{font:serif,size:55,min:45,leading:1.15,color:p.chalk,gap:0});
+  box('accent',57,365,69,4,p.gold);flow('subtitle',['A hands-on workshop in waveform cross-correlation with DDCorr.jl'],56,395,548,145,{size:30,min:27,color:p.chalk,leading:1.2});
+  text('photo-credit','Holuhraun, Iceland  /  Landsat 8  /  6 September 2014',681,669,579,32,16,{color:p.white,bold:true});
+  text('author','Elías Rafn Heimisson',57,648,550,40,22,{color:p.mint});
+ }else if(d.kind==='framing'){
+  s.background.fill=p.paper;text('section','THE QUESTION',55,37,800,35,16,{color:p.rust,bold:true});
+  flow('heading',[d.title],54,81,1165,107,{font:serif,size:48,min:40});framingWave();
+  let yy=201;for(const [label,txt] of d.rows){box('rule',623,yy-6,594,1,p.sep);text('concept',label,624,yy+7,589,50,31,{font:serif,color:p.rust});flow('explanation',[txt],625,yy+52,586,80,{size:23,min:20});yy+=142;}footer(d);
+ }else if(d.kind==='references'){
+ const y=title(d);let last=y+5;for(const [author,subject,doi] of d.rows){box('rule',55,last,1166,1,p.sep);text('author',author,57,last+9,614,34,24,{bold:true});text('paper-topic',subject,57,last+44,662,31,19,{color:p.light});text('paper-doi',doi+'',727,last+22,498,39,21,{color:p.rust,href:'https://doi.org/'+doi});last+=83;}
+ if(d.rows.length===4){text('repo-label','Software repositories',59,last+19,430,44,26,{font:serif,color:p.green});for(const [i,[label,url]] of [['DDCorr.jl','https://github.com/eliasrh/DDCorr.jl'],['DDSync','https://github.com/eliasrh/DDSync'],['GraphSplit.jl','https://github.com/eliasrh/GraphSplit.jl']].entries())text('repository',label+'',58+i*365,last+73,310,33,21,{color:p.rust,href:url});}
+ footer(d);
+ }else if(d.kind==='agenda')agenda(d);
+ else if(d.kind==='break')sectionBreak(d);
+ else {if(inv)s.background.fill=p.dark;const y=title(d,inv);
+  if(d.image)await figSlide(d,y);else if(d.command||d.commandWindows)cmdSlide(d,y);else if(d.rows?.length)nativeTable(d,y);else if(d.equation)equations(d,y);else story(d,y);footer(d,inv);}
+ let notes=d.notes||'';if(d.sources?.length)notes+='\n\nSources and links\n'+d.sources.join('\n');s.speakerNotes.text=notes;
+}
+await fs.mkdir(build,{recursive:true});await fs.mkdir(out.slice(0,out.lastIndexOf('/')),{recursive:true});
+const candidate=path.join(build,'candidate.pptx');
+await(await PresentationFile.exportPptx(deck)).save(candidate);
+await fs.writeFile(path.join(build,'fit-audit.json'),JSON.stringify(audit,null,2));
+console.log('Exported '+slides.length+' slides. Fit audit '+JSON.stringify(audit));
 if(process.argv.includes('--final')){
- const finalPath=path.resolve(process.env.DDCORR_SLIDES_OUTPUT||path.join(REPO,'teaching/DDCorr_minicourse_rebuilt.pptx'));
- await fs.mkdir(path.dirname(finalPath),{recursive:true});
- const result=await finalizePresentation({workspaceDir:WORKSPACE,candidatePath:draft,finalPath,pythonExecutable:RUNTIME_PYTHON,integrityValidatorPath:path.join(SKILL,'container_tools/inspect_presentation_package_integrity.py'),layoutValidatorPath:path.join(SKILL,'container_tools/inspect_presentation_layout_geometry.py'),layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-heading-fit',...tables.flatMap(n=>['--require-native-table-slide',String(n)])],fontPolicy:{basis:'design',families:[FONT,MONO]},requiredNativeTableOwnerSlides:tables,requiredNativeChartOwnerSlides:charts,materializeLiteralChartWorkbooks:true,nativeChartTargetApplication:'powerpoint',verifyArtifactToolImport:true,receiptPath:path.join(HERE,'validation_verified.json')});console.log(result);
-}else console.log({draft,slides:slides.length,font:FONT,charts,tables});
+ const {finalizePresentation}=await import(pathToFileURL(path.join(skill,'container_tools/artifact_tool_utils.mjs')));
+ const releaseDir=await fs.mkdtemp(path.join(build,'validated-'));const verified=path.join(releaseDir,'DDCorr_minicourse.pptx');
+ await finalizePresentation({workspaceDir:path.resolve(process.env.DDCORR_SLIDES_WORKSPACE||repo),candidatePath:candidate,finalPath:verified,pythonExecutable:py,integrityValidatorPath:path.join(skill,'container_tools/inspect_presentation_package_integrity.py'),layoutValidatorPath:path.join(skill,'container_tools/inspect_presentation_layout_geometry.py'),layoutArgs:['--expected-slide-size-emu','12192000,6858000',...tables.flatMap(n=>['--require-native-table-slide',String(n)])],fontPolicy:{basis:'design',families:[serif,sans,mono]},requiredNativeTableOwnerSlides:tables,verifyArtifactToolImport:true,receiptPath:path.join(build,'validation_verified.json')});
+ const stage=out+'.'+process.pid+'.part';await fs.copyFile(verified,stage);await fs.rename(stage,out);
+}
+if(process.argv.includes('--render')){const rend=path.join(build,'renders');await fs.mkdir(rend,{recursive:true});for(const [i,sl] of deck.slides.items.entries()){const blob=await deck.export({slide:sl,format:'png',scale:.8});await fs.writeFile(path.join(rend,'slide-'+num(i+1)+'.png'),new Uint8Array(await blob.arrayBuffer()));}}
