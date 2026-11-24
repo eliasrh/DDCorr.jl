@@ -1,8 +1,6 @@
 {
   "workshop": "Friday 10:00–18:00: waveform cross-correlation with DDCorr.jl.",
   "repository": "https://github.com/eliasrh/DDCorr.jl",
-  "source_baseline": "26e6ae03caae6bdb15d657027229c3d0d194deb7",
-  "slide_count": 83,
   "data": {
     "event_catalog": "Ágústsdóttir et al. (2019), Data Set S1, https://doi.org/10.1029/2018JB016010",
     "network": "Z7",
@@ -13,35 +11,11 @@
       "S": 4625
     }
   },
-  "illustrations": {
-    "agustsdottir_fig1.png": "Figure 1 in Ágústsdóttir et al. (2019), accepted manuscript, Cambridge repository DOI 10.17863/CAM.41805, p. 5.",
-    "fapesp_graph.png": "From instructor’s Some_slides_for_FAPESP_augmented.pptx, slide 9, graph schematic. Related ray-path teaching diagram on slide 2 adapted from seminar slides 4–6.",
-    "field_pair.png; field_peak.png; real_strong.png; real_weak.png": "Original DDCorr export arrays for Z7.STAM and Z7.RODG S in figure_data/real_figdata.",
-    "field_processing.png; kver_worked.png": "S1_009900/Z7.KVER..HHZ.sac raw/filtered samples and the KVER P comparison of IDs 1 and 2. Exported by Julia.",
-    "phase_demo.png; alias_demo.png; core_extended.png; lag_introduction.png; windows.png": "Constructed teaching examples.",
-    "threshold.png; real_lags.png; real_matrix.png": "Counted/plotted from the accepted Iceland100 measurements.",
-    "matched_locations.png": "Input, prelocation, and final DD locations for the identical 57 final events, kept in the supplied Iceland100 solutions.",
-    "taper.png": "Real processing of a synthetic pulse train. Input in figure_data/trace.",
-    "holuhraun_landsat.jpg": "NASA Earth Observatory / Jesse Allen, Landsat 8 data from USGS. Holuhraun lava field, 6 September 2014, false colour. https://science.nasa.gov/earth/earth-observatory/roiling-flows-on-holuhraun-lava-field-84316/",
-    "opening composition": "Adaptation of SlidesGPT opening. Title, 3 concepts and waveforms are editable PowerPoint objects.",
-    "seminar illustrations": "See seminar_provenance.json for paper figures, author data and original charts.",
-    "method_*.png": "Original plots from the Iceland100 field waveforms, using method_examples.jl and method_figures.py.",
-    "lab_*.png": "Original synthetic and recorded waveforms, including an exact UTC overlap check on Z7.RODG E."
-  },
-  "papers": [
-    "https://doi.org/10.1016/j.epsl.2018.03.020",
-    "https://doi.org/10.1029/2018JB016010",
-    "https://doi.org/10.1029/JB089iB07p05719",
-    "https://doi.org/10.1785/0120000006",
-    "https://doi.org/10.1785/0120020238",
-    "https://doi.org/10.1785/0220160188",
-    "https://doi.org/10.1785/0220260086",
-    "https://doi.org/10.22541/essoar.15009811/v1",
-    "https://doi.org/10.3133/ofr01113"
-  ],
+  "source_baseline": "633b6cfdcd9305b0421e88303f18aad29f6c9cb1",
+  "slide_count": 89,
   "code_excerpts": [
     {
-      "slide": 59,
+      "slide": 57,
       "file": "src/signal.jl",
       "ranges": [
         [
@@ -55,39 +29,25 @@
       ],
       "label": "src/signal.jl:13–14, 28–30",
       "image": "code-42.png"
-    },
-    {
-      "slide": 65,
-      "file": "src/signal.jl",
-      "ranges": [
-        [
-          126,
-          129
-        ],
-        [
-          132,
-          133
-        ]
-      ],
-      "label": "src/signal.jl:126–129, 132–133",
-      "image": "code-44.png"
-    },
-    {
-      "slide": 66,
-      "file": "src/signal.jl",
-      "ranges": [
-        [
-          34,
-          35
-        ],
-        [
-          72,
-          74
-        ]
-      ],
-      "label": "src/signal.jl:34–35, 72–74",
-      "image": "code-43.png"
     }
   ],
-  "slides_sha256": "0a47cf02780491e5c773879b61de17fa6d4d88457220a21ba483d9f9336f96be"
+  "illustrations": {
+    "holuhraun_landsat.jpg": "NASA Earth Observatory / Jesse Allen, Landsat 8 data from USGS. Holuhraun lava field, 6 September 2014, false colour. https://science.nasa.gov/earth/earth-observatory/roiling-flows-on-holuhraun-lava-field-84316/",
+    "Literature, shared paths, matched earthquake maps and graph": "See lecture_provenance.json and seminar_provenance.json.",
+    "Iceland report screenshots": "The laboratory and report figures show the real 100-event run: its 22 station/phase matrices, quality summary, cycle-closure plots, filter audit and accepted waveform examples. The filter-response calibration uses test sinusoids; the waveform spectra use Iceland recordings.",
+    "Waveforms and measurements": "The methods figures use the Iceland100 waveforms, configuration and exported correlations. Refer to build instructions, individual slide notes and linked Julia source.",
+    "Competing peaks and threshold comparison": "KVER P pair 13/27 is shown in the 4–8 Hz band. P station counts compare two coefficient thresholds applied to the accepted reference rows; see lag_figure.py and threshold_figure.py."
+  },
+  "papers": [
+    "https://doi.org/10.1029/JB089iB07p05719",
+    "https://doi.org/10.1785/0120020238",
+    "https://doi.org/10.1785/0120000006",
+    "https://doi.org/10.3133/ofr01113",
+    "https://doi.org/10.1785/0220160188",
+    "https://doi.org/10.1016/j.epsl.2018.03.020",
+    "https://doi.org/10.1029/2018JB016010",
+    "https://doi.org/10.1785/0220260086",
+    "https://doi.org/10.22541/essoar.15009811/v1"
+  ],
+  "slides_sha256": "495be5db28e4accb6d40d99329e43f6a6e2601e5d2d5acb6ac56b19b830bf0c5"
 }

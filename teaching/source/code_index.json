@@ -1,6 +1,6 @@
 [
   {
-    "slide": 59,
+    "slide": 57,
     "file": "src/signal.jl",
     "ranges": [
       [
@@ -14,37 +14,5 @@
     ],
     "label": "src/signal.jl:13\u201314, 28\u201330",
     "image": "code-42.png"
-  },
-  {
-    "slide": 65,
-    "file": "src/signal.jl",
-    "ranges": [
-      [
-        126,
-        129
-      ],
-      [
-        132,
-        133
-      ]
-    ],
-    "label": "src/signal.jl:126\u2013129, 132\u2013133",
-    "image": "code-44.png"
-  },
-  {
-    "slide": 66,
-    "file": "src/signal.jl",
-    "ranges": [
-      [
-        34,
-        35
-      ],
-      [
-        72,
-        74
-      ]
-    ],
-    "label": "src/signal.jl:34\u201335, 72\u201374",
-    "image": "code-43.png"
   }
 ]

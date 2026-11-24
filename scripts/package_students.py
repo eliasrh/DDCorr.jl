@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package the student code, short guides, slides and worked solutions.
+"""Package the student code, short guides, slides and report walkthrough.
 
 From the repository folder run:
     python3 scripts/package_students.py --output ../DDCorr_student_package.zip

@@ -1,90 +1,202 @@
-DDCorr workshop • worked answers
+Reading the Bárðarbunga DDCorr report
 
-1. Which phase times does the first Iceland trace contain?
+The Iceland input
 
-In S1_009900/Z7.HRIM..HHZ.sac, KA is P_pred and KT0 is S_pred. The numeric
-times used for P and S are A and T0, respectively. O gives the event origin
-relative to the SAC clock. Subtract O from A to read the P time after origin.
-The Iceland S1 catalogue contains event origins, locations and magnitudes.
-The SAC producer calculated arrival times to centre the windows using 6.0 km/s
-for P and 3.5 km/s for S. On another dataset, inspect the field names and labels.
+Iceland100/DDCorr.toml selects the SAC directory beside the settings file.
+It defines the numerical SAC fields A for P and T0 for S. For example, the
+vertical recording in S1_009992/Z7.DYSA..HHZ.sac has A = 3.991571 s and
+T0 = 6.842693 s. Both times are measured from the reference instant in
+the SAC header. In this archive it coincides with this event's origin.
+Their labels P_pred and S_pred identify predicted phase times.
 
-2. What do the Iceland baseline counts mean?
+The metadata viewer prints a trace's channel, reference time, origin,
+coordinates, orientation, sampling interval and phase markers. The
+“Your own SAC files” section in Start Here gives the command for this
+exact recording. The Iceland P window extends from 0.5 s before to 2 s
+after its P marker. Both phases use a 2–14 Hz bandpass.
 
-100 event folders × 11 stations × 3 components = 3,300 SAC traces.
-Twelve stations met the original metadata selection; STJA had no usable
-waveforms in the selected archive. The baseline produced 2,412 P rows
-and 4,625 S rows, or 7,037 station–phase measurements across 1,914
-distinct earthquake pairs. Separate stations can measure the same pair.
-Multiple horizontal components can contribute to one S measurement.
+The Iceland report
 
-In group_summary.csv, Z7.DYSA P had 66 prepared events. Its 2,145 possible
-pairs yielded 800 accepted, 1,307 below the correlation threshold and 38 at
-the search boundary. A boundary peak suggests the true optimum might lie
-beyond the chosen lag range. Check the waveforms before increasing that range.
+Open report.html in your Iceland correlation folder, or use
+Iceland100/reference/report.html for the supplied result. The catalogue
+contains 100 events. The run retained 2,412 P measurements and 4,625 S
+measurements across 1,914 event pairs. The observation count includes
+separate measurements from every contributing station and phase.
 
-3. Does every convincing correlation demonstrate two different earthquakes?
+The six “Quality and connectivity” panels
 
-In the existing [plots] section of a copy of Iceland100/DDCorr.toml, set
-  event_pairs = [[44, 45], [28, 45]]
-  example_stations = ["Z7.RODG", "Z7.STAM"]
-  example_phases = ["S"]
-Save this TOML in Iceland100/. Run DDCorr with this copy and open the printed
-report. Use example_selection.csv to locate the requested figures.
+Upper left — All measured peaks. At each station and phase DDCorr searches
+a correlation curve for its highest sampled coefficient. The step curves
+count those values in bins of 0.05. Blue represents P and orange S. The
+dashed lines at 0.70 are the configured limits for this Iceland run. Most
+peaks fall below them. A pair without enough shared components has no
+correlation curve to contribute.
 
-IDs 28, 44 and 45 map to S1_009927, S1_009943 and S1_009944.
-For 44/45, Z7.RODG S gives r = 0.99982 and lag = +0.0003 s. The two traces
-nearly cover each other. Their catalogue origins differ by only 0.060 s and
-15 accepted measurements at 11 stations have r between 0.908 and 0.99982.
-At Z7.RODG, aligning the two raw horizontal cuts on UTC gives 9,495 shared
-samples with exactly equal amplitudes on the component used in the example.
-These files contain the same recorded pulse. A high r warrants that
-check; a decision to merge requires evidence of one source occurrence.
+Upper right — Accepted coefficients. This panel includes only rows retained
+in correlations.csv, in bins of 0.025. The horizontal scale is signed r.
+A concentration near the threshold can be investigated by viewing some
+of those actual waveforms. The upper-left and upper-right graphs have
+different vertical scales and bin widths. Exact acceptance and rejection
+counts are in the group decisions table.
 
-For 28/45, Z7.STAM S gives r = 0.700006 and lag = −0.0039 s. An early pulse
-aligns better than the later coda. Compare the other horizontal component,
-neighbouring lag peaks and the other stations. There are eight accepted
-measurements across six stations for this pair; the strongest has r = 0.92963.
+Middle left — Accepted residual lags. Each observation contributes its
+fitted shift, in seconds, relative to the two input markers. Most Iceland
+shifts cluster near zero. A positive value moves the second trace earlier
+in the alignment plot. A concentration well to one side is worth checking
+by station and phase for a marker convention or onset mismatch. The figure
+contains accepted observations, so boundary rejections are found in the
+pair-outcome panel and table.
 
-4. What happens when only the P threshold changes?
+Middle right — Event graph degree. For each event, count its distinct
+partners across all stations and phases. Measuring a pair at several
+stations adds one partner. The vertical scale counts events in the degree
+range. Four Iceland events have zero partners. The component sizes above
+the figures are 96, 1, 1, 1 and 1. A component means there is a path between
+its members. event_connectivity.csv gives the degree of each event.
 
-A Threshold.toml alongside the Iceland baseline with [P] min_cc = 0.90 leaves
-233 P rows. All 4,625 S rows still pass. Together these give 4,858 observations
-on 1,260 pairs. At 0.70 there were 2,412 P rows and 1,914 linked pairs. These
-counts can also be checked by filtering the baseline correlations.csv on
-cc_signed; the default comparison keeps r greater than or equal to the
-threshold. The smaller set gives fewer P constraints for relocation.
+Lower left — Accepted observations by station. Each station has a P bar and
+an S bar. Their heights are numbers of accepted station–phase measurements.
+The two phases use different components, markers and signal windows, so
+their coverage can differ at the same site.
 
-5. How do we check the sign and error independently?
+Lower right — Pair decisions. Each bar counts an outcome after individual
+traces have been prepared. For this run 7,037 comparisons were accepted,
+50,361 fell below the threshold, 893 peaked on the search boundary, and
+124 had insufficient common components. group_summary.csv divides the
+outcomes by station and phase. preprocessing_issues.csv gives the earlier
+reasons why individual traces failed preparation.
 
-In the synthetic dataset, output events 1 and 2 map to original names
-1201 and 17. At XX.S01 P their supplied pick-minus-origin times differ by
-+0.3600 s (event 1 minus event 2). The waveform of event 2 arrives +0.2247 s
-later relative to its own pick on the aligned axes. Subtract that correction.
-DDCorr writes 0.3600 − 0.2247 = +0.1353 s for event 1 minus event 2. The
-synthetic pulses were generated with a difference of +0.1350 s, giving a
-signed error of +0.0003 s. The squared coefficient in dt.cc, approximately
-0.9698, is the weight. Use check_synthetic.py as shown in START_HERE for all
-accepted rows. Expect 80 signal measurements, maximum absolute error about
-0.0006 s, and zero accepted rows for the noise-only event, original ID 905.
+One DYSA P measurement
 
-6. How does narrowing the P band change the result?
+Under “Accepted pair examples”, the first DYSA P figure shows catalogue
+IDs 93 and 97. The header of the figure and the entries in event_id_map.csv
+identify the original folders as S1_009992 and S1_009996. The contributing
+component is HHZ at station Z7.DYSA.
 
-Copy the Iceland baseline TOML beside the original, change only the P
-band from 2–14 Hz to 4–8 Hz, and keep the S settings. The narrower band
-accepts 4,626 P observations, compared with 2,412 at the baseline. There
-are 1,945 P observations shared by the runs. The new band gains 2,681
-and loses 467. Both runs accept 4,625 S observations. Compare station,
-phase and both event IDs when counting the overlap. At Z7.KVER, P for
-13/27 passes in the broad band and fails in the narrow band because two
-different lags give nearly the same coefficient. More accepted pairs alone
-does not establish a better location dataset.
+In the top panel the main pulse in event 97 is later on its P-marker-centred
+axis. In the middle panel its waveform is shifted 0.0586 s earlier. The
+strong positive peaks align. The following oscillations differ in detail.
+In the bottom panel, the highest sampled coefficient is 0.70003 at
++0.060 s. A parabola fitted through that sample and its two neighbours
+gives a lag of +0.0586 s.
 
-7. What should you save?
+The “Correlation audit” link under “Files and conventions” opens
+correlations.csv. For events 93 and 97 at Z7.DYSA, phase P, the values are:
 
-Choose a reference run. Save its dt.cc, catalog.txt, stations.txt and
-event_id_map.csv together. Keep the settings, report and correlation rows
-so someone else can reproduce and inspect your measurement. Write down
-the event IDs, station, phase, lag, differential time and your reason for
-retaining or flagging one pair. An original event name in event_id_map.csv
-leads you back to the contributing SAC folder.
+    lag_B_later_s    +0.0586 s   Shift relative to the input phase markers.
+    cc_signed         0.70003   Signed peak correlation coefficient.
+    dt_s             +0.2972 s   Estimated P travel time for 93 minus 97.
+    weight            0.490046  Squared coefficient in this configuration.
+
+The P markers are 3.9916 and 3.6358 s after the two event origins. Their
+difference is +0.3558 s. Subtracting the fitted lag of +0.0586 s gives
+a differential travel time of +0.2972 s for event 93 minus event 97.
+The dt.cc block for this pair reads:
+
+    # 93 97 0.0
+    Z7.DYSA       0.2972 0.490046 P
+
+A pair measured at several stations or phases has several observation lines
+under the same header. Catalogue IDs 93 and 97 match the IDs in catalog.txt,
+and station Z7.DYSA appears in stations.txt.
+
+Two horizontal components at STAM
+
+Under “Accepted pair examples”, example_11_Z7.STAM_S shows S for events
+85 and 86. Only the first shared horizontal component, HHE, is drawn in
+the waveform overlays. The coefficient at each tested lag averages the
+HHE and HHN correlation coefficients. Event 86 lies earlier on its own
+marker-centred axis; displaying it 0.3416 s later aligns the main pulse.
+
+In the lower panel, the horizontal dashed line is the 0.70 acceptance
+threshold. The vertical dashed line marks the fitted lag. The highest
+sampled coefficient is approximately 0.997, and the gap in coefficient to
+the strongest separate competing peak is about 0.850. Similar-height peaks
+would indicate another plausible alignment. The footer gives the band,
+minimum signal-to-noise ratio and distance between the input epicentres.
+example_selection.csv records the station, phase, original folders, integer
+IDs and filename for each plot.
+
+Station matrices and missing measurements
+
+Under “Station/phase matrices (PNG)”, expand the Z7.DYSA P entry. For each
+pair of event IDs the three panels show the signed coefficient, differential
+time and residual lag. Grey cells have no accepted measurement. The
+coefficient is mirrored across the diagonal. Use the smaller ID first
+when looking up a row in correlations.csv. Reversing the pair order
+reverses the sign of the lag and differential time.
+
+For DYSA P, row 93, column 97 has coefficient 0.70003 in the left
+matrix. The middle matrix gives +0.2972 s in that cell and −0.2972 s
+in the reflected cell. The right matrix instead gives +0.0586 s, the
+shift on the two marker-centred axes. Each time panel has its own colour
+scale in seconds. Rows or columns with few coloured cells have few
+partners measured at this station and phase.
+
+Event 2 illustrates why a phase can be missing. Its Z7.DYSA vertical
+file was present and the phase_readiness.csv table marks its P window
+as ready. The filtered P signal was too weak relative to the pre-P noise;
+preprocessing_issues.csv gives that reason. The two horizontal components
+still supplied an S observation for events 1 and 2. The “Quality and
+connectivity” section links the preparation tables; “Group decisions”
+gives the totals for each station and phase.
+
+Cycle consistency
+
+For one station and phase, a triangle requires accepted differential times
+for all three pairs among three events. The horizontal quantity is
+dt(i,j) + dt(j,k) − dt(i,k) in seconds. A value near zero means the indirect
+timing difference through j agrees with the direct difference. The vertical
+scale counts triangles. The report pools P groups on the left and S groups
+on the right, with separate vertical scales. Titles give sampled counts
+and the number outside the ±0.5 s display.
+
+Many Iceland values lie inside the central 0.01 s bins. The linked
+triangle_closure_summary.csv resolves smaller differences by station and
+phase. At DYSA, 90% of the absolute P mismatches are at or below 1.48 ms,
+and 90% of S mismatches are at or below 1.97 ms. A broader tail indicates
+inconsistent pair times. Closure by itself cannot identify the wrong edge;
+a consistent bias on one event or a correlated noise pulse can still close.
+
+Filter audit
+
+The upper panels show amplitude gain against frequency in Hz for the P
+and S settings applied to this dataset. A gain of one preserves a tone’s
+amplitude. Both filters use 2–14 Hz; after filtering forward and backward,
+the gain is 0.5 at 2 Hz and 14 Hz. The continuous curves are calculated
+from the actual filter. The dots are measured by passing individual tones
+through that filter. Exact gains appear in filter_tone_audit.csv.
+
+The lower panels use real SAC recordings at TOHR: event S1_009943 in the
+P panel and S1_009910 in the S panel. At each frequency, the grey line is
+the raw power spectral density, and the coloured line is the filtered
+density at the original sample rate. PSD measures power per unit frequency.
+Both curves in each panel use the same raw peak as 0 dB. At any one frequency
+a 10 dB drop means ten times less power density. The drop outside the
+passband shows how the filter suppresses those frequencies. The two event
+panels each have their own raw reference.
+
+Near-identical recordings
+
+The “Near-identical arrival flags” link near the top of the report opens
+near_identity.csv. Of the 22 flagged observations, the row for events
+44 and 45 at Z7.RODG, phase S, has r = 0.99982. Under “Accepted pair
+examples”, example_09_Z7.RODG_S shows the marker-centred alignment.
+The slide adds a comparison on a common UTC clock, made directly from
+the two original east-component SAC recordings. All 9,495 overlapping
+samples match. DDCorr retains both catalogue IDs for review.
+
+Report switches in the TOML
+
+With [plots] enabled = true, summary, closure, filters and examples select
+the summary charts, cycle-consistency histograms, filter audit and gallery.
+max_examples limits the automatic gallery. [matrices] enabled and plots
+produce the station/phase images within the configured size limits.
+[matrices] dense controls separate dense CSV tables; the PNGs can be
+produced with dense = false.
+
+What to keep
+
+Save the whole correlation directory to keep the browser report, figures,
+measurements and effective configuration together. For relocation, use
+dt.cc, catalog.txt, stations.txt and event_id_map.csv from that same run.

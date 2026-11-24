@@ -1,11 +1,11 @@
 # DDCorr.jl
 
-DDCorr measures the shift between P or S waveforms from two earthquakes recorded at the same station. It combines that shift with the phase markers and earthquake origin times to write differential travel times for relocation.
+DDCorr compares P or S waveforms from pairs of earthquakes recorded at the same station. It uses their measured lag, phase-marker times and origin times to write differential travel times for relocation.
 
-**[Start here](docs/START_HERE.md)** for the Friday workshop. Begin with six synthetic events whose travel times are known. Fetch a small set of real waveforms, then use the instructor’s `Iceland100.zip` to measure and review correlations among 100 Bárðarbunga events. Extract the `DDCorr.jl` and `Iceland100` folders side by side.
+**[Start here for the Friday lab](docs/START_HERE.md)**. Run DDCorr on the synthetic SAC files, then on the supplied recordings of 100 Icelandic earthquakes. At 14:05 the class reads the real Iceland report together, follows individual P and S measurements into the output tables, and reviews how DDCorr processed those waveforms. From 16:00 to 18:00, participants can run their own SAC files or explore other Iceland station and event pairs.
 
 - [Editable workshop PowerPoint](teaching/DDCorr_minicourse.pptx)
-- [Inputs, settings and outputs](docs/INPUTS_OUTPUTS.md)
-- [Worked answers](teaching/SOLUTIONS.txt)
+- [Report walkthrough](teaching/SOLUTIONS.txt)
+- [Inputs, settings and output formats](docs/INPUTS_OUTPUTS.md)
 
-You can also start from your own event-cut SAC files. A completed run includes an HTML report, station–phase correlations, `dt.cc`, a catalogue, a station table and a map from the integer IDs back to your original event names.
+Extract the instructor’s `Iceland100.zip` alongside `DDCorr.jl`. For your own SAC files, use one directory per event. A completed run includes its HTML report, `correlations.csv`, `dt.cc`, `catalog.txt`, `stations.txt` and `event_id_map.csv`.
