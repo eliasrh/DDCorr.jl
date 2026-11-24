@@ -36,8 +36,9 @@ IDs 28, 44 and 45 map to S1_009927, S1_009943 and S1_009944.
 For 44/45, Z7.RODG S gives r = 0.99982 and lag = +0.0003 s. The two traces
 nearly cover each other. Their catalogue origins differ by only 0.060 s and
 15 accepted measurements at 11 stations have r between 0.908 and 0.99982.
-Check the cuts in absolute UTC against the continuous record. Two catalogue
-entries may be using the very same physical arrival. A high r warrants that
+At Z7.RODG, aligning the two raw horizontal cuts on UTC gives 9,495 shared
+samples with exactly equal amplitudes on the component used in the example.
+These files contain the same recorded pulse. A high r warrants that
 check; a decision to merge requires evidence of one source occurrence.
 
 For 28/45, Z7.STAM S gives r = 0.700006 and lag = −0.0039 s. An early pulse
@@ -56,7 +57,7 @@ threshold. The smaller set gives fewer P constraints for relocation.
 
 5. How do we check the sign and error independently?
 
-In the optional synthetic dataset, output events 1 and 2 map to original names
+In the synthetic dataset, output events 1 and 2 map to original names
 1201 and 17. At XX.S01 P their supplied pick-minus-origin times differ by
 +0.3600 s (event 1 minus event 2). The waveform of event 2 arrives +0.2247 s
 later relative to its own pick on the aligned axes. Subtract that correction.
@@ -67,26 +68,23 @@ signed error of +0.0003 s. The squared coefficient in dt.cc, approximately
 accepted rows. Expect 80 signal measurements, maximum absolute error about
 0.0006 s, and zero accepted rows for the noise-only event, original ID 905.
 
-6. Which Friday result should we bring to DDSync and GraphSplit on Saturday?
+6. How does narrowing the P band change the result?
 
-Choose the 100-event baseline result and keep its dt.cc, catalog.txt,
-stations.txt and event_id_map.csv together. In Iceland100/ use prepare_run.jl
-with that result path or with reference, as described in START.txt. DDSync
-uses alternate paths through the station–phase graph to test consistency.
-GraphSplit uses measurements from several stations and a velocity model to
-estimate relative positions. DDSync retains 6,736 of 7,037 observations in
-the supplied run. GraphSplit uses 65 events for prelocation and 57 in the DD
-solve. Select the 57 IDs in catalog_dd_filt.txt from each of the three
-catalogues before comparing them. Iceland100/solutions/RESULTS.txt and matched_locations.png give the
-worked comparison. Assess coverage, link redundancy and station geometry
-before interpreting a change in cluster shape.
+Copy the Iceland baseline TOML beside the original, change only the P
+band from 2–14 Hz to 4–8 Hz, and keep the S settings. The narrower band
+accepts 4,626 P observations, compared with 2,412 at the baseline. There
+are 1,945 P observations shared by the runs. The new band gains 2,681
+and loses 467. Both runs accept 4,625 S observations. Compare station,
+phase and both event IDs when counting the overlap. At Z7.KVER, P for
+13/27 passes in the broad band and fails in the narrow band because two
+different lags give nearly the same coefficient. More accepted pairs alone
+does not establish a better location dataset.
 
+7. What should you save?
 
-7. Trace events 28 and 45 through Saturday’s relocation.
-
-Both IDs appear in graphsplit_output/catalog_dd_filt.txt. Match the final
-integer ID in each catalogue to the same two IDs at input and prelocation.
-Their horizontal separation is about 0.176 km initially, 0.171 km after
-prelocation and 0.172 km after DD. Their 3-D separation is about 0.291,
-0.355 and 0.362 km. Most of the change for this pair was in the vertical
-direction. These are distances between the fitted hypocentres.
+Choose a reference run. Save its dt.cc, catalog.txt, stations.txt and
+event_id_map.csv together. Keep the settings, report and correlation rows
+so someone else can reproduce and inspect your measurement. Write down
+the event IDs, station, phase, lag, differential time and your reason for
+retaining or flagging one pair. An original event name in event_id_map.csv
+leads you back to the contributing SAC folder.

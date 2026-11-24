@@ -5,7 +5,7 @@ From the repository folder run:
     python3 scripts/package_students.py --output ../DDCorr_student_package.zip
 
 Share the separate Iceland100.zip alongside this handout. It contains the SAC
-files and the inputs for the DDSync and GraphSplit exercises.
+files and the DDCorr reference report for the Iceland practical.
 """
 import argparse
 import hashlib
