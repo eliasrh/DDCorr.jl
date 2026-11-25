@@ -1,0 +1,26 @@
+Saturday workshop sources and data
+
+Event origins and magnitudes come from Data Set S1 of Ágústsdóttir, T., Winder, T., Woods, J., White, R. S., Greenfield, T., and Brandsdóttir, B. (2019). Intense seismicity during the 2014–2015 Bárðarbunga–Holuhraun rifting event, Iceland, reveals the nature of dike-induced earthquakes and caldera collapse mechanisms. Journal of Geophysical Research: Solid Earth, 124, 8331–8357.
+https://doi.org/10.1029/2018JB016010
+
+The first 100 catalogue entries after noon on 23 August 2014 span 12:00:29.86–13:48:56.81 UTC. The original field recordings are from the Cambridge Northern Volcanic Zone network (Z7). Friday's Iceland100 archive includes the station and event tables and provenance of the SAC cuts.
+https://doi.org/10.7914/SN/Z7_2010
+
+The four files in inputs are byte-for-byte copies of Iceland100/reference from Friday. They belong to one run of DDCorr on eleven stations. Candidate windows were centred on P and S markers predicted from constant speeds of 6.0 and 3.5 km/s. Both phases used a 2–14 Hz band and a minimum signed correlation coefficient of 0.70. The observation weight in dt.cc is the squared coefficient. The catalogue and waveform tables link via event_id_map.csv.
+https://github.com/eliasrh/DDCorr.jl
+
+The 19 depth, Vp, Vs rows in config/vm.txt come from the local TOMO_test_BB model used in Elías Heimisson's Bárðarbunga relocation work. The depths are in km below sea level and the speeds in km/s. Its SHA-256 is c0196bdccd28323f8e3fc50bfd8094404b7865cad3a92331cd8aea0fa1bc5b1d. Its equivalence to the exact model used to locate the published S1 events has not been established. The classroom lookup table is generated locally from this file. A study elsewhere needs an appropriate regional model and table extent.
+
+DDSync
+Heimisson, E. R., and Yu, Y. (2026). DDSync: Graph-based denoising of differential travel-time observations with applications to pick reconstruction and path-difference tomography. Seismological Research Letters.
+https://doi.org/10.1785/0220260086
+The unmodified Julia runner and source in software/DDSync/DDSyncJulia come from the following revision.
+https://github.com/eliasrh/DDSync/tree/3c38abb490d69c91f6fd90d7f6f445c2ffb98840
+
+GraphSplit
+Heimisson, E. R. (2026). GraphSplit: Sparse double-difference earthquake relocation from synchronized differential-time graphs. ESS Open Archive, preprint, version 1.
+https://doi.org/10.22541/essoar.15009811/v1
+The unmodified Julia runner and source in software/GraphSplit.jl come from the following revision.
+https://github.com/eliasrh/GraphSplit.jl/tree/541f518d89bc0a2d650c7a3d0aa16485e2a6a101
+
+Both runtime copies retain the upstream copyright and non-commercial licence. The corresponding LICENSE and CITATION.cff are in each software folder. Julia 1.12.3 was used for the reference calculation. The package uses Julia standard libraries and the inputs supplied here. The run summary in the shipped reference uses a relative configuration filename for portability.

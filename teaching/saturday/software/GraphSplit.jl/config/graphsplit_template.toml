@@ -1,0 +1,80 @@
+# Minimal GraphSplit configuration.
+# Paths are resolved relative to this TOML file. Copy this file beside your data.
+
+[io]
+catalog_file = "catalog.txt"
+stations_file = "stations.txt"
+theta_dir = "theta"
+thetastd_dir = "thetastd"
+output_dir = "graphsplit_output"
+# For a DD-only second pass, also set:
+# restart_shift_file = "../pass1/catalog_dd_dxdydzt0.txt"
+
+# Normally use the catalog hypocenters. To locate without single-event seed
+# locations, use "common_centroid" or "common_manual" and keep Stage 1 enabled.
+[initialization]
+mode = "catalog"
+# latitude = 64.0000
+# longitude = -21.0000
+# depth_km = 2.0
+
+# Optional physical depth controls. These are independent of the gauge. A
+# minimum depth is positive downward, so -0.8 km represents 800 m elevation.
+[constraints.depth_bound]
+enabled = false
+minimum_depth_km = 0.0 # for example, -0.8 means 800 m elevation
+reflected_prelocation_restart = false
+
+[constraints.fixed_depth]
+enabled = false
+scope = "all" # use "event_ids" plus event_ids=[...] for a subset
+event_ids = []
+depth_km = 0.0 # for example, -0.8 fixes events at 800 m elevation
+
+[travel_time]
+velocity_model_file = "vm.txt"
+table_file = "lookuptable/graphsplit_tt.gstt"
+
+# An existing native table identifies its own geometry. If no table exists,
+# build_geometry selects the native builder: "cartesian" or "radial".
+geometry = "auto"
+build_geometry = "cartesian"
+
+[lookup]
+horizontal_step_m = 125.0
+depth_step_m = 50.0
+station_depth_step_m = 100.0
+
+# Damping keeps weakly resolved events from drifting too far from the current
+# catalog. Increase by factors of 2–10 if the solution moves systematically or
+# implausibly; excessive damping preserves bias in the seed catalog.
+[prelocation]
+damping_lambda = 1.0e-3
+
+[relocation]
+damping_lambda = 5.0e-4
+
+[graph]
+neighbors = 20
+maximum_degree = 30
+metric = "xyz_scaled"
+depth_scale = 0.5
+mutual = true
+maximum_distance_km = 0.0 # 0 disables the radius cap
+
+[observations]
+minimum_theta_degree = 6
+minimum_observations_per_pair = 6
+
+[run]
+prelocation = true
+overwrite = true
+
+# Optional error/stability estimates. "linearized" is the inexpensive formal
+# estimate; "bootstrap" resamples complete station-phase theta groups; "both"
+# writes both products. Bootstrap runs can be much more expensive.
+[uncertainty]
+method = "none" # "none", "linearized", "bootstrap", or "both"
+
+# Every available option, including interactions, zero behavior, units, and
+# worked examples, is explained in docs/CONFIGURATION_REFERENCE.md.

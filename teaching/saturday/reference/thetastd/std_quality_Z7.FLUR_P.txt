@@ -1,0 +1,16 @@
+# event_id ref_id method relative_mc_se
+8 14 exact NaN
+12 14 exact NaN
+14 14 reference NaN
+20 14 exact NaN
+25 14 exact NaN
+26 14 exact NaN
+29 14 exact NaN
+30 14 exact NaN
+38 14 exact NaN
+39 14 exact NaN
+42 14 exact NaN
+51 14 exact NaN
+53 14 exact NaN
+94 14 exact NaN
+98 14 exact NaN

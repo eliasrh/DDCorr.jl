@@ -4,9 +4,12 @@ In this lab you will run DDCorr twice. The short synthetic run introduces the co
 
 ## Before class
 
-Get `DDCorr_student_package.zip` and `Iceland100.zip` from the instructor. Extract them into the same parent folder. If you use GitHub for the code, choose **Code → Download ZIP**, extract it and rename `DDCorr.jl-main` to `DDCorr.jl`. You can also use `git clone https://github.com/eliasrh/DDCorr.jl.git` with access to the private repository. The instructor supplies the Iceland recordings separately.
+You need **one copy of the DDCorr code** and **one Iceland100 data folder**. If you already downloaded the GitHub ZIP, you have the code. The instructor supplies `Iceland100.zip` separately.
 
-Your folders should look like this.
+1. Create a folder called `Workshop` wherever you keep your course files.
+2. For the code, use **Code → Download ZIP** on the DDCorr GitHub page, or use the instructor’s `DDCorr_student_package.zip`. Both contain the files needed for the lab. GitHub requires access to the private repository.
+3. Extract the code ZIP. On Windows, right-click the ZIP and choose **Extract All**. On macOS, double-click it. Find the extracted folder that directly contains `Project.toml`, `bin` and `scripts`. Place that folder in `Workshop` and name it `DDCorr.jl`.
+4. Extract `Iceland100.zip` the same way. Place the folder that directly contains `sac`, `reference` and `DDCorr.toml` in `Workshop` and name it `Iceland100`. Some ZIP tools add an extra outer folder. The two folders below must sit side by side.
 
 ```text
 Workshop/
@@ -21,21 +24,35 @@ Workshop/
     reference/
 ```
 
-Install Julia 1.12.3 and Python 3.12. Open Terminal on macOS/Linux or PowerShell on Windows in the `DDCorr.jl` directory, the folder containing `Project.toml`. If you opened the terminal in `Workshop`, type `cd DDCorr.jl`. All the commands below run from this same directory. [Julia downloads](https://julialang.org/downloads/) · [Python downloads](https://www.python.org/downloads/)
+To read these directions in a browser from the extracted files, double-click **DDCorr.jl → docs → START_HERE.html**. Both the guide and the supplied Iceland report work offline.
 
-Install the Julia dependencies once, while connected to the internet. Allow several minutes for this first setup. Both classroom runs then work offline.
+Install **Julia 1.12.3** for DDCorr. The short synthetic example also uses **Python 3**. Python 3.12 is the version used for the separate optional archive downloader. If you already have the Iceland files, the Iceland run only requires Julia. [Julia downloads](https://julialang.org/downloads/) · [Python downloads](https://www.python.org/downloads/)
+
+**Open a terminal in the code folder.** A terminal is the window where you paste the commands below.
+
+- **Windows:** In File Explorer, open the extracted `DDCorr.jl` folder so you can see `Project.toml`. Click the address bar, type `powershell` and press Enter.
+- **macOS:** In Finder, open `Workshop`, select the `DDCorr.jl` folder and use **Finder → Services → New Terminal at Folder**. You can also open Terminal, type `cd ` with a space, drag the folder from Finder into the window and press Return.
+- **Linux:** In your file manager, open `DDCorr.jl` and use **Open in Terminal**. Alternatively, type `cd ` and the folder path in your terminal, placing quotes around a path containing spaces.
+
+Keep this terminal in `DDCorr.jl` for both runs. Paste one command at a time and press Enter. If you see a `julia>` prompt, enter `exit()` to return to your terminal first.
+
+**Install the Julia packages once.** Run this command before class while connected to the internet. Julia downloads the packages, then compiles them. On the rehearsal Mac, the new package folder used about 1 GB and setup took about six minutes. Other computers may take longer, and the output may pause. Continue when your terminal prompt returns. Both classroom runs can then work offline.
 
 ```sh
 julia --project=. -e "using Pkg; Pkg.instantiate(); using DDCorr"
 ```
 
+If the terminal says it cannot find `julia`, finish the Julia installation and open a new terminal in `DDCorr.jl`. If setup is still in progress when class reaches the Iceland report, you can join immediately by opening **Iceland100 → reference → report.html** in your file manager.
+
 ## Synthetic data
 
-**Before lunch.** Generate the example SAC recordings from the repository. Use the command for your system.
+**Before lunch.** Generate the example recordings. Use the command for your system. This step uses only Python’s standard library.
 
 | macOS or Linux | Windows PowerShell |
 |---|---|
-| `python3 scripts/make_synthetic.py` | `py -3.12 scripts/make_synthetic.py` |
+| `python3 scripts/make_synthetic.py` | `py -3 scripts/make_synthetic.py` |
+
+If Windows installed Python as `python` and cannot find `py`, use `python scripts/make_synthetic.py`. If Python is unavailable during class, continue with the Iceland run below.
 
 The generator writes one folder for each earthquake under `examples/synthetic/sac`. Inside a folder such as `44`, each SAC file contains one component at one station. For example, `XX.S01..HHZ.sac` contains the vertical component from station S01 in network XX.
 
@@ -49,7 +66,7 @@ DDCorr prints the path to a new `results/correlate_…` directory. It contains i
 
 ## Iceland data
 
-**After lunch.** The supplied `Iceland100/sac` contains the real event cuts. Each of its 100 folders holds the available three-component records at eleven Z7 stations. The starting origins and magnitudes come from Data Set S1 of Ágústsdóttir et al. The example SAC files use predicted P and S times to centre the waveform windows. [Catalogue paper and supplement](https://doi.org/10.1029/2018JB016010) · [Z7 network](https://doi.org/10.7914/SN/Z7_2010)
+**After lunch, keep the terminal in DDCorr.jl.** The supplied `Iceland100/sac` contains the real event cuts. Each of its 100 folders holds the available three-component records at eleven Z7 stations. The starting origins and magnitudes come from Data Set S1 of Ágústsdóttir et al. The example SAC files use predicted P and S times to centre the waveform windows. [Catalogue paper and supplement](https://doi.org/10.1029/2018JB016010) · [Z7 network](https://doi.org/10.7914/SN/Z7_2010)
 
 Run the same program with **Iceland100/DDCorr.toml**. The path in this command selects the Iceland settings file. The `sac_dir = "sac"` line in that file points to `Iceland100/sac`.
 
@@ -57,9 +74,11 @@ Run the same program with **Iceland100/DDCorr.toml**. The path in this command s
 julia --project=. --threads=2 bin/ddcorr.jl ../Iceland100/DDCorr.toml
 ```
 
-Open **report.html** in the newly printed `Iceland100/results/correlate_…` directory. If your local run is still in progress, open **Iceland100/reference/report.html**. The reference folder contains the complete Iceland result, including its figures and tables.
+**Open the Iceland report.** When DDCorr finishes it prints an “Open in your browser” line. In Finder or File Explorer, open **Workshop → Iceland100 → results**, choose the `correlate_` folder whose date and time match the printed path, and double-click **report.html**. Windows may display the file as **report** with a browser icon. The Iceland report opens with **100 events**, **2,412 P observations** and **4,625 S observations**.
 
-**Return to the slides at 14:05 with the Iceland report open.** The guided lab is complete.
+If you cannot finish the run on your computer, double-click **Workshop → Iceland100 → reference → report.html**. It contains the same Iceland figures and measurement tables. Open the HTML in its extracted folder so its figure links work.
+
+**At 14:05, leave the Iceland report open and return to slide 25**, “The Iceland run uses its own settings and SAC directory.” The instructor will walk through the figures with the class.
 
 ## Reading the report
 

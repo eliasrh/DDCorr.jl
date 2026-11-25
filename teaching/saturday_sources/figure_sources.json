@@ -1,0 +1,35 @@
+{
+  "figures": {
+    "sat_cahuilla_maps.png": "Heimisson (2026). GraphSplit: Sparse Double-Difference Earthquake Relocation From Synchronized Differential-Time Graphs. ESS Open Archive, version 1. Figure 4. https://doi.org/10.22541/essoar.15009811/v1 Original author-supplied Figure 4, panels a–c, cropped without changing the data or axes.",
+    "sat_cahuilla_section.png": "Heimisson (2026). GraphSplit: Sparse Double-Difference Earthquake Relocation From Synchronized Differential-Time Graphs. ESS Open Archive, version 1. Figure 4. https://doi.org/10.22541/essoar.15009811/v1 Original author-supplied Figure 4, panels d–f, cropped without changing the data or axes."
+  },
+  "field_data": "23 August 2014 Z7 field recordings. Event identifiers are the sequential Iceland100 workshop IDs. Starting catalogue Ágústsdóttir et al. (2019), Data Set S1, https://doi.org/10.1029/2018JB016010. Waveform network https://doi.org/10.7914/SN/Z7_2010.",
+  "methods": [
+    "https://doi.org/10.1785/0220260086",
+    "https://doi.org/10.22541/essoar.15009811/v1",
+    "https://doi.org/10.1785/0120000006",
+    "https://doi.org/10.1785/0220160188"
+  ],
+  "software": {
+    "DDSync": "https://github.com/eliasrh/DDSync/tree/3c38abb490d69c91f6fd90d7f6f445c2ffb98840",
+    "GraphSplit": "https://github.com/eliasrh/GraphSplit.jl/tree/541f518d89bc0a2d650c7a3d0aa16485e2a6a101"
+  },
+  "code_excerpts": [
+    {
+      "file": "DDSyncJulia/src/DDSync.jl",
+      "lines": [
+        1126,
+        1129
+      ]
+    },
+    {
+      "file": "src/Solver.jl",
+      "lines": [
+        374,
+        377
+      ]
+    }
+  ],
+  "graph_export": "export_teaching_edges.jl reconstructs the exact classroom geometry graph from the completed prelocation shift. The verified slice contains 724 geometry edges, 409 contributing pairs and 4815 supported station–phase rows.",
+  "drawing": "theory_figures.py recreates all original figures from the classroom inputs and reference outputs. The incidence/Huber/shared-ray figures are mathematical illustrations. Counts, times, topology, field locations and errors in all other original figures are real field-workshop products. The Cahuilla plots reproduce the preprint figure cited above."
+}

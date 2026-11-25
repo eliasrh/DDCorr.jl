@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use GraphSplit in your research, please cite the manuscript below and the software version used. The preprint is in moderation."
+title: "GraphSplit: Sparse graph relocation from synchronized differential travel times"
+type: software
+authors:
+  - family-names: "Heimisson"
+    given-names: "Elías Rafn"
+    affiliation: "Institute of Earth Sciences, University of Iceland"
+    orcid: "https://orcid.org/0000-0001-8342-7226"
+repository-code: "https://github.com/eliasrh/GraphSplit.jl"
+url: "https://github.com/eliasrh/GraphSplit.jl"
+license: "LicenseRef-GraphSplit-NonCommercial-1.0"
+version: "0.4.0"
+date-released: "2026-09-07"
+preferred-citation:
+  type: unpublished
+  title: "GraphSplit: Sparse Double-Difference Earthquake Relocation From Synchronized Differential-Time Graphs"
+  authors:
+    - family-names: "Heimisson"
+      given-names: "Elías Rafn"
+      orcid: "https://orcid.org/0000-0001-8342-7226"
+  year: 2026
+  doi: "10.22541/essoar.15009811/v1"
+  notes: "ESS Open Archive, Submitted to Journal of Geophysical Research: Solid Earth"
+keywords:
+  - seismology
+  - earthquake relocation
+  - double difference
+  - graph methods
+  - differential travel times
+  - eikonal equation
+abstract: >
+  GraphSplit is a standard-library-only Julia implementation of sparse,
+  graph-based earthquake relocation from synchronized DDSync theta data. It
+  includes native Cartesian and radial layered-model travel-time builders,
+  robust matrix-free inversion, serial-ID-safe catalog/common initialization,
+  HypoDD-style corrected origin times, cumulative space-time shift sidecars,
+  physical and fixed-depth constraints, conditional station-phase bootstrap
+  and linearized uncertainty, and TOML-driven reproducible runs.

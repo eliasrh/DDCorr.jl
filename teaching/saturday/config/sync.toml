@@ -1,0 +1,29 @@
+# Run from the new run folder that contains this file.
+[io]
+infile_dt = "dt.cc"                 # One differential travel time per event pair, station and phase.
+catalog_file = "catalog.txt"        # Same event IDs and origin times as the measurements.
+tmpdir = "ddsync_tmp"
+thetadir = "theta"                  # Fitted event times relative to each connected group's reference.
+thetastd_dir = "thetastd"           # Timing uncertainties in seconds for GraphSplit.
+metrics_file = "sync_metrics.txt"
+
+[weights]
+base_mode = "cc"                    # DDCorr already wrote r². Read column 3 with no further squaring.
+
+[std]
+export = true
+mode = "auto"                       # Small groups use exact inverse-Laplacian diagonals.
+min_sigma = 0.0005                  # Seconds. Minimum residual scatter for uncertainty calculations.
+apply_min_sigma = true              # An individual timing standard deviation can be smaller.
+
+[output]
+write_dt_sync = false               # GraphSplit reads the two theta directories directly.
+
+[robust]
+MIN_EDGES = 30                      # A component must contain 30 comparisons and at least one redundant edge.
+K_SIGMA = 20.0                      # Prune large timing misfits relative to the robust within-component scale.
+min_scale = 0.0005                  # Seconds. Minimum scale used for robust weighting and pruning.
+
+[irls]
+C_HUBER = 1.345                     # Downweight large standardized residuals gradually.
+iters = 10                          # Maximum number of robust reweighting iterations.

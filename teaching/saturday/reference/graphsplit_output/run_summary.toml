@@ -1,0 +1,52 @@
+[catalog_output]
+origin_time_columns = [1, 2, 3, 4, 5, 6]
+origin_time_decimals = 6
+restart_shift_file = ""
+shift_horizontal_axes = "local_east_north"
+shift_reference_latitude = 64.92692011818183
+shift_reference_longitude = -16.83576275619867
+shift_semantics = "cumulative_from_first_pass_input"
+shift_spatial_units = "m"
+shift_time_units = "s"
+shift_vertical_convention = "positive_depth"
+
+[depth_constraints]
+bound_enabled = false
+bound_events = 0
+fixed_depth_enabled = false
+fixed_depth_events = 0
+prelocation_bound_active_events = 0
+reflected_prelocation_events = 0
+relocation_bound_active_events = 0
+unconstrained_prelocation_pilot_ran = false
+
+[initialization]
+mode = "catalog"
+
+[inputs]
+events = 100
+stations = 11
+theta_groups = 21
+
+[prelocation]
+final_robust_rms_s = 0.003528837563522199
+iterations = 38
+observations = 745
+
+[relocation]
+final_robust_rms_s = 0.0022361143466961865
+graph_components = 2
+graph_edges = 724
+iterations = 9
+observations = 4815
+
+[run]
+completed_utc = "2026-11-25T10:24:38Z"
+config_file = "DD.toml"
+
+[travel_time]
+geometry = "radial"
+type = "lookup"
+
+[uncertainty]
+method = "none"
