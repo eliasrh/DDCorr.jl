@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Earthquake catalogues · GraphSplit</title>
+<style>
+:root{color-scheme:light;--ink:#153c37;--rust:#a34926;--rule:#cbd5c9;--bg:#faf9f3}*{box-sizing:border-box}body{max-width:1380px;margin:auto;padding:28px clamp(12px,4vw,64px) 45px;font:17px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--ink)}h1,h2{font-family:Georgia,serif;font-weight:normal;line-height:1.1}h1{font-size:clamp(32px,4vw,55px);margin:0 0 8px}h2{font-size:30px;margin:15px 0}p{max-width:82ch;margin:8px 0 15px}button,select,input{font:inherit}button,select{background:white;color:var(--ink);border:1px solid #93a79b;border-radius:4px;padding:5px 10px}button{cursor:pointer}label{display:inline-flex;align-items:center;gap:.4em}.bar,.legend{display:flex;align-items:center;flex-wrap:wrap;gap:.65em 1.3em;margin:10px 0}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:12px;height:12px;display:inline-block;border:2px solid currentColor;border-radius:50%}details{padding:12px 0;border-top:1px solid var(--rule);margin-top:15px}summary{cursor:pointer;font-weight:650}.files{display:grid;gap:8px;margin:12px 0}.files label{display:grid;grid-template-columns:minmax(175px,220px) auto;align-content:center}svg{background:white;display:block;width:100%;height:auto;border:1px solid var(--rule)}svg text{font-family:system-ui,sans-serif}.plots{display:grid;grid-template-columns:1fr 1fr;gap:12px}.plot h2{font-size:23px}.status{padding:6px 0}#message{color:#923812}table{border-collapse:collapse;margin:9px 0}td,th{padding:5px 16px 5px 0;border-bottom:1px solid var(--rule);text-align:left;white-space:nowrap}#detail{overflow:auto}.meta{font-size:14px}.mark{stroke:#fff;stroke-width:.45}.mark:focus{outline:2px solid var(--rust)}@media(max-width:850px){.plots{grid-template-columns:1fr}.files label{display:block}body{padding:12px}}@media print{details,button,.bar{display:none}.plots{grid-template-columns:1fr 1fr}body{padding:0}}
+</style></head><body>
+<h1>Earthquake catalogues</h1>
+<p id="dataset"></p>
+<div class="bar"><label>Events <select id="population"><option value="final">With a DD location</option><option value="common">Present in every loaded catalogue</option><option value="all">All available at each stage</option></select></label><label>View <select id="view"><option value="fit">Whole sequence</option><option value="near">Near selected event</option></select></label><label>Event ID <select id="event"></select></label><button id="export" type="button">Save both plots as SVG</button></div>
+<div class="legend"><label style="color:#48566b"><input type="checkbox" id="on0" checked> Input ○</label><label style="color:#b65a22"><input type="checkbox" id="on1" checked> Preliminary △</label><label style="color:#087768"><input type="checkbox" id="on2" checked> DD ●</label></div>
+<div id="count" class="status" aria-live="polite"></div>
+<div class="plots"><div class="plot"><h2>Epicentres</h2><svg id="map" viewBox="0 0 520 390" aria-label="Epicentre map in local east and north kilometres"></svg></div><div class="plot"><h2>East–west depth section</h2><svg id="section" viewBox="0 0 520 390" aria-label="East versus depth in kilometres"></svg></div></div>
+<p class="meta" id="origin"></p>
+<h2 id="detailtitle">Selected earthquake</h2><div id="detail"></div>
+<details><summary>Open files from a different run</summary><p>Choose the input catalog.txt from the run and the two files ending in _filt.txt from its graphsplit_output folder. Their last column must contain the same integer event IDs across stages. Only the input catalogue is required.</p>
+<div class="files"><label>Input catalogue <input type="file" id="file0" accept=".txt,.dat,text/plain"></label><label>Preliminary catalogue <input type="file" id="file1" accept=".txt,.dat,text/plain"></label><label>DD catalogue <input type="file" id="file2" accept=".txt,.dat,text/plain"></label></div>
+<button id="load">Display selected files</button> <button id="restore">Restore Iceland example</button>
+<p id="message" role="status"></p><p class="meta">Each row has year, month, day, hour, minute, seconds, latitude, longitude, depth in kilometres, an optional magnitude, then the event ID. Filtered files contain only events supported at that stage. A full GraphSplit file can include carried-forward locations. Use a single run’s files. All processing happens in this browser.</p></details>
+<details><summary>How to read and reuse the plots</summary><p>Each point represents one earthquake in one catalogue. The selected ID is outlined, and a line joins its available stages. Click a point or choose its ID above. Depth increases downwards. The section includes the entire north–south width of the plotted sample. Both panels use the same east limits and equal kilometre scales. The full view retains the same axes as you switch stages.</p><p>The local projection approximates east and north distances on a sphere near the centre of the input earthquakes. It is intended for regional sequences. The displacement table uses this same projection. Coordinates and depth changes describe movement between solutions. They do not give a location uncertainty.</p><p class="meta">You may reuse and adapt this single-file viewer under the MIT license. The license text is embedded in the HTML source. The Iceland coordinates originate from Ágústsdóttir et al. (2019) and the workshop relocation. <a href="https://doi.org/10.1029/2018JB016010">Catalogue paper</a>.</p></details>
+<script id="example" type="application/json">__INITIAL_CATALOGUES__</script>
+<script>
+/*
+MIT License
+Copyright (c) 2026 DDCorr workshop contributors
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+'use strict';
+const by=id=>document.getElementById(id), stages=['Input','Preliminary','DD'], colors=['#48566b','#b65a22','#087768'];
+const namespace='http://www.w3.org/2000/svg';
+function make(tag,attrs={},label){
+ const el=document.createElementNS(namespace,tag);
+ for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
+ if(label!==undefined)el.textContent=label;
+ return el;
+}
+function parseCatalog(raw,name){
+ const events=new Map();
+ for(const [i,line] of raw.split(/\r?\n/).entries()){
+  const stripped=line.split('#')[0].trim();if(!stripped)continue;
+  const a=stripped.split(/\s+/), v=a.map(Number),id=v.at(-1);
+  if(![10,11].includes(v.length)||v.slice(0,9).some(x=>!Number.isFinite(x))||!Number.isSafeInteger(id)||Math.abs(v[6])>90||Math.abs(v[7])>360)
+   throw Error(name+' line '+(i+1)+' does not match the catalogue format. Choose the catalogue itself; shift tables have a different layout.');
+  if(events.has(id))throw Error(name+' repeats event ID '+id+'.');
+  events.set(id,{id,lat:v[6],lon:v[7],depth:v[8],time:a.slice(0,6).join(' ')});
+ }
+ if(!events.size)throw Error(name+' contains no earthquake rows.');
+ return events;
+}
+const example=JSON.parse(by('example').textContent);
+let cats,selected,local,loaded,description;
+const rad=Math.PI/180,wrap=deg=>((deg+180)%360+360)%360-180;
+function activate(texts,names,title){
+ const next=texts.map((s,i)=>s===null?new Map():parseCatalog(s,names[i]));
+ const first=[...next[0].values()],lat=first.reduce((sum,e)=>sum+e.lat,0)/first.length;
+ let xx=0,yy=0;for(const e of first){xx+=Math.cos(e.lon*rad);yy+=Math.sin(e.lon*rad)}
+ const lon=Math.atan2(yy,xx)/rad;
+ for(const m of next)for(const e of m.values()){e.x=6371*rad*wrap(e.lon-lon)*Math.cos(lat*rad);e.y=6371*rad*(e.lat-lat)}
+ cats=next;local={lat,lon};loaded=texts.map(t=>t!==null);description=title;by('dataset').textContent=title;
+ by('population').options[0].disabled=!loaded[2];by('population').value=loaded[2]?'final':'all';
+ for(let i=0;i<3;i++){by('on'+i).disabled=!loaded[i];by('on'+i).checked=loaded[i]}
+ by('view').value='fit';selected=null;refreshOptions();
+}
+function choices(){
+ const mode=by('population').value;
+ const ids=mode==='final'?[...cats[2].keys()]:[...new Set(cats.flatMap(c=>[...c.keys()]))];
+ return ids.filter(id=>mode!=='common'||cats.every((c,i)=>!loaded[i]||c.has(id))).sort((a,b)=>a-b);
+}
+function refreshOptions(){
+ const ids=choices();by('event').replaceChildren(...ids.map(id=>new Option(String(id),String(id))));
+ if(!ids.includes(selected))selected=ids[0]??null;
+ if(selected!==null)by('event').value=String(selected);
+ redraw();
+}
+function tickStep(span){const v=span/5,base=10**Math.floor(Math.log10(v)),n=v/base;return (n<1.5?1:n<3?2:n<7?5:10)*base}
+function draw(el,z,ids){
+ el.replaceChildren();const w=520,h=390,L=72,R=19,T=16,B=59,pw=w-L-R,ph=h-T-B,key=z?'depth':'y';
+ const allowed=new Set(ids),all=cats.flatMap(m=>[...m.values()].filter(e=>allowed.has(e.id)));
+ if(!all.length){el.append(make('text',{x:40,y:90},'No events for this selection.'));return}
+ const extent=key=>all.reduce(([a,b],e)=>[Math.min(a,e[key]),Math.max(b,e[key])],[Infinity,-Infinity]);
+ const [xmin,xmax]=extent('x'),[ymin,ymax]=extent(key);
+ const north=extent('y'),depth=extent('depth');
+ let cx=(xmin+xmax)/2,cy=(ymin+ymax)/2,unit=Math.max((xmax-xmin)/pw,(north[1]-north[0])/ph,(depth[1]-depth[0])/ph,0.25/Math.min(pw,ph))*1.16;
+ if(by('view').value==='near'&&selected!==null){const pts=cats.map(c=>c.get(selected)).filter(Boolean);cx=pts.reduce((sum,e)=>sum+e.x,0)/pts.length;cy=pts.reduce((sum,e)=>sum+e[key],0)/pts.length;const my=pts.reduce((sum,p)=>sum+p.y,0)/pts.length,md=pts.reduce((sum,p)=>sum+p.depth,0)/pts.length;unit=Math.max(1.6/pw,...pts.map(p=>2.6*Math.max(Math.abs(p.x-cx)/pw,Math.abs(p.y-my)/ph,Math.abs(p.depth-md)/ph)))}
+ const sx=v=>L+pw/2+(v-cx)/unit,sy=v=>T+ph/2+(v-cy)/unit*(z?1:-1);
+ const f=(t,a,label)=>el.append(make(t,a,label)),label=(x,y,v,extra={})=>f('text',{x,y,fill:'#29433f','font-size':13,...extra},v);
+ const step=tickStep(ph*unit);
+ for(let k=Math.ceil((cx-unit*pw/2)/step);k<=(cx+unit*pw/2)/step;k++){
+  const v=k*step,x=sx(v);f('line',{x1:x,x2:x,y1:T,y2:T+ph,stroke:'#e1e6df'});label(x,T+ph+21,String(+v.toFixed(3)),{'text-anchor':'middle'});
+ }
+ for(let k=Math.ceil((cy-unit*ph/2)/step);k<=(cy+unit*ph/2)/step;k++){
+  const v=k*step,y=sy(v);f('line',{x1:L,x2:L+pw,y1:y,y2:y,stroke:'#e1e6df'});label(L-8,y+4,String(+v.toFixed(3)),{'text-anchor':'end'});
+ }
+ f('rect',{x:L,y:T,width:pw,height:ph,fill:'none',stroke:'#817f77'});
+ label(L+pw/2,h-8,'East (km)',{'text-anchor':'middle'});
+ label(18,T+ph/2,z?'Depth (km)':'North (km)',{transform:'rotate(-90 18 '+(T+ph/2)+')','text-anchor':'middle'});
+ const defs=make('defs'),clip=make('clipPath',{id:'clip-'+el.id});clip.append(make('rect',{x:L,y:T,width:pw,height:ph}));defs.append(clip);el.append(defs);const dots=make('g',{'clip-path':'url(#clip-'+el.id+')'});el.append(dots);
+ const track=[];
+ for(let i=0;i<3;i++){
+  if(!by('on'+i).checked)continue;
+  for(const e of cats[i].values()){
+   if(!allowed.has(e.id))continue;const x=sx(e.x),y=sy(e[key]),r=e.id===selected?5:3.3;
+   const point=i===1?make('path',{d:'M '+x+' '+(y-r-1)+' l '+r+' '+(r*1.8)+' h '+(-2*r)+' z'}):make('circle',{cx:x,cy:y,r});
+   point.setAttribute('stroke',colors[i]);point.setAttribute('stroke-width',i===2?0.65:1.2);point.setAttribute('fill',i===2?colors[i]:'none');point.style.cursor='pointer';point.style.pointerEvents='all';
+   point.append(make('title',{},stages[i]+' · event '+e.id+' · '+e.depth.toFixed(3)+' km deep'));
+   point.addEventListener('click',()=>{selected=e.id;by('event').value=String(selected);redraw()});dots.append(point);
+   if(e.id===selected)track.push([x,y]);
+  }
+ }
+ if(track.length){dots.append(make('polyline',{points:track.map(p=>p.join(',')).join(' '),stroke:'#263e39','stroke-width':1,'stroke-dasharray':'4 3',fill:'none','pointer-events':'none'}));for(const [x,y]of track)dots.append(make('circle',{cx:x,cy:y,r:7,fill:'none',stroke:'#263e39','pointer-events':'none'}))}
+}
+function redraw(){
+ const ids=choices(),displayed=cats.map((m,i)=>by('on'+i).checked?ids.filter(id=>m.has(id)).length:0);
+ by('count').textContent=stages.map((s,i)=>s+' '+displayed[i]+' / '+cats[i].size).join('     ·     ')+'  (shown / in file)';
+ by('origin').textContent='Local kilometre coordinates are relative to '+local.lat.toFixed(4)+'°, '+local.lon.toFixed(4)+'°. Both views use the same event selection.';
+ draw(by('map'),false,ids);draw(by('section'),true,ids);
+ by('detailtitle').textContent=selected===null?'Selected earthquake':'Event '+selected;
+ const detail=by('detail');detail.replaceChildren();if(selected===null)return;
+ const table=document.createElement('table');
+ function row(values,cell){const tr=document.createElement('tr');for(const v of values){const td=document.createElement(cell);td.textContent=v;tr.append(td)}table.append(tr)}
+ row(['Stage','Latitude (°)','Longitude (°)','Depth (km)','Horizontal shift from input (km)','Depth change (km)'],'th');const src=cats[0].get(selected);
+ for(let i=0;i<3;i++){if(!loaded[i])continue;const e=cats[i].get(selected);if(!e){row([stages[i],'Absent','—','—','—','—'],'td');continue}row([stages[i],e.lat.toFixed(5),e.lon.toFixed(5),e.depth.toFixed(3),src?Math.hypot(e.x-src.x,e.y-src.y).toFixed(3):'—',src?(e.depth-src.depth).toFixed(3):'—'],'td')}
+ detail.append(table);
+}
+by('population').onchange=refreshOptions;by('event').onchange=()=>{selected=Number(by('event').value);redraw()};
+for(const id of ['view','on0','on1','on2'])by(id).onchange=redraw;
+function restore(){activate(example,['Input','Preliminary','DD'],'Reference run · Bárðarbunga, 23 August 2014 · 100 input earthquakes, 12:00–13:49 UTC');by('message').textContent='';for(let i=0;i<3;i++)by('file'+i).value=''}
+by('restore').onclick=restore;
+by('load').onclick=async()=>{try{const files=[0,1,2].map(i=>by('file'+i).files[0]);if(!files[0])throw Error('Choose an input catalog.txt first.');const vals=await Promise.all(files.map(f=>f?f.text():null));activate(vals,files.map(f=>f?.name||''),'Local files · '+files.filter(Boolean).map(f=>f.name).join(' / '));by('message').textContent=files.slice(1).some(f=>f && /^catalog_(preloc|dd)\.txt$/i.test(f.name))?'Full output loaded. It includes carried-forward positions. Choose files ending in _filt.txt to compare observation-supported events.':'Selected files loaded.';}catch(e){by('message').textContent=e.message}};
+by('export').onclick=()=>{const svg=make('svg',{xmlns:namespace,width:1040,height:470,viewBox:'0 0 1040 470'});svg.append(make('rect',{width:1040,height:470,fill:'white'}));svg.append(make('text',{x:20,y:22,'font-size':16},description));
+ [by('map'),by('section')].forEach((node,i)=>{const copy=node.cloneNode(true);copy.setAttribute('x',i*520);copy.setAttribute('y',55);copy.setAttribute('height',390);copy.setAttribute('width',520);svg.append(make('text',{x:i*520+72,y:45},i?'East–west depth section':'Epicentres'));svg.append(copy)});
+ svg.append(make('text',{x:20,y:462,'font-size':14},stages.filter((s,i)=>by('on'+i).checked).map(s=>s+[' ○',' △',' ●'][stages.indexOf(s)]).join('     ')+'   |   Event '+(selected??'—')));
+ const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'}));const link=document.createElement('a');link.href=url;link.download='earthquake-catalogues.svg';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+restore();
+</script></body></html>

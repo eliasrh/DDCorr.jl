@@ -1,0 +1,52 @@
+{
+  "mutual": {
+    "prelocation_events": 65,
+    "dd_events": 57,
+    "both_stages": 57,
+    "dd_only": [],
+    "geometry_edges": 724,
+    "geometry_components": 2,
+    "used_pairs": 409,
+    "dd_observations": 4815,
+    "dd_rms_ms": 2.2361143466961866,
+    "dd_outer_iters": 9,
+    "preloc_rms_ms": 3.528837563522199,
+    "preloc_iters": 38
+  },
+  "either": {
+    "prelocation_events": 65,
+    "dd_events": 59,
+    "both_stages": 59,
+    "dd_only": [],
+    "geometry_edges": 1256,
+    "geometry_components": 1,
+    "used_pairs": 574,
+    "dd_observations": 6362,
+    "dd_rms_ms": 2.375295567073709,
+    "dd_outer_iters": 11,
+    "preloc_rms_ms": 3.528837563522199,
+    "preloc_iters": 38
+  },
+  "common_dd_ids": 57,
+  "additional_ids": [
+    3,
+    96
+  ],
+  "lost_ids": [],
+  "horizontal_difference_m": {
+    "median": 100.1907157189514,
+    "p90": 139.3765426788782,
+    "maximum": 341.90898877297485
+  },
+  "abs_depth_difference_m": {
+    "median": 97.73515099999997,
+    "p90": 234.40696039999997,
+    "maximum": 860.264267
+  },
+  "spatial_difference_m": {
+    "median": 188.6000599381527,
+    "p90": 255.4944489206738,
+    "maximum": 925.7193773929579
+  },
+  "preloc_files_identical": true
+}

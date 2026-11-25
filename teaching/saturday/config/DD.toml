@@ -1,0 +1,42 @@
+# GraphSplit starts from the published origins and the timing graph fitted by DDSync.
+[io]
+catalog_file = "catalog.txt"
+stations_file = "stations.txt"
+theta_dir = "theta"
+thetastd_dir = "thetastd"
+output_dir = "graphsplit_output"
+
+[run]
+prelocation = true                  # Fit reference-to-event times before fitting nearby pairs.
+overwrite = false                   # Make a fresh run folder to keep an earlier experiment.
+
+[travel_time]
+velocity_model_file = "vm.txt"      # Depth (km below sea level), Vp and Vs (km/s).
+table_file = "lookuptable/bardarbunga.gstt"
+build_geometry = "radial"           # Travel time varies with epicentral distance and depth.
+clamp_to_grid = false
+
+[lookup]
+horizontal_step_m = 125.0
+depth_step_m = 100.0
+station_depth_step_m = 100.0
+minimum_depth_km = -2.0
+maximum_depth_km = 25.0
+distance_margin_km = 15.0
+maximum_table_gib = 0.25
+threaded = true
+
+[observations]
+minimum_theta_degree = 2            # Each timing estimate needs links to at least two events.
+minimum_star_observations_per_event = 6
+minimum_observations_per_pair = 6    # A pair needs six common station-phase observations.
+
+[graph]
+neighbors = 20                      # Each event nominates up to 20 nearby candidates.
+mutual = true                       # Both events must nominate each other.
+
+[gauge]
+zero_mean = "xyzt0_scaled"           # Limit a common spatial and origin-time shift of the group.
+
+[prelocation]
+max_outer_iterations = 80            # Allow the initial catalog to settle before forming nearby pairs.

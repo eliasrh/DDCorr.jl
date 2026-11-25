@@ -469,7 +469,7 @@ export const slides = [
     "title": "Open Start Here and follow the DDCorr lab",
     "kind": "handoff",
     "notes": "Keep this slide on screen throughout the guided lab. The synthetic run introduces the command and the event-folder layout. The figures will all be taught with the real Iceland recordings. The Iceland reference report provides a local fallback.",
-    "lead": "Open docs/START_HERE.md in the student package, or use the GitHub link below.",
+    "lead": "In the extracted DDCorr.jl folder, open docs and double-click START_HERE.html. You can also follow the guide on GitHub.",
     "body": [
       "Generate the small synthetic example and run DDCorr once.",
       "Run the supplied Iceland100 data and open its report.html.",

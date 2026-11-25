@@ -1,0 +1,228 @@
+# DDSync metrics
+# event_count=100
+# event_ids_remapped=false
+# theta_event_ids=original (already 1:N)
+# dt_sync_event_ids=original
+# K_SIGMA=20 MIN_EDGES=30 IRLS_ITERS=10 C_HUBER=1.345 MODE=thetaStd EXPORT_THETA_STD=1 STD_PROBES=4096 DIST=rademacher THETASTD_MODE=auto
+# STD_MIN_PROBES=128 STD_REL_TOL=0.1 STD_BATCH=128 STD_FALLBACK=pseudo_degree STD_EXACT_MAX_NRED=2048
+# STD_AUTO_PROBE=hutch
+# STD_REPAIR_MAX_NODES=128 STD_UNCONVERGED=keep
+# STD_MIN_SIGMA=0.0005 STD_APPLY_MIN_SIGMA=true
+
+# UNCERTAINTY SUMMARY
+# Denominator: 893 supported non-reference std entries (station-phase/event rows).
+# Excluded: 27 gauge references; 0 disabled entries; rejected/absent events.
+# Category                              Count      Percent
+# Exact (including repairs)               893      100.00%
+# Converged Hutch                           0        0.00%
+# Kept unconverged Hutch                    0        0.00%
+# Converged Cholesky                        0        0.00%
+# Kept unconverged Cholesky                 0        0.00%
+# Fallback / proxy                          0        0.00%
+# A draw is one random sample. Relative MC SE is the estimated sampling error divided by the event timing variance estimate.
+# For example, 0.10 means 10% sampling error on the variance. The uncertainty exported in seconds is its square root after scaling.
+# Requires review (kept unconverged + fallback/proxy): 0 (0.00%)
+# Numerically checked (exact + converged estimates): 893 (100.00%)
+# Fallback/proxy includes explicitly requested proxies/bounds. Checked does not mean physically calibrated.
+# Below the 10% review advisory threshold. Inspect flagged entries and group summaries before weighting.
+# Sampled entries with relative MC SE >= 1, invalid estimates or too few probes cannot be kept;
+# after selected repairs these entries use fallback. They are included in the fallback/proxy counts above.
+# Timing mismatch = fitted (theta_i - theta_j) minus measured differential travel time, for kept pairs.
+# sigma_hat: robust scatter of these mismatches per component (seconds); group entries report the median across components.
+# sigma_std = max(sigma_hat, min_sigma) when the minimum is enabled, otherwise sigma_hat; this is sigma in std formulas.
+# Neither scale is a theta std or a Monte Carlo error. pseudo_weight does not use sigma_std.
+
+# STATION-PHASE OBSERVATIONS
+group               n_edges     n_kept  pruned_pct   robust_p50   robust_p05   robust_p95  frac_robust_lt_0p99     sigma_hat
+Z7.DYSA_S               806        775       3.846       1.0000       0.3021       1.0000                0.274   0.000401539
+Z7.KVER_P               546        539       1.282       1.0000       0.3625       1.0000                0.269   0.000686765
+Z7.DYSA_P               800        800       0.000       1.0000       0.5855       1.0000                0.184    0.00046809
+Z7.KATT_S               484        481       0.620       1.0000       0.3668       1.0000                0.274   0.000617472
+Z7.TOHR_P               441        430       2.494       1.0000       0.4825       1.0000                0.223   0.000706867
+Z7.SOSU_P               107        106       0.935       1.0000       0.5254       1.0000                0.151   0.000482569
+Z7.KVER_S               463        458       1.080       1.0000       0.3370       1.0000                0.262   0.000779137
+Z7.HRIM_S               228        208       8.772       1.0000       0.4026       1.0000                0.279   0.000419196
+Z7.TOHR_S               601        569       5.324       1.0000       0.1998       1.0000                0.401   0.000576474
+Z7.RODG_S               421        397       5.701       1.0000       0.3976       1.0000                0.209   0.000727976
+Z7.FLUR_S               525        495       5.714       1.0000       0.5003       1.0000                0.263   0.000552125
+Z7.HRIM_P                69         66       4.348       1.0000       0.4321       1.0000                0.288   0.000680286
+Z7.NOHR_P                82         73      10.976       1.0000       0.7450       1.0000                0.137    0.00085088
+Z7.NOHR_S               282        255       9.574       1.0000       0.3668       1.0000                0.278   0.000565592
+Z7.SOSU_S               255        232       9.020       1.0000       0.4031       1.0000                0.284    0.00072356
+Z7.STAM_S               353        330       6.516       1.0000       0.3482       1.0000                0.261   0.000579124
+Z7.MOFO_S               207        195       5.797       1.0000       0.4254       1.0000                0.226   0.000491605
+Z7.RODG_P               149        143       4.027       1.0000       0.4564       1.0000                0.238   0.000537955
+Z7.MOFO_P                12          0     100.000          NaN          NaN          NaN                  NaN           NaN
+Z7.STAM_P               111        111       0.000       1.0000       0.4371       1.0000                0.279   0.000540362
+Z7.KATT_P                44         43       2.273       1.0000       0.3773       1.0000                0.349   0.000432192
+Z7.FLUR_P                51         30      41.176       1.0000       0.6521       1.0000                0.133   0.000990494
+
+# OVERALL
+overall_edges=7037
+overall_kept=6736
+overall_pruned_pct=4.277
+pseudo_groups_used=0
+pseudo_components_used=0
+
+# UNCERTAINTY BY GROUP (counts and percentages use each group's assessed std entries)
+# group               n_std              exact    hutch_converged  hutch_unconverged   cholesky_converged cholesky_unconverged     fallback/proxy   review_pct   disabled
+# Z7.DYSA_S              66       66 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.KVER_P              63       63 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.DYSA_P              55       55 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.KATT_S              60       60 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.TOHR_P              47       47 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.SOSU_P              34       34 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.KVER_S              66       66 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.HRIM_S              42       42 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.TOHR_S              58       58 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.RODG_S              52       52 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.FLUR_S              54       54 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.HRIM_P              17       17 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.NOHR_P              17       17 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.NOHR_S              47       47 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.SOSU_S              41       41 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.STAM_S              46       46 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.MOFO_S              35       35 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.RODG_P              28       28 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.MOFO_P               0            0 (N/A)            0 (N/A)            0 (N/A)              0 (N/A)              0 (N/A)            0 (N/A)          N/A          0
+# Z7.STAM_P              34       34 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.KATT_P              17       17 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+# Z7.FLUR_P              14       14 (100.00%)          0 (0.00%)          0 (0.00%)            0 (0.00%)            0 (0.00%)          0 (0.00%)        0.00%          0
+
+# COMPONENT DETAILS (all uncertainty methods)
+# max_rel_se is the pre-repair diagnostic, not the error of exact repairs; scales are seconds.
+# std_component group=Z7.DYSA_S ref=13 nodes=67 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000401539 sigma_std=0.0005 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=66 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.KVER_P ref=15 nodes=64 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000686765 sigma_std=0.000686765 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=63 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.DYSA_P ref=25 nodes=56 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.00046809 sigma_std=0.0005 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=55 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.KATT_S ref=12 nodes=61 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000617472 sigma_std=0.000617472 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=60 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.TOHR_P ref=13 nodes=48 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000706867 sigma_std=0.000706867 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=47 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.SOSU_P ref=70 nodes=35 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000482569 sigma_std=0.0005 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=34 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.KVER_S ref=46 nodes=52 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.00079264 sigma_std=0.00079264 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=51 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.KVER_S ref=71 nodes=16 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000765635 sigma_std=0.000765635 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=15 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.HRIM_S ref=73 nodes=43 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000419196 sigma_std=0.0005 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=42 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.TOHR_S ref=78 nodes=59 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000576474 sigma_std=0.000576474 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=58 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.RODG_S ref=67 nodes=25 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000695911 sigma_std=0.000695911 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=24 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.RODG_S ref=14 nodes=29 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000760041 sigma_std=0.000760041 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=28 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.FLUR_S ref=68 nodes=55 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000552125 sigma_std=0.000552125 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=54 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.HRIM_P ref=20 nodes=18 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000680286 sigma_std=0.000680286 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=17 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.NOHR_P ref=20 nodes=18 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.00085088 sigma_std=0.00085088 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=17 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.NOHR_S ref=20 nodes=23 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000649326 sigma_std=0.000649326 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=22 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.NOHR_S ref=77 nodes=26 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000481857 sigma_std=0.0005 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=25 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.SOSU_S ref=20 nodes=23 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000909455 sigma_std=0.000909455 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=22 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.SOSU_S ref=67 nodes=20 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000537666 sigma_std=0.000537666 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=19 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.STAM_S ref=20 nodes=27 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.00081003 sigma_std=0.00081003 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=26 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.STAM_S ref=67 nodes=21 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000348218 sigma_std=0.0005 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=20 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.MOFO_S ref=20 nodes=17 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000473083 sigma_std=0.0005 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=16 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.MOFO_S ref=70 nodes=20 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000510127 sigma_std=0.000510127 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=19 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.RODG_P ref=70 nodes=29 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000537955 sigma_std=0.000537955 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=28 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.STAM_P ref=82 nodes=35 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000540362 sigma_std=0.000540362 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=34 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.KATT_P ref=20 nodes=18 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000432192 sigma_std=0.0005 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=17 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
+# std_component group=Z7.FLUR_P ref=14 nodes=15 method=exact
+#   reason=requested probes=0 max_rel_se=NaN
+#   sigma_hat=0.000990494 sigma_std=0.000990494 repair_attempted=0 repaired_nodes=0
+#   exact_nodes=14 hutch_converged=0 cholesky_converged=0 cholesky_unconverged=0 unconverged_nodes=0 fallback_nodes=0
+
