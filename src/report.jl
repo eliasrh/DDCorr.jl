@@ -207,12 +207,14 @@ function make_report(out,events,groups,rows,cfg)
                 label=flagged ? " · near-identity flag" : ""
                 print(io,"<details><summary>$(escapehtml(name)) · events $(r.i) and $(r.j)$label</summary>")
                 if flagged
-                    weight_description=cfg["output"]["weight"]=="cc_squared" ? "r²" : "|r|"
-                    print(io,"""<p>The <a href="near_identity.csv">near-identity flag</a> applies to one station and phase. The table lists every accepted observation for this pair from <a href="correlations.csv">correlations.csv</a>. It shows the signed coefficient r. In this run the weight in <a href="dt.cc">dt.cc</a> is $weight_description. To investigate a possible duplicate, put both original recordings and their P and S markers on a shared UTC clock and look for distinct arrivals at several stations.</p>""")
-                    print(io,"<table><caption>All accepted measurements for events $(r.i) and $(r.j)</caption><thead><tr><th>Station</th><th>Phase</th><th>Signed r</th><th>dt (i − j), s</th><th>|r| ≥ $threshold</th></tr></thead><tbody>")
+                    squared=cfg["output"]["weight"]=="cc_squared"
+                    weight_description=squared ? "r²" : "|r|"
+                    print(io,"""<p>The <a href="near_identity.csv">near-identity flag</a> applies to one station and phase. The table lists every accepted observation for this pair from <a href="correlations.csv">correlations.csv</a>. DDCorr records r at the best sampled lag. When subsample timing is enabled, the lag is refined between samples and the sampled r still determines the flag and the weight. The weight in <a href="dt.cc">dt.cc</a> is $weight_description. To investigate a possible duplicate, put both original recordings and their P and S markers on a shared UTC clock and look for distinct arrivals at several stations.</p>""")
+                    print(io,"<table><caption>All accepted measurements for events $(r.i) and $(r.j)</caption><thead><tr><th>Station</th><th>Phase</th><th>Signed r</th><th>dt (i − j), s</th><th>dt.cc weight ($weight_description)</th><th>|r| ≥ $threshold</th></tr></thead><tbody>")
                     for obs in comparisons[(r.i,r.j)]
-                        @printf(io,"<tr><td>%s</td><td>%s</td><td>%.4f</td><td>%.*f</td><td>%s</td></tr>",
-                                escapehtml(obs.station),escapehtml(obs.phase),obs.cc,cfg["output"]["dt_decimals"],obs.dt,abs(obs.cc)>=threshold ? "Yes" : "No")
+                        @printf(io,"<tr><td>%s</td><td>%s</td><td>%.4f</td><td>%.*f</td><td>%.6f</td><td>%s</td></tr>",
+                                escapehtml(obs.station),escapehtml(obs.phase),obs.cc,cfg["output"]["dt_decimals"],obs.dt,
+                                squared ? abs2(obs.cc) : abs(obs.cc),abs(obs.cc)>=threshold ? "Yes" : "No")
                     end
                     print(io,"</tbody></table>")
                 end

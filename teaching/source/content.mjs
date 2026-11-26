@@ -727,25 +727,25 @@ export const slides = [
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "title": "Why events 85 and 86 look nearly identical at STAM",
+    "title": "Events 85 and 86 match the same S pulse at STAM",
     "image": "report_s_alignment.png",
-    "lead": "At STAM, the S waves for events 85 and 86 have r = 0.9967. DDCorr flags this station and phase because r exceeds 0.99.",
+    "lead": "The S markers in the two files are 342.09 ms apart on the UTC clock. At STAM, shifting the orange trace by 341.6 ms aligns the pulses.",
     "body": [
-      "The plot shows the east component. DDCorr averaged both horizontal correlation curves. Shifting event 86 to the right by 0.3416 s aligns the pulses.",
-      "Three of seven observations reach 0.99. The other four have r between 0.904 and 0.960. In dt.cc the STAM weight is r² = 0.9933."
+      "DDCorr tested lags every 20 ms. Its highest sampled coefficient was 0.996669 at −340 ms, averaged over the two horizontals. The plot shows the east component.",
+      "DDCorr refined the lag to −341.6 ms for timing. It kept the sampled coefficient for the weight in dt.cc. Squaring 0.996669 gives 0.993349."
     ],
-    "notes": "Event 85 is S1_009984 and event 86 is S1_009985. Under Accepted pair examples, open example_11_Z7.STAM_S. The orange record is aligned to the blue record by shifting it later because the measured lag on the two marker-centred axes is −0.3416 s. The reported coefficient is the sampled peak of the mean HHE/HHN curve. In correlations.csv, accepted signed coefficients are DYSA P 0.9240, FLUR S 0.9041, KATT S 0.9547, KVER S 0.9601, NOHR S 0.9947, RODG S 0.9924 and STAM S 0.9967. The last three meet the 0.99 threshold. The third field on an observation line in dt.cc is the configured weight, here r squared. STAM S therefore has weight 0.993349. Compare coefficients in correlations.csv."
+    "notes": "Open example_11_Z7.STAM_S in the Iceland report. Both S markers are theoretical. The largest sampled coefficient is at −340 ms. A parabola through that point and its two neighbours gives the plotted lag of −341.6 ms. The station/phase flag uses the sampled coefficient. NOHR, RODG and STAM meet the 0.99 cutoff on r. For this export that cutoff corresponds to 0.9801 in the weight column. The dt.cc row reads Z7.STAM 0.4595 0.993349 S. The first number is the differential travel time in seconds."
   },
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "title": "Do the two event cuts contain the same arrival?",
-    "image": "iceland_pair_85_86.png",
-    "lead": "Both cuts contain exactly the same 9,455 overlapping raw samples on each of 33 channels. At STAM the predicted S times differ by 0.3421 s on the UTC clock. The dashed lines show where each comparison window was centred.",
+    "title": "Why the same S wave gets a weight of 0.8174 at FLUR",
+    "image": "iceland_85_86_flur_lag.png",
+    "lead": "The S markers are 231.35 ms apart. The same pulse lines up at −231.35 ms. The nearest trial is −240 ms, where r = 0.904098. Squaring that coefficient gives the weight 0.817394 in dt.cc.",
     "body": [
-      "The origins are 0.4600 s apart. All seven travel-time differences are 0.4591–0.4612 s, placing the matched features within 1.2 ms on the clock. Look for a second P and S onset at several stations before merging the catalogue entries."
+      "At DDCorr’s fitted lag of −232.55 ms, remeasuring r gives 0.9979. Comparing both cuts at identical UTC times gives r = 1.000000 for every one of the seven accepted station/phase rows. Each matches a recorded arrival to itself."
     ],
-    "notes": "Left: STAM east, S window. Right: DYSA vertical, P window. Each pair of traces is vertically separated for display and has a common amplitude scale within that panel. The two source cuts are about 95 s long at 100 Hz. Their beginnings differ by 46 samples, leaving 9,455 equal raw values on every shared channel (11 stations, 3 components). Overlap is expected for cuts from the same continuous stream, including when two real events are close together. The header markers are predicted P_pred and S_pred, rather than an independent set of manual picks. The STAM predicted S offset of +0.3421 s contrasts with the fitted marker-relative lag of −0.3416 s; the resulting matched feature times differ by about 0.0005 s on UTC. To obtain arrival_j − arrival_i on UTC, subtract dt(i,j) from origin_j − origin_i. All seven accepted rows align shared energy within 1.2 ms. Different pick-centred windows, sample-grid offsets and the discrete lag grid allow r below one even when original samples coincide. Inspect the onsets, particle motion and moveout on multiple components and stations. Repeated detection of one pulse and a second nearby event hidden in the overlapping record remain possibilities. No phase misassociation or duplicate catalogue entry has been established by this check. See pair_85_86.py and the Iceland100 SAC files."
+    "notes": "FLUR uses the north component for this S observation. The raw traces on the left share the same scale and UTC axis. They are separated vertically so that both are visible. On the right, each dot is a lag sampled by DDCorr. The continuous line was calculated by shifting the second window on the filtered recording, applying the same normalized, symmetric correlation at each new lag. The diamond marks the coefficient remeasured at the fitted lag and does not enter dt.cc. The full row is Z7.FLUR 0.4612 0.817394 S. At the fitted lags the seven coefficients range from 0.997913 to 0.999986. Comparing the original cuts at identical UTC times gives 1.000000 to six decimal places for all seven. The 0.4591–0.4612 s differential times recover the 0.4600 s separation of catalogue origins because the matched energy falls at the same absolute time."
   },
   {
     "section": "14:05   /   Reading the Iceland report",

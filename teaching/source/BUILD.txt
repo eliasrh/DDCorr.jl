@@ -53,3 +53,7 @@ For the marker-relative grid figure, run export_trace.jl on Z7.KVER..HHZ.sac in 
     python teaching/source/pair_sample_grid.py work/grid/event1 work/grid/event2 teaching/assets/kver_pair_sample_grid.png
 
 method_examples.jl exports kver_fft.csv directly from DDCorr.correlation!. measurement_figures.py checks the direct normalized sums against all 51 values before drawing the FFT comparison.
+
+Reproduce slide 41 and print the seven original coefficients, exported weights, and coefficients remeasured at fitted and shared UTC lags with:
+
+    julia --project=. teaching/source/pair_lag_85_86.jl ../Iceland100 teaching/assets/iceland_85_86_flur_lag.png

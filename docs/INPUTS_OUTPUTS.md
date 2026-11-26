@@ -174,7 +174,7 @@ DDSync takes `dt.cc` and the matching catalogue. Configure it to consume the exi
 
 ## Reading the results
 
-In `report.html`, expand a waveform example marked **near-identity flag**. Its table compares the signed coefficient and differential time across every accepted station and phase for those same two events. To check whether two picks mark the same physical arrival, compare the original recordings on a shared UTC time axis at several stations.
+In `report.html`, expand a waveform example marked **near-identity flag**. Its table lists the signed coefficient, differential travel time and exported `dt.cc` weight for every accepted station and phase of that pair. DDCorr takes the coefficient at the best sampled lag. With `subsample = true`, it fits the peak time between samples and keeps the sampled coefficient for the weight and near-identity flag. A cutoff of 0.99 on |r| corresponds to 0.9801 in a squared-weight export. To check whether two picks mark the same physical arrival, compare the original recordings on a shared UTC time axis at several stations.
 
 | File | What to look for |
 |---|---|
