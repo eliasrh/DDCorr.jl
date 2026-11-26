@@ -14,6 +14,7 @@ component_inclination_tolerance_deg = 10.0 # allow a component axis this many de
 strict_headers = true # stop if an event has invalid or conflicting required metadata. false skips the whole affected event and logs the reason
 
 [output]
+coefficient_lag = "sampled" # "fitted" remeasures signed r at the fitted lag for export weights and near-identity flags
 weight = "cc_squared" # write r² in dt.cc. Choose "cc" to write |r| instead
 write_rejected_pairs = false # true keeps one row per failed event pair at each station and phase. This can use substantial memory and disk
 dt_decimals = 4 # round exported time differences and lags to this many decimal places in seconds

@@ -86,6 +86,7 @@ function write_matrices(out, events, rows, cfg)
             "dt_definition"=>"travel_time(i) - travel_time(j), seconds",
             "lag_definition"=>"residual after centring each waveform on its own pick; positive lag means shift j left to align with i, seconds",
             "weight"=>cfg["output"]["weight"],
+            "coefficient_lag"=>get(cfg["output"],"coefficient_lag","sampled"),
             "positive_semidefinite_guaranteed"=>false);sorted=true)
     end
     write(joinpath(target,"README.md"),"""
@@ -104,8 +105,8 @@ function write_matrices(out, events, rows, cfg)
     Correlation coefficients are symmetric. Differential times and lags are
     antisymmetric, so swapping i and j reverses their sign. Seconds are used.
 
-    The coefficients are peaks of lag-search curves, not correlations evaluated
-    at a single common alignment. Such a matrix need not be positive semidefinite.
+    Each pair has its own lag. The coefficient uses the lag policy recorded in
+    conventions.toml. Such a matrix need not be positive semidefinite.
     Do not silently fill missing entries with zero or treat exported weights as
     independently calibrated timing precision. No station/phase averaging or
     clustering has been performed here.

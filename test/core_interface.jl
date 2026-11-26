@@ -105,6 +105,16 @@ end
         @test one.rows[1].ncomponents==1
         @test endswith(one.rows[1].components,"HHN")
         @test abs(one.rows[1].lag-.073)<.002
+        fitted=deepcopy(config); fitted["output"]["coefficient_lag"]="fitted"
+        rerun=M.process_group("XX.ABC","S",entries,fitted)
+        obs=only(rerun.rows); check=only(rerun.checks)
+        @test check.sampled_cc==one.rows[1].cc
+        @test obs.cc==check.fitted_cc && obs.cc>check.sampled_cc
+        @test (obs.lag,obs.dt,obs.gap)==(one.rows[1].lag,one.rows[1].dt,one.rows[1].gap)
+        @test M.group_fingerprint(entries,config["phase"]["S"],config)!=M.group_fingerprint(entries,fitted["phase"]["S"],fitted)
+        fitted["quality"]["subsample"]=false
+        grid_only=only(M.process_group("XX.ABC","S",entries,fitted).checks)
+        @test grid_only.sampled_lag==grid_only.fitted_lag && grid_only.sampled_cc==grid_only.fitted_cc
         config["phase"]["S"]["min_components"]=2
         two=M.process_group("XX.ABC","S",entries,config)
         @test isempty(two.rows)

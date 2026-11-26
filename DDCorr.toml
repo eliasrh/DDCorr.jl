@@ -14,6 +14,7 @@ p_pick_header = "a" # P arrival, in seconds from the SAC reference time
 s_pick_header = "t0" # S arrival; both mappings apply to the whole input dataset
 
 [output]
+# Set coefficient_lag = "fitted" to remeasure r at the fitted lag for weights and near-identity flags.
 directory = "results" # a new timestamped run directory preserves older results
 
 [P]

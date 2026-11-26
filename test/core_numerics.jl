@@ -40,6 +40,23 @@ end
     end
 end
 
+@testset "Fractional remeasurement uses the filtered parent and retains polarity" begin
+    fs=50.0; dt=0.01999999955; n=120; L=15; start=1.2317
+    parent=[sin(2pi*7.1*t)+0.4cos(2pi*11.9*t) for t in (0:320).*dt]
+    offsets=(0:n-1)./fs
+    lag=-0.07319
+    fixed_ext=-M.interpolate_grid(parent,0.0,dt,(start+lag) .+ collect(-L:n+L-1)./fs)
+    fixed=synthetic_cache(fixed_ext,n,L)
+    # A cropped parent retains its native sample positions, even for off-grid picks.
+    first_index=31; filtered=M.FilteredWindow(parent[first_index:240],(first_index-1)*dt,dt,start,1/fs)
+    scratch=zeros(n)
+    @test M.shifted_correlation!(scratch,fixed,filtered,lag)≈-1.0 atol=1e-12
+    grid=round(lag*fs)/fs
+    direct=cor(@view(fixed_ext[L+1:L+n]),M.interpolate_grid(parent,0.0,dt,(start+grid) .+ offsets))
+    @test M.shifted_correlation!(scratch,fixed,filtered,grid)≈direct atol=1e-12
+    @test abs(direct)<0.99
+end
+
 @testset "Polarity, boundary and ambiguous peak rejection" begin
     q=deepcopy(cfg["quality"]);pc=cfg["phase"]["P"]
     c=zeros(101); c[45]=-0.98;c[60]=0.8

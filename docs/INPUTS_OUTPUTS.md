@@ -67,6 +67,7 @@ Use `[P]` and `[S]` for phase settings. The longer names `[phase.P]` and `[phase
 |---|---|---|
 | `directory` | `"results"` | Parent of the new `inspect_…` or `correlate_…` folder for each run. |
 | `weight` | `"cc_squared"` | Writes the squared coefficient to `dt.cc`. `"cc"` writes its magnitude. The signed coefficient is in `correlations.csv`. |
+| `coefficient_lag` | `"sampled"` | `"fitted"` remeasures r on the filtered recordings at the full-precision fitted lag for the export weight, matrices and near-identity flag. The original sampled peak and peak gap determine acceptance in both modes. |
 | `dt_decimals` | `4` | Decimal places for exported differential times and lags in seconds, from 0 to 9. |
 | `write_rejected_pairs` | `false` | Save `rejected_pairs.csv` with one reason per unsuccessful pair at each station and phase. Can be large. |
 | `near_identity_cc` | `0.99` | Flag an accepted station/phase measurement when the absolute coefficient reaches this threshold. All observations stay in the output. |
@@ -101,7 +102,7 @@ Set each option under `[P]` or `[S]`. A phase marker is the time around which DD
 | `[quality]` key | Default | Meaning |
 |---|---|---|
 | `polarity` | `"positive"` | Score positive similarity. `"absolute"` can select a strong negative match for reversed motion. The recorded coefficient retains its sign. |
-| `subsample` | `true` | Fit the winning peak and its two neighbours with a parabola to refine lag between samples. The coefficient remains the measured value at the winning sample. |
+| `subsample` | `true` | Fit the winning peak and its two neighbours with a parabola to refine lag between samples. The export coefficient follows `output.coefficient_lag`. With subsample timing off, both modes use the same grid lag. |
 | `boundary_guard_samples` | `1` | Reject a peak this many grid samples from either end, including the endpoint. A peak at the edge may continue beyond the search. |
 | `component_pick_tolerance_s` | `0.001` | Maximum spread, in seconds, of the two events’ marker-minus-origin differences across shared components. |
 | `max_pair_distance_km` | `0.0` | Maximum initial epicentral separation for a pair, in km. Zero allows any distance for events sharing usable channels. |
@@ -174,7 +175,7 @@ DDSync takes `dt.cc` and the matching catalogue. Configure it to consume the exi
 
 ## Reading the results
 
-In `report.html`, expand a waveform example marked **near-identity flag**. Its table lists the signed coefficient, differential travel time and exported `dt.cc` weight for every accepted station and phase of that pair. DDCorr takes the coefficient at the best sampled lag. With `subsample = true`, it fits the peak time between samples and keeps the sampled coefficient for the weight and near-identity flag. A cutoff of 0.99 on |r| corresponds to 0.9801 in a squared-weight export. To check whether two picks mark the same physical arrival, compare the original recordings on a shared UTC time axis at several stations.
+In `report.html`, expand a waveform example marked **near-identity flag**. Its table lists the signed coefficient, differential travel time and exported `dt.cc` weight for every accepted station and phase of that pair. The default uses the coefficient at the best sampled lag. For `[output] coefficient_lag = "fitted"`, DDCorr shifts a window on each filtered parent recording, evaluates the normalized correlation in both event orders, and averages the same components as in the lag search. `coefficient_audit.csv` records the two lags and coefficients. A constant shifted window has undefined Pearson r and the audit labels that row `sampled_fallback`. The fitted coefficient can fall below the sampled peak. A cutoff of 0.99 on |r| corresponds to 0.9801 in a squared-weight export. To check whether two picks mark the same physical arrival, compare the original recordings on a shared UTC time axis at several stations.
 
 | File | What to look for |
 |---|---|
