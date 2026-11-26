@@ -31,7 +31,23 @@ for example in rows:
     expected={(r['station'],r['phase']) for r in audit if (r['event_i'],r['event_j'])==pair}
     summary=f"<summary>{figure} · events {pair[0]} and {pair[1]} · near-identity flag</summary>"
     assert summary in report,figure
-    table=report.split(summary,1)[1].split('</table>',1)[0]
+    details=report.split(summary,1)[1].split('</details>',1)[0]
+    if example['phase']=='S':
+        components_caption='<caption>S correlation on each shared horizontal</caption>'
+        assert components_caption in details,figure
+        components=details.split(components_caption,1)[1].split('</table>',1)[0]
+        assert '<th>r at joint fitted lag</th>' in components,figure
+        obs=next(r for r in audit if (r['event_i'],r['event_j'])==pair
+                 and r['station']==example['station'] and r['phase']=='S')
+        channels={c.rsplit('.',1)[-1] for c in obs['components'].split(';')}
+        measurements=[re.findall(r'<td>([^<]+)</td>',row)
+                      for row in re.findall(r'<tr>(<td>.*?)</tr>',components)]
+        assert {m[0] for m in measurements}==channels,figure
+        mean_fitted=sum(float(m[4]) for m in measurements)/len(measurements)
+        assert abs(mean_fitted-float(obs['cc_signed']))<1e-6,figure
+    caption=f'<caption>All accepted measurements for events {pair[0]} and {pair[1]}</caption>'
+    assert caption in details,figure
+    table=details.split(caption,1)[1].split('</table>',1)[0]
     assert set(re.findall(r'<tr><td>([^<]+)</td><td>([PS])</td>',table))==expected,figure
     for obs in audit:
         if (obs['event_i'],obs['event_j'])==pair:

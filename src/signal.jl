@@ -38,6 +38,10 @@ end
 
 function interpolate_grid(y,b,dt,times)
     out=Vector{Float64}(undef,length(times))
+    return interpolate_grid!(out,y,b,dt,times)
+end
+
+function interpolate_grid!(out,y,b,dt,times)
     for (i,t) in enumerate(times)
         q=(t-b)/dt+1; j=floor(Int,q); a=q-j
         1<=j<length(y) || error("Requested window outside SAC samples")
@@ -75,7 +79,18 @@ function cache_vector(ext,ncore,nlag)
     return tf,ef,norms,tn,nf
 end
 
-function prepare(e,h,pc,prep)
+"Only the filtered parent samples needed to shift the phase window in either direction."
+struct FilteredWindow
+    samples::Vector{Float64}
+    begin_s::Float64
+    step_s::Float64
+    core_start_s::Float64
+    grid_step_s::Float64
+end
+
+prepare(e,h,pc,prep) = first(prepare_trace(e,h,pc,prep,false))
+
+function prepare_trace(e,h,pc,prep,keep_parent)
     p=pick(h,pc["pick_header"])
     isfinite(p) || error("Missing $(pc["pick_header"]) pick")
     origin=h.floats[8]
@@ -104,7 +119,36 @@ function prepare(e,h,pc,prep)
     tf,ef,norms,tn,nf=cache_vector(ext,n,L)
     # Avoid subtracting large Unix epochs for the important pick-origin difference.
     reduced=(h.reference-e.origin)+p
-    return CachedTrace(e,h,p,reduced,ext,tf,ef,norms,tn,snr,n,L,nf)
+    trace=CachedTrace(e,h,p,reduced,ext,tf,ef,norms,tn,snr,n,L,nf)
+    keep_parent || return trace,nothing
+    # Keep interpolation neighbours at both ends of the allowed lag range.
+    first_parent=max(1,floor(Int,(start-sacbegin)/dt))
+    last_parent=min(length(z),ceil(Int,(stop-sacbegin)/dt)+2)
+    parent=FilteredWindow(z[first_parent:last_parent],sacbegin+(first_parent-1)*dt,dt,p+a,1/fs)
+    return trace,parent
+end
+
+function sample_shifted!(shifted,moving::FilteredWindow,lag)
+    times=range(moving.core_start_s+lag;step=moving.grid_step_s,length=length(shifted))
+    return interpolate_grid!(shifted,moving.samples,moving.begin_s,moving.step_s,times)
+end
+
+"Pearson r for one fixed core and one window shifted on its filtered parent trace."
+function shifted_correlation!(buffer,fixed,moving::FilteredWindow,lag)
+    shifted=sample_shifted!(@view(buffer[1:fixed.ncore]),moving,lag)
+    core=@view fixed.ext[fixed.nlag+1:fixed.nlag+fixed.ncore]
+    return cor(core,shifted)
+end
+
+function fitted_correlation!(buffer,A,B,common,parents,lag)
+    total=0.0
+    for channel in common
+        a,b=A[channel],B[channel]
+        forward=shifted_correlation!(buffer,a,parents[b.header.path],lag)
+        reverse=shifted_correlation!(buffer,b,parents[a.header.path],-lag)
+        total+=(forward+reverse)/2
+    end
+    return clamp(total/length(common),-1.0,1.0)
 end
 
 "FFT work buffers and inverse plan are private to one worker."
@@ -166,7 +210,7 @@ function measure(curve,pc,quality)
     gap=best-max(0.0,second)
     status=boundary ? "boundary" : best<pc["min_cc"] ? "low_cc" :
            gap<pc["min_peak_gap"] ? "ambiguous_peak" : "accepted"
-    return (lag=(idx-L-1+delta)/fs, cc=curve[idx], second_cc=second, gap=gap,status=status)
+    return (lag=(idx-L-1+delta)/fs, sampled_lag=(idx-L-1)/fs, cc=curve[idx], second_cc=second, gap=gap,status=status)
 end
 
 "dt.cc is travel_time(i)-travel_time(j), excluding the catalog origin separation."

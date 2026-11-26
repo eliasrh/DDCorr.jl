@@ -14,6 +14,15 @@ struct Observation
     components::String
 end
 
+struct FittedCoefficient
+    i::Int
+    j::Int
+    sampled_lag::Float64
+    sampled_cc::Float64
+    fitted_lag::Float64
+    fitted_cc::Float64
+end
+
 function compatible(a,b,tol)
     for k in (58,59)
         x,y=a.header.floats[k],b.header.floats[k]
@@ -34,6 +43,7 @@ function group_fingerprint(entries,pc,cfg)
         write(io,read(joinpath(@__DIR__,file)))
     end
     print(io,cfg["output"]["write_rejected_pairs"]); TOML.print(io,Dict("plots"=>cfg["plots"]))
+    TOML.print(io,Dict("coefficient_lag"=>cfg["output"]["coefficient_lag"]))
     TOML.print(io,Dict("phase"=>pc,"preprocess"=>cfg["preprocess"],"quality"=>cfg["quality"]))
     ctx=SHA.SHA2_256_CTX()
     SHA.update!(ctx,take!(io))
@@ -63,6 +73,9 @@ function group_plan(station,phase,entries,cfg)
     workers=min(Threads.nthreads(),max(0,n_events-1))
     raw_trace_bytes=10*8*longest
     prepared_trace_bytes=8*(ncore+4nlag+1)+32*(nfft÷2+1)
+    if cfg["output"]["coefficient_lag"]=="fitted" && cfg["quality"]["subsample"]
+        prepared_trace_bytes+=8*(ncore+2nlag+5)
+    end
     worker_bytes=16*(nfft÷2+1)+16*nfft+16*(2nlag+1)
     bytes=raw_trace_bytes+length(entries)*prepared_trace_bytes+workers*worker_bytes
     bytes>cfg["runtime"]["max_group_memory_mib"]*2^20 && error("$station $phase needs an estimated $(round(bytes/2^20;digits=1)) MiB for waveform preparation and FFT work areas, above runtime.max_group_memory_mib. Select fewer events, shorten the windows, or increase the allowance under [runtime] in the run TOML.")
@@ -71,14 +84,17 @@ end
 
 function process_group(station,phase,entries,cfg,plan=group_plan(station,phase,entries,cfg))
     pc=cfg["phase"][phase]; quality=cfg["quality"]
+    fitted_output=cfg["output"]["coefficient_lag"]=="fitted"
+    parents=Dict{String,FilteredWindow}()
     prepared=Dict{Int,Dict{String,CachedTrace}}(); issues=Tuple{String,String}[]
     for (e,h) in entries
         try
-            c=prepare(e,h,pc,cfg["preprocess"])
+            c,parent=prepare_trace(e,h,pc,cfg["preprocess"],fitted_output && quality["subsample"])
             traces=get!(prepared,e.id,Dict{String,CachedTrace}())
             key=channelkey(h)
             haskey(traces,key) && error("Duplicate event/channel SAC file")
             traces[key]=c
+            isnothing(parent) || (parents[h.path]=parent)
         catch err
             # Data problems are audited; programming/API errors must stop the run.
             err isa ErrorException || rethrow()
@@ -87,6 +103,7 @@ function process_group(station,phase,entries,cfg,plan=group_plan(station,phase,e
     end
     ids=sort(collect(keys(prepared))); n=length(ids)
     rows_by_i=[Observation[] for _ in 1:n]
+    checks_by_i=fitted_output ? [FittedCoefficient[] for _ in 1:n] : Vector{FittedCoefficient}[]
     nw=min(plan.workers,max(0,n-1))
     worker_counts=[Dict{String,Int}() for _ in 1:nw]
     worker_hist=[zeros(Int,40) for _ in 1:nw]
@@ -131,7 +148,15 @@ function process_group(station,phase,entries,cfg,plan=group_plan(station,phase,e
                                     if maximum(bases)-minimum(bases)>quality["component_pick_tolerance_s"]
                                         state="component_pick_mismatch"
                                     else
-                                        obs=Observation(ids[ia],ids[ib],station,phase,mean(bases)-m.lag,m.lag,m.cc,
+                                        exported_cc=m.cc
+                                        if fitted_output
+                                            fitted_cc=m.lag==m.sampled_lag ? m.cc : fitted_correlation!(w.ab,A,B,common,parents,m.lag)
+                                            push!(checks_by_i[ia],FittedCoefficient(ids[ia],ids[ib],m.sampled_lag,m.cc,m.lag,fitted_cc))
+                                            # A constant shifted window has undefined Pearson r.
+                                            # Keep its original measurement and identify the fallback in the audit.
+                                            isfinite(fitted_cc) && (exported_cc=fitted_cc)
+                                        end
+                                        obs=Observation(ids[ia],ids[ib],station,phase,mean(bases)-m.lag,m.lag,exported_cc,
                                             m.second_cc,m.gap,snr,length(common),distance,join(common,';'))
                                         push!(rows_by_i[ia],obs)
                                     end
@@ -149,6 +174,7 @@ function process_group(station,phase,entries,cfg,plan=group_plan(station,phase,e
         end
     end
     rows=reduce(vcat,rows_by_i;init=Observation[])
+    checks=reduce(vcat,checks_by_i;init=FittedCoefficient[])
     counts=Dict{String,Int}()
     for d in worker_counts,(k,v) in d;counts[k]=get(counts,k,0)+v;end
     hist=reduce(+,worker_hist;init=zeros(Int,40))
@@ -158,22 +184,41 @@ function process_group(station,phase,entries,cfg,plan=group_plan(station,phase,e
     if cfg["plots"]["enabled"] && (cfg["plots"]["examples"] || cfg["plots"]["filters"]) && !isempty(rows) && (isempty(cfg["plots"]["example_stations"]) || station in cfg["plots"]["example_stations"]) && phase in cfg["plots"]["example_phases"]
         requested=Set(Tuple(sort(Int.(pair))) for pair in cfg["plots"]["event_pairs"])
         selected=if isempty(requested)
-            ranked=sort(rows;by=x->(abs(x.cc),x.i,x.j))
-            ranked[unique([1,cld(length(ranked),2),length(ranked)])]
+            # Use the sampled score that admitted each observation. Changing the
+            # export weight then leaves the weak/middle/strong examples comparable.
+            ranked=sortperm(eachindex(rows);by=i->(abs(fitted_output ? checks[i].sampled_cc : rows[i].cc),rows[i].i,rows[i].j))
+            rows[ranked[unique([1,cld(length(ranked),2),length(ranked)])]]
         else
             filter(r->(r.i,r.j) in requested,rows)
         end
         # Store a bounded set per group; globally capped again by the report.
         isempty(requested) && (selected=selected[1:min(length(selected),max(1,cfg["plots"]["max_examples"]))])
+        fallback_lags=Dict((c.i,c.j)=>c.sampled_lag for c in checks if !isfinite(c.fitted_cc))
         for row in selected
             keys=split(row.components,';');A=prepared[row.i];B=prepared[row.j]
             w=CorrelationWorkspace(A[keys[1]].nfft,A[keys[1]].nlag);curve=zeros(length(w.curve))
-            for k in keys;curve .+= correlation!(w,A[k],B[k]);end
+            component_curves=[copy(correlation!(w,A[k],B[k])) for k in keys]
+            for c in component_curves;curve .+= c;end
             curve ./= length(keys)
-            push!(examples,(row=row,a=A[keys[1]],b=B[keys[1]],curve=curve))
+            summaries=if phase=="S"
+                grid_lag=measure(curve,pc,quality).sampled_lag
+                grid_index=round(Int,grid_lag*pc["sample_rate_hz"])+A[keys[1]].nlag+1
+                map(keys,component_curves) do k,c
+                    individual=measure(c,pc,quality)
+                    at_grid=c[grid_index]
+                    at_output=fitted_output && row.lag!=grid_lag ? fitted_correlation!(w.ab,A,B,(k,),parents,row.lag) : at_grid
+                    (channel=A[k].header.channel,best_lag=individual.sampled_lag,best_cc=individual.cc,at_grid=at_grid,at_output=at_output)
+                end
+            else
+                NamedTuple[]
+            end
+            score_lag=get(fallback_lags,(row.i,row.j),row.lag)
+            a,b=A[keys[1]],B[keys[1]]
+            shifted=fitted_output && quality["subsample"] ? sample_shifted!(zeros(b.ncore),parents[b.header.path],row.lag) : nothing
+            push!(examples,(row=row,a=a,b=b,curve=curve,score_lag=score_lag,shifted=shifted,components=summaries))
         end
     end
-    return (station=station,phase=phase,rows=rows,counts=counts,hist=hist,issues=issues,
+    return (station=station,phase=phase,rows=rows,checks=checks,counts=counts,hist=hist,issues=issues,
             examples=examples,prepared_events=n,files=length(entries),rejected=reduce(vcat,rejects_by_i;init=Tuple[]))
 end
 
@@ -232,6 +277,15 @@ function write_inputs(events,results,out,cfg)
         open(joinpath(out,"rejected_pairs.csv"),"w") do io
             csvrow(io,"event_i","event_j","station","phase","reason","cc","lag_s")
             for r in results,t in r.rejected;csvrow(io,t...);end
+        end
+    end
+    if cfg["output"]["coefficient_lag"]=="fitted"
+        open(joinpath(out,"coefficient_audit.csv"),"w") do io
+            csvrow(io,"event_i","event_j","station","phase","sampled_lag_s","sampled_r","fitted_lag_s","fitted_r","coefficient_source")
+            for group in results, c in group.checks
+                source=isfinite(c.fitted_cc) ? "fitted" : "sampled_fallback"
+                csvrow(io,c.i,c.j,group.station,group.phase,c.sampled_lag,c.sampled_cc,c.fitted_lag,c.fitted_cc,source)
+            end
         end
     end
     return rows
@@ -308,7 +362,8 @@ function run(path;args=String[])
         "correlation_elapsed_s"=>time()-start,"julia_version"=>string(VERSION),
         "dt_convention"=>"(arrival_i-origin_i)-(arrival_j-origin_j); lag positive when B later relative to its pick",
         "id_convention"=>"1..N for valid selected event directories in lexical order; isolated events retained",
-        "polarity"=>cfg["quality"]["polarity"],"weight"=>cfg["output"]["weight"])
+        "polarity"=>cfg["quality"]["polarity"],"weight"=>cfg["output"]["weight"],
+        "coefficient_lag"=>cfg["output"]["coefficient_lag"])
     open(joinpath(out,"run_summary.toml"),"w") do io;TOML.print(io,summary);end
     if cfg["plots"]["enabled"]
         println("Rendering diagnostics...")

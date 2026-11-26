@@ -67,6 +67,7 @@ Use `[P]` and `[S]` for phase settings. The longer names `[phase.P]` and `[phase
 |---|---|---|
 | `directory` | `"results"` | Parent of the new `inspect_…` or `correlate_…` folder for each run. |
 | `weight` | `"cc_squared"` | Writes the squared coefficient to `dt.cc`. `"cc"` writes its magnitude. The signed coefficient is in `correlations.csv`. |
+| `coefficient_lag` | `"sampled"` | `"fitted"` remeasures r on the filtered recordings at the full-precision fitted lag for the export weight, matrices and near-identity flag. The original sampled peak and peak gap determine acceptance in both modes. |
 | `dt_decimals` | `4` | Decimal places for exported differential times and lags in seconds, from 0 to 9. |
 | `write_rejected_pairs` | `false` | Save `rejected_pairs.csv` with one reason per unsuccessful pair at each station and phase. Can be large. |
 | `near_identity_cc` | `0.99` | Flag an accepted station/phase measurement when the absolute coefficient reaches this threshold. All observations stay in the output. |
@@ -85,9 +86,13 @@ Set each option under `[P]` or `[S]`. A phase marker is the time around which DD
 | `max_lag_s` | `0.5` / `0.5` | Search earlier and later by this many seconds. Choose a whole number of analysis sample intervals, leaving a peak inside the boundary guard. |
 | `min_snr` | `1.5` / `1.5` | Minimum ratio of filtered RMS amplitude in the phase window to RMS amplitude in the pre-P background window. Applied to each component before matching events. |
 | `min_components` | `1` / `1` | Minimum number of shared, compatible components. Two for S requires two usable horizontals. |
-| `min_cc` | `0.70` / `0.70` | Minimum peak score for acceptance. The polarity setting controls whether DDCorr scores the signed coefficient or its magnitude. |
+| `min_cc` | `0.70` / `0.70` | Minimum peak of the signed mean correlation curve across shared channels, sampled at a common lag. The polarity setting controls whether DDCorr scores the signed coefficient or its magnitude. |
 | `min_peak_gap` | `0.10` / `0.08` | Minimum difference in height between the winning peak and its strongest competing local maximum. A smaller gap can admit alignments one cycle apart. |
 | `sidelobe_exclusion_s` | `0.04` / `0.04` | Ignore competing maxima this close in time to the winner when measuring the peak gap. |
+
+For S, DDCorr pairs east with east and north with north. Each shared component must meet `min_snr` in both events. At each grid lag, it takes the arithmetic mean of the signed component curves. It compares the winning score to `min_cc` and checks the boundary and competing peaks on this same curve. A single channel can be below `min_cc` while the pair passes. Setting `[S] min_components = 2` requires two usable shared channels. Each plotted S example gives their individual best grid lags and coefficients at the common lag.
+
+The pick-consistency test computes `(pick_i − origin_i) − (pick_j − origin_j)` independently for each contributing channel. A spread greater than `[quality] component_pick_tolerance_s` (0.001 s) gives `component_pick_mismatch`. There is no separate cut on differences between component waveform peak lags or coefficients. For accepted comparisons the fitted coefficient sets the weight and flag when `[output] coefficient_lag = "fitted"`.
 
 ### Waveform preparation and pair quality
 
@@ -101,7 +106,7 @@ Set each option under `[P]` or `[S]`. A phase marker is the time around which DD
 | `[quality]` key | Default | Meaning |
 |---|---|---|
 | `polarity` | `"positive"` | Score positive similarity. `"absolute"` can select a strong negative match for reversed motion. The recorded coefficient retains its sign. |
-| `subsample` | `true` | Fit the winning peak and its two neighbours with a parabola to refine lag between samples. The coefficient remains the measured value at the winning sample. |
+| `subsample` | `true` | Fit the winning peak and its two neighbours with a parabola to refine lag between samples. The export coefficient follows `output.coefficient_lag`. With subsample timing off, both modes use the same grid lag. |
 | `boundary_guard_samples` | `1` | Reject a peak this many grid samples from either end, including the endpoint. A peak at the edge may continue beyond the search. |
 | `component_pick_tolerance_s` | `0.001` | Maximum spread, in seconds, of the two events’ marker-minus-origin differences across shared components. |
 | `max_pair_distance_km` | `0.0` | Maximum initial epicentral separation for a pair, in km. Zero allows any distance for events sharing usable channels. |
@@ -121,7 +126,7 @@ Set each option under `[P]` or `[S]`. A phase marker is the time around which DD
 | `example_stations` | `[]` | Restrict the example candidates to named stations, such as `["Z7.STAM"]`. Empty includes all. |
 | `example_phases` | `["P", "S"]` | Phases eligible for examples. Use `["S"]` to restrict selection to S. |
 
-Automatic selection first takes the weakest, middle and strongest accepted absolute coefficients in each eligible station/phase group. The gallery then samples the ordered list evenly up to `max_examples`. The **filter spectrum** uses the last candidate for each phase *before* the gallery cap, displaying the lower-ID event and its first shared component. The title identifies the displayed trace. To choose a particular accepted trace, give one pair, one station and one phase under `[plots]`. These selectors are shared with the waveform gallery. If there is no eligible example for a phase, the response and tone checks still appear and its waveform spectrum is empty.
+Automatic selection first takes the weakest, middle and strongest accepted absolute sampled coefficients in each eligible station/phase group. The gallery then samples the ordered list evenly up to `max_examples`. The **filter spectrum** uses the last candidate for each phase *before* the gallery cap, displaying the lower-ID event and its first shared component. The title identifies the displayed trace. To choose a particular accepted trace, give one pair, one station and one phase under `[plots]`. These selectors are shared with the waveform gallery. If there is no eligible example for a phase, the response and tone checks still appear and its waveform spectrum is empty.
 
 ### Matrices and resources
 
@@ -174,7 +179,7 @@ DDSync takes `dt.cc` and the matching catalogue. Configure it to consume the exi
 
 ## Reading the results
 
-In `report.html`, expand a waveform example marked **near-identity flag**. Its table lists the signed coefficient, differential travel time and exported `dt.cc` weight for every accepted station and phase of that pair. DDCorr takes the coefficient at the best sampled lag. With `subsample = true`, it fits the peak time between samples and keeps the sampled coefficient for the weight and near-identity flag. A cutoff of 0.99 on |r| corresponds to 0.9801 in a squared-weight export. To check whether two picks mark the same physical arrival, compare the original recordings on a shared UTC time axis at several stations.
+In `report.html`, expand a waveform example marked **near-identity flag**. Its table lists the signed coefficient, differential travel time and exported `dt.cc` weight for every accepted station and phase of that pair. The Friday TOMLs select the fitted coefficient. If the run TOML omits `coefficient_lag`, the package falls back to the sampled value. For `[output] coefficient_lag = "fitted"`, DDCorr shifts a window on each filtered parent recording, evaluates the normalized correlation in both event orders, and averages the same components as in the lag search. `coefficient_audit.csv` records the two lags and coefficients. A constant shifted window has undefined Pearson r and the audit labels that row `sampled_fallback`. The fitted coefficient can fall below the sampled peak. A cutoff of 0.99 on |r| corresponds to 0.9801 in a squared-weight export. To check whether two picks mark the same physical arrival, compare the original recordings on a shared UTC time axis at several stations.
 
 | File | What to look for |
 |---|---|

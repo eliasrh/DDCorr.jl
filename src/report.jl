@@ -28,7 +28,7 @@ end
 function summary_figure(out,events,groups,rows,cfg)
     fig=Figure(size=(1400,1050),fontsize=16)
     Label(fig[0,:],"DDCorr waveform correlations · $(length(events)) events",fontsize=27,font=:bold)
-    a=Axis(fig[1,1],title="All measured peaks, including rejected pairs",xlabel="Signed correlation coefficient",ylabel="Candidate pairs")
+    a=Axis(fig[1,1],title="Sampled peaks, including rejected pairs",xlabel="Signed correlation coefficient",ylabel="Candidate pairs")
     for ph in ("P","S")
         h=reduce(+,[g.hist for g in groups if g.phase==ph];init=zeros(Int,40))
         stairs!(a,collect(-0.975:0.05:0.975),h;label=ph,color=REPORT_COLORS[ph])
@@ -111,7 +111,7 @@ function example_figure(out,index,ex,cfg)
     r=ex.row;a=ex.a;b=ex.b;pc=cfg["phase"][r.phase];fs=pc["sample_rate_hz"]
     n=a.ncore;L=a.nlag;t=pc["window_s"][1] .+ (0:n-1)./fs
     ac=a.ext[L+1:L+n];bc=b.ext[L+1:L+n]
-    shifted=interpolate_grid(b.ext,pc["window_s"][1]-L/fs,1/fs,t .+ r.lag)
+    shifted=hasproperty(ex,:shifted) && !isnothing(ex.shifted) ? ex.shifted : interpolate_grid(b.ext,pc["window_s"][1]-L/fs,1/fs,t .+ r.lag)
     scale(x)=x./max(std(x;corrected=false),eps())
     fig=Figure(size=(1250,860),fontsize=16)
     Label(fig[0,:],"$(r.station) $(r.phase) · event_id $(r.i) / $(r.j) · folders $(a.event.name) / $(b.event.name)",fontsize=23,font=:bold)
@@ -121,6 +121,10 @@ function example_figure(out,index,ex,cfg)
     lines!(bx,t,scale(ac);color="#167d9a");lines!(bx,t,scale(shifted);color="#c26034")
     cx=Axis(fig[3,1],title="$(r.ncomponents)-component symmetric correlation; r=$(round(r.cc;digits=3)), peak gap=$(round(r.gap;digits=3))",xlabel="Lag after pick alignment (s); positive: shift j left to align",ylabel="Signed correlation",limits=(nothing,nothing,-1,1))
     lines!(cx,(-L:L)./fs,ex.curve;color="#42526a");vlines!(cx,[r.lag];color="#c26034",linestyle=:dash)
+    if get(cfg["output"],"coefficient_lag","sampled")=="fitted"
+        scatter!(cx,[ex.score_lag],[r.cc];color="#c26034",marker=:diamond,markersize=12,label="Exported coefficient")
+        axislegend(cx;position=:rb,labelsize=12)
+    end
     hlines!(cx,[pc["min_cc"]];color="#167d9a",linestyle=:dash)
     Label(fig[4,:],"$(pc["band_hz"]) Hz · RMS SNR ≥ $(round(r.snr;digits=2)) · $(round(r.distance;digits=2)) km seed separation\nWaveforms show first common component ($(a.header.channel)); correlation uses all $(r.ncomponents) listed components.",fontsize=13)
     name=@sprintf("example_%02d_%s_%s",index,r.station,r.phase)
@@ -147,7 +151,7 @@ function make_report(out,events,groups,rows,cfg)
         csvrow(io,"event_i","event_j","original_event_i","original_event_j","station","phase","cc_signed","selection","figure")
         for (ex,name) in zip(examples,names)
             r=ex.row
-            csvrow(io,r.i,r.j,ex.a.event.name,ex.b.event.name,r.station,r.phase,r.cc,isempty(plot["event_pairs"]) ? "deterministic weak/middle/strong per group, then evenly spaced group order" : "explicit requested event pair",name*".png")
+            csvrow(io,r.i,r.j,ex.a.event.name,ex.b.event.name,r.station,r.phase,r.cc,isempty(plot["event_pairs"]) ? "weak/middle/strong sampled peaks per group, then evenly spaced group order" : "explicit requested event pair",name*".png")
         end
         for pair in plot["event_pairs"]
             i,j=sort(Int.(pair))
@@ -170,6 +174,12 @@ function make_report(out,events,groups,rows,cfg)
         <p>Polarity: <b>$(escapehtml(cfg["quality"]["polarity"]))</b>. Largest graph components: $(join(sizes[1:min(8,end)],", ")). Connectedness does not guarantee relocation geometry or verify that a detection is an earthquake.</p>
         <p>IDs are sequential across valid input events, including isolated events. <a href="event_id_map.csv">Original ID map</a>. <a href="near_identity.csv">Near-identical arrival flags</a> are review evidence; no events were automatically deleted.</p>""")
         print(io,"""<p><strong>What does the lag mean?</strong> Each waveform is first centred on its own phase pick. A positive lag of +0.10 s means the matching feature in event j is 0.10 s later within that pick-centred window; shift j left by 0.10 s to align it with i. It does not mean the earthquakes occurred 0.10 s apart. The exported differential travel time is <code>dt(i−j) = (pick_i−origin_i) − (pick_j−origin_j) − lag</code>. Template-derived picks can change correlation windows and noise estimates, so accepted-pair counts need not increase even when more traces have picks.</p>""")
+        fitted=get(cfg["output"],"coefficient_lag","sampled")=="fitted"
+        score_note=fitted ? "For accepted observations, DDCorr remeasures signed r on the filtered waveforms at the fitted lag." :
+                            "DDCorr uses signed r at the best sampled lag for the weight and the flag."
+        if fitted
+            print(io,"""<p>$score_note Peak acceptance and the peak-gap test use the sampled curve. The <a href="coefficient_audit.csv">coefficient audit</a> lists both lags, both coefficients and any fallback to the sampled value.</p>""")
+        end
         exclusions=joinpath(out,"station_exclusions.csv")
         nexcluded=isfile(exclusions) ? max(0,countlines(exclusions)-1) : 0
         if nexcluded>0
@@ -206,10 +216,21 @@ function make_report(out,events,groups,rows,cfg)
                 flagged=abs(r.cc)>=threshold
                 label=flagged ? " · near-identity flag" : ""
                 print(io,"<details><summary>$(escapehtml(name)) · events $(r.i) and $(r.j)$label</summary>")
+                if hasproperty(example,:components) && !isempty(example.components)
+                    print(io,"<table><caption>S correlation on each shared horizontal</caption><thead><tr><th>Channel</th><th>Own best grid lag (s)</th><th>Own peak r</th><th>r at joint grid lag</th>")
+                    fitted && print(io,"<th>r at joint fitted lag</th>")
+                    print(io,"</tr></thead><tbody>")
+                    for c in example.components
+                        @printf(io,"<tr><td>%s</td><td>%.4f</td><td>%.6f</td><td>%.6f</td>",escapehtml(c.channel),c.best_lag,c.best_cc,c.at_grid)
+                        fitted && @printf(io,"<td>%.6f</td>",c.at_output)
+                        print(io,"</tr>")
+                    end
+                    print(io,"</tbody></table><p>Read across a channel to see its preferred lag and its correlation at the common lag. DDCorr applies the S threshold to the mean at the joint grid peak. Each channel contributes equally. Its individual peak lag and coefficient are shown for review.</p>")
+                end
                 if flagged
                     squared=cfg["output"]["weight"]=="cc_squared"
                     weight_description=squared ? "r²" : "|r|"
-                    print(io,"""<p>The <a href="near_identity.csv">near-identity flag</a> applies to one station and phase. The table lists every accepted observation for this pair from <a href="correlations.csv">correlations.csv</a>. DDCorr records r at the best sampled lag. When subsample timing is enabled, the lag is refined between samples and the sampled r still determines the flag and the weight. The weight in <a href="dt.cc">dt.cc</a> is $weight_description. To investigate a possible duplicate, put both original recordings and their P and S markers on a shared UTC clock and look for distinct arrivals at several stations.</p>""")
+                    print(io,"""<p>The <a href="near_identity.csv">near-identity flag</a> applies to one station and phase. The table lists every accepted observation for this pair from <a href="correlations.csv">correlations.csv</a>. $score_note The weight in <a href="dt.cc">dt.cc</a> is $weight_description. To investigate a possible duplicate, put both original recordings and their P and S markers on a shared UTC clock and look for distinct arrivals at several stations.</p>""")
                     print(io,"<table><caption>All accepted measurements for events $(r.i) and $(r.j)</caption><thead><tr><th>Station</th><th>Phase</th><th>Signed r</th><th>dt (i − j), s</th><th>dt.cc weight ($weight_description)</th><th>|r| ≥ $threshold</th></tr></thead><tbody>")
                     for obs in comparisons[(r.i,r.j)]
                         @printf(io,"<tr><td>%s</td><td>%s</td><td>%.4f</td><td>%.*f</td><td>%.6f</td><td>%s</td></tr>",

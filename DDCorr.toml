@@ -14,6 +14,7 @@ p_pick_header = "a" # P arrival, in seconds from the SAC reference time
 s_pick_header = "t0" # S arrival; both mappings apply to the whole input dataset
 
 [output]
+coefficient_lag = "fitted" # remeasure r at the fitted lag for weights and near-identity flags. Use "sampled" for the original grid weights.
 directory = "results" # a new timestamped run directory preserves older results
 
 [P]
@@ -25,11 +26,11 @@ sample_rate_hz = 50.0 # compare P signals at 50 samples per second. Input traces
 min_snr = 1.5 # the filtered P window must have at least 1.5 times the RMS amplitude of pre-P noise
 
 [S]
-min_components = 1 # only components passing min_snr enter the mean; 2 requires both horizontals
+min_components = 1 # number of shared, usable horizontals. Each must pass min_snr in both events.
 band_hz = [2.0, 14.0] # S bandpass corners in Hz
 window_s = [-0.5, 3.0] # compare samples from 0.5 s before S to 3 s after S
 max_lag_s = 0.5 # largest earlier or later correction to the S picks, in seconds
-min_cc = 0.70 # minimum peak coefficient for the average curve across shared usable components
+min_cc = 0.70 # threshold on the peak of the mean sampled curve. Individual horizontals can fall below it.
 sample_rate_hz = 50.0 # time grid used to compare the S waveforms, in samples per second
 min_snr = 1.5 # minimum S-window RMS divided by pre-P noise RMS on each component
 

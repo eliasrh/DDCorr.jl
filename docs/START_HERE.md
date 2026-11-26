@@ -91,6 +91,8 @@ DDCorr prints the path to a new `results/correlate_…` directory. It contains i
 
 **After lunch, keep the terminal in DDCorr.jl.** The supplied `Iceland100/sac` contains the real event cuts. Each of its 100 folders holds the available three-component records at eleven Z7 stations. The starting origins and magnitudes come from Data Set S1 of Ágústsdóttir et al. The example SAC files use predicted P and S times to centre the waveform windows. [Catalogue paper and supplement](https://doi.org/10.1029/2018JB016010) · [Z7 network](https://doi.org/10.7914/SN/Z7_2010)
 
+Open **Iceland100 → DDCorr.toml**. Under `[output]`, Friday’s settings include `coefficient_lag = "fitted"`. If you have an earlier Iceland100 ZIP, copy **DDCorr.toml** from **DDCorr.jl → examples → download → iceland100** into the extracted **Iceland100** folder beside **sac** and replace the old settings file. You can reuse all the recordings. [Friday’s Iceland settings](../examples/download/iceland100/DDCorr.toml)
+
 Run the same program with **Iceland100/DDCorr.toml**. The path in this command selects the Iceland settings file. The `sac_dir = "sac"` line in that file points to `Iceland100/sac`.
 
 ```sh
@@ -99,7 +101,7 @@ julia --project=. --threads=2 bin/ddcorr.jl ../Iceland100/DDCorr.toml
 
 **Open the Iceland report.** When DDCorr finishes it prints an “Open in your browser” line. In Finder or File Explorer, open **Workshop → Iceland100 → results**, choose the `correlate_` folder whose date and time match the printed path, and double-click **report.html**. Windows may display the file as **report** with a browser icon. The Iceland report opens with **100 events**, **2,412 P observations** and **4,625 S observations**.
 
-If you cannot finish the run on your computer, double-click **Workshop → Iceland100 → reference → report.html**. It contains the same Iceland figures and measurement tables. Open the HTML in its extracted folder so its figure links work.
+If you want to open the completed Friday report, double-click **DDCorr.jl → examples → download → iceland100 → reference → report.html** in the extracted GitHub download. The current instructor handout also includes it under **Iceland100 → reference**. Keep the report in its folder so its figures open. The fitted-weight report has 61 station–phase measurements in `near_identity.csv`.
 
 **At 14:05, leave the Iceland report open and return to slide 25**, “The Iceland run uses its own settings and SAC directory.” The instructor will walk through the figures with the class.
 
@@ -124,7 +126,9 @@ The instructor will use the real Iceland report for the plot walkthrough. The se
 
 The DYSA P markers differ by +0.3558 s relative to the respective event origins. After the +0.0586 s lag correction, DDCorr writes +0.2972 s for event 93 minus event 97.
 
-**Why do events 85 and 86 have different weights at different stations?** Open **example_11_Z7.STAM_S** and look at its seven measurements. At FLUR S, the line in `dt.cc` reads `Z7.FLUR 0.4612 0.817394 S`. The first number is the differential travel time in seconds. The second is the square of the correlation coefficient. The best 20 ms trial lag at FLUR is −240 ms, where r = 0.9041. DDCorr refines the lag to −232.55 ms and keeps the sampled r for the weight. Remeasuring r there gives 0.9979. Slide 41 shows the two S recordings and the peak between the sampled lags. At identical UTC times all seven rows give r = 1.000000. Each compares a recorded arrival with itself.
+**Which coefficient goes into the weight?** Open `example_11_Z7.STAM_S` for events 85 and 86. The table lists all seven measurements for this pair. At FLUR S, `dt.cc` reads `Z7.FLUR 0.4612 0.995830 S`. The travel-time difference is 0.4612 s. The best 20 ms grid point gives r = 0.904098 at −240 ms. Shifting the filtered waveforms to the fitted lag of −232.55 ms gives r = 0.997913. The square of that value is the exported weight. All seven observations pass the 0.99 near-identity threshold. The Friday TOMLs select `coefficient_lag = "fitted"` under `[output]`. Older sampled-weight reports show 0.817394 at FLUR. Each run records the setting in `effective_config.toml`.
+
+**What if the two S components disagree?** Expand an S example in the report. The table **S correlation on each shared horizontal** gives each channel’s preferred grid lag, its own peak coefficient, and its coefficient at the common lag. DDCorr checks signal-to-noise separately on each component in both events. It then tests the peak of the mean sampled curve. At STAM for events 28/45, east gives 0.673144 and north 0.726868 at zero lag. Their mean of 0.700006 passes the 0.70 cutoff. At DYSA for events 1/2, the horizontal grid peaks differ by 20 ms and the pair passes. The 1 ms consistency check compares the two input pick differences. DDCorr has no separate rejection threshold for the difference between the component coefficients or their preferred waveform lags. Slides 65–68 show the measurements.
 
 The [Iceland report walkthrough](../teaching/SOLUTIONS.txt) explains each figure, including its axes, colours and units, and follows a missing P observation through the output tables.
 

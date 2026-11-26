@@ -37,6 +37,7 @@ function write_run_guide(out,cfg,mode,status)
       "stations.txt"=>"Station coordinates; elevation in metres.",
       "dt.cc"=>"Accepted differential travel times for DDSync; no self-pairs.",
       "correlations.csv"=>"Accepted pairs with signed coefficient, lag, SNR and components.",
+      "coefficient_audit.csv"=>"Sampled and fitted lags and signed coefficients for each accepted observation, including the source of the export weight.",
       "group_summary.csv"=>"Accepted/rejected pair counts for each station and phase.",
       "preprocessing_issues.csv"=>"Traces excluded before pair correlation, including low SNR.",
       "rejected_pairs.csv"=>"Optional per-pair rejection reasons.",
