@@ -1,5 +1,6 @@
 "Merge known TOML keys recursively, rejecting misspellings and table/value conflicts."
 function merge_checked!(dest, overrides, prefix="")
+    overrides isa AbstractDict || error("Expected a TOML table for $(rstrip(prefix, '.'))")
     for (key,value) in overrides
         haskey(dest,key) || error("Unknown configuration key $(prefix)$(key)")
         if dest[key] isa AbstractDict
@@ -39,19 +40,37 @@ function load_config(path)
         pop!(s_phase,"min_components",nothing)
         merge_checked!(cfg,overrides)
     end
-    public=pop!(cfg,"interface")
-    merge_checked!(public,user)
-    cfg["input"]["sac_root"]=normpath(joinpath(dirname(path),public["input"]["sac_dir"]))
-    cfg["output"]["root"]=normpath(joinpath(dirname(path),public["output"]["directory"]))
+    # Assemble one schema before applying the run file. The interface defaults
+    # retain their historical precedence over a legacy advanced.file.
+    common=pop!(cfg,"interface")
+    for group in ("input","output")
+        merge!(cfg[group],common[group])
+    end
+    for group in ("plots","matrices")
+        cfg[group]=common[group]
+    end
+    short_phase=Dict(ph=>pop!(user,ph,Dict{String,Any}()) for ph in ("P","S"))
+    for ph in ("P","S")
+        merge!(cfg["phase"][ph],common[ph])
+    end
+    merge_checked!(cfg,user)
+    for ph in ("P","S")
+        short=short_phase[ph]
+        short isa AbstractDict || error("$ph must be a TOML table")
+        nested=get(get(user,"phase",Dict()),ph,Dict())
+        duplicates=intersect(keys(short),keys(nested))
+        isempty(duplicates) || error("Set $(join(sort!(collect(duplicates)), ", ")) once under [$ph] or [phase.$ph]")
+        merge_checked!(cfg["phase"][ph],short,"$ph.")
+    end
+    cfg["input"]["sac_root"]=normpath(joinpath(dirname(path),pop!(cfg["input"],"sac_dir")))
+    cfg["output"]["root"]=normpath(joinpath(dirname(path),pop!(cfg["output"],"directory")))
     cfg["runtime"]["cache_dir"]=normpath(joinpath(dirname(path),cfg["runtime"]["cache_dir"]))
     for ph in ("P","S")
-        merge!(cfg["phase"][ph],public[ph])
-        cfg["phase"][ph]["pick_header"]=lowercase(public["input"][lowercase(ph)*"_pick_header"])
+        cfg["phase"][ph]["pick_header"]=lowercase(pop!(cfg["input"],lowercase(ph)*"_pick_header"))
     end
     cfg["preprocess"]["noise_pick_header"]=="auto" &&
         (cfg["preprocess"]["noise_pick_header"]=cfg["phase"]["P"]["pick_header"])
     cfg["preprocess"]["origin_tolerance_s"]=cfg["input"]["origin_tolerance_s"]
-    cfg["plots"]=public["plots"];cfg["matrices"]=public["matrices"]
     cfg["configuration_source"]=path
     validate_config(cfg)
     cfg
