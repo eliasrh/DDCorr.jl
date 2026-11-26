@@ -729,10 +729,10 @@ export const slides = [
     "kind": "figure",
     "title": "Why events 85 and 86 look nearly identical at STAM",
     "image": "report_s_alignment.png",
-    "lead": "At STAM, the S coefficient for events 85 and 86 is 0.9967. It exceeds the 0.99 threshold in near_identity.csv. The flag applies to this station and phase.",
+    "lead": "At STAM, the S waves for events 85 and 86 have r = 0.9967. DDCorr flags this station and phase because r exceeds 0.99.",
     "body": [
-      "The plot shows the east component. DDCorr averaged the east and north correlation curves. A shift of 0.3416 s to the right aligns event 86 with event 85.",
-      "Across the network, three of seven measurements are flagged. The other four have coefficients from 0.904 to 0.960."
+      "The plot shows the east component. DDCorr averaged both horizontal correlation curves. Shifting event 86 to the right by 0.3416 s aligns the pulses.",
+      "Three of seven observations reach 0.99. The other four have r between 0.904 and 0.960. In dt.cc the STAM weight is r² = 0.9933."
     ],
     "notes": "Event 85 is S1_009984 and event 86 is S1_009985. Under Accepted pair examples, open example_11_Z7.STAM_S. The orange record is aligned to the blue record by shifting it later because the measured lag on the two marker-centred axes is −0.3416 s. The reported coefficient is the sampled peak of the mean HHE/HHN curve. In correlations.csv, accepted signed coefficients are DYSA P 0.9240, FLUR S 0.9041, KATT S 0.9547, KVER S 0.9601, NOHR S 0.9947, RODG S 0.9924 and STAM S 0.9967. The last three meet the 0.99 threshold. The third field on an observation line in dt.cc is the configured weight, here r squared. STAM S therefore has weight 0.993349. Compare coefficients in correlations.csv."
   },
