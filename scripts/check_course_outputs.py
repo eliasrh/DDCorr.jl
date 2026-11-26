@@ -33,6 +33,11 @@ for example in rows:
     assert summary in report,figure
     table=report.split(summary,1)[1].split('</table>',1)[0]
     assert set(re.findall(r'<tr><td>([^<]+)</td><td>([PS])</td>',table))==expected,figure
+    for obs in audit:
+        if (obs['event_i'],obs['event_j'])==pair:
+            cells=(obs['station'],obs['phase'],f"{float(obs['cc_signed']):.4f}",
+                   f"{float(obs['dt_s']):.4f}",f"{float(obs['weight']):.6f}")
+            assert ''.join(f'<td>{cell}</td>' for cell in cells) in table,figure
 
 for line in (run/'dt.cc').read_text().splitlines():
     if line and not line.startswith('#'):assert re.fullmatch(r'-?\d+\.\d{4}',line.split()[1]),line

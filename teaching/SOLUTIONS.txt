@@ -117,11 +117,22 @@ minimum signal-to-noise ratio and distance between the input epicentres.
 example_selection.csv records the station, phase, original folders, integer
 IDs and filename for each plot.
 
-Why review events 85 and 86?
+Why does FLUR S have a weight of 0.817394 for the same arrival?
 
-The S example at STAM has a signed coefficient of 0.99667. The number in dt.cc is the weight, 0.993349 (r squared in this run). Filter correlations.csv for event_i = 85 and event_j = 86 to see all seven measurements. Three S rows meet 0.99, at NOHR, RODG and STAM. The other four coefficients range from 0.904 to 0.960. near_identity.csv flags an observation at a particular station and phase.
+In the block beginning “# 85 86 0.0”, read “Z7.FLUR 0.4612 0.817394 S” as station, differential travel time (s), weight and phase. At 50 Hz, DDCorr tests lags 20 ms apart. The FLUR S markers in the two SAC files are 231.35 ms apart on the UTC clock. The best trial is −240 ms, 8.65 ms from exact alignment. Its signed coefficient is 0.904098, which gives the exported weight 0.817394 when squared. DDCorr fits a lag of −232.55 ms for timing and keeps the sampled coefficient for the weight.
 
-Open folders S1_009984 and S1_009985 and compare corresponding channels on one UTC clock. Their catalogue origin times are 13:32:44.890 and 13:32:45.350 UTC. Each of the 33 channel pairs shares 9,455 identical raw samples. The header times are predicted. For example, the two STAM S marks are 0.3421 s apart on the clock. DDCorr measures a lag of −0.3416 s relative to those marks, and all seven matched features coincide within 1.2 ms on UTC. The cut windows contain the same recorded motion. To decide whether there are two earthquakes, inspect the original P and S onsets and their moveout at several stations. Close earthquakes can share an overlapping continuous record.
+The last column below remeasures the coefficient at the fitted lag using the same recordings, filters, window lengths and components. It is a diagnostic calculation. The other two columns are the original run values.
+
+Station/phase    Saved r    dt.cc weight    r at fitted lag
+DYSA P           0.924044     0.853858          0.999845
+FLUR S           0.904098     0.817394          0.997913
+KATT S           0.954744     0.911537          0.999954
+KVER S           0.960115     0.921820          0.999986
+NOHR S           0.994675     0.989378          0.999812
+RODG S           0.992355     0.984768          0.999525
+STAM S           0.996669     0.993349          0.999811
+
+At identical UTC times each of the seven correlations is 1.000000 to six decimal places. The two cuts share exactly 9,455 raw samples per channel on all 33 channels. These seven rows time the same recorded arrivals twice. Their differential travel times of 0.4591 to 0.4612 s recover the 0.4600 s separation of the two catalogue origins.
 
 Station matrices and missing measurements
 
