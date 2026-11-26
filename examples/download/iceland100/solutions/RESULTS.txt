@@ -1,0 +1,32 @@
+BÁRÐARBUNGA · THE REFERENCE REPORT
+
+Open report.html inside Iceland100/reference. The example uses 3,300 SAC
+files from 100 earthquakes recorded on three components at 11 stations.
+
+DDCorr accepted 2,412 P measurements and 4,625 S measurements. Each of
+the 7,037 measurements compares two events at one station for one phase.
+Several stations and both phases can measure the same pair. Together the
+accepted measurements connect 1,914 distinct event pairs.
+
+In a waveform example, the first panel shows the two records relative to
+their P or S markers. The aligned traces show how much their waveforms
+agree after applying the measured time shift. The lag curve gives the
+correlation coefficient for each shift considered.
+
+The fitted-weight run flags 61 observations at |r| >= 0.99, including
+all seven for events 85 and 86. coefficient_audit.csv gives the sampled
+and fitted lags and their coefficients.
+
+s_horizontal_components.csv lists each horizontal separately for the
+3,973 accepted S observations that used two components. own_grid_lag_ms
+and own_peak_r describe that channel's strongest sampled peak. The joint
+columns describe the common grid or fitted lag selected for both channels.
+r_at_joint_grid and r_at_joint_fit give the contribution of this channel
+at each of those two lags. The sampled mean must reach 0.70. DDCorr writes
+the square of the fitted mean as the weight. All lags in this table are
+milliseconds relative to the event picks. Positive means the feature in
+event j is later on its pick-centred axis.
+
+The horizontal maxima occupy the same grid point for 3,598 pairs of
+records. In 375 they differ by one 20 ms grid interval. For 736 of the
+3,973 observations, one component is below 0.70 at the shared grid lag.

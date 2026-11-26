@@ -1,0 +1,7 @@
+configuration = "../DDCorr.toml"
+directory_time_zone = "UTC"
+entry_point = "report.html"
+excluded_stations = 0
+mode = "correlate"
+sac_directory = "../sac"
+status = "complete"

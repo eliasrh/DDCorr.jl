@@ -1,0 +1,95 @@
+configuration_source = "../DDCorr.toml"
+
+[plots]
+summary = true
+filters = true
+example_stations = []
+original_event_pairs = []
+examples = true
+example_phases = ["P", "S"]
+closure = true
+event_pairs = []
+enabled = true
+max_examples = 12
+
+[preprocess]
+noise_pick_header = "a"
+orientation_tolerance_deg = 10.0
+origin_tolerance_s = 0.02
+trace_taper_fraction = 0.02
+noise_window_s = [-8.0, -2.0]
+
+[output]
+near_identity_cc = 0.99
+root = "../results"
+weight = "cc_squared"
+coefficient_lag = "fitted"
+write_rejected_pairs = false
+dt_decimals = 4
+
+[runtime]
+max_group_memory_mib = 1024
+cache_dir = "../.ddcorr_cache"
+max_events = 0
+resume = true
+max_pairs_per_group = 2000000
+
+[matrices]
+max_dense_events = 500
+plots = true
+dense = false
+max_plot_groups = 24
+enabled = true
+max_dense_cells = 2000000
+max_plot_events = 500
+
+[phase.S]
+filter_order = 4
+pick_header = "t0"
+min_components = 1
+filter_padding_s = 5.0
+min_peak_gap = 0.08
+sidelobe_exclusion_s = 0.04
+max_lag_s = 0.5
+min_snr = 1.5
+band_hz = [2.0, 14.0]
+window_s = [-0.5, 3.0]
+min_cc = 0.7
+sample_rate_hz = 50.0
+
+[phase.P]
+filter_order = 4
+pick_header = "a"
+min_components = 1
+filter_padding_s = 5.0
+min_peak_gap = 0.1
+sidelobe_exclusion_s = 0.04
+max_lag_s = 0.5
+min_snr = 1.5
+band_hz = [2.0, 14.0]
+window_s = [-0.5, 2.0]
+min_cc = 0.7
+sample_rate_hz = 50.0
+
+[diagnostics]
+max_requested_examples = 200
+max_closure_triangles = 100000
+
+[input]
+station_coordinate_tolerance_deg = 0.0001
+origin_tolerance_s = 0.02
+sac_root = "../sac"
+depth_unit = "km"
+depth_tolerance_km = 0.01
+station_elevation_tolerance_m = 10.0
+coordinate_tolerance_deg = 0.0001
+component_inclination_tolerance_deg = 10.0
+station_epoch_policy = "skip"
+strict_headers = true
+
+[quality]
+polarity = "positive"
+boundary_guard_samples = 1
+component_pick_tolerance_s = 0.001
+max_pair_distance_km = 0.0
+subsample = true

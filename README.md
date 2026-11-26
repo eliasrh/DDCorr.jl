@@ -9,10 +9,12 @@ DDCorr compares P or S waveforms from pairs of earthquakes recorded at the same 
 **[Start here for the Friday lab](docs/START_HERE.md)**. In a downloaded copy, double-click `docs/START_HERE.html` to read the same guide in your browser. Run DDCorr on the synthetic SAC files, then on the supplied recordings of 100 Icelandic earthquakes. At 14:05 the class reads the real Iceland report together, follows individual P and S measurements into the output tables, and reviews how DDCorr processed those waveforms. From 16:00 to 18:00, participants can run their own SAC files or explore other Iceland station and event pairs.
 
 - [Editable workshop PowerPoint](teaching/DDCorr_minicourse.pptx)
+- [Friday’s fitted-weight Iceland100 results and figures](examples/download/iceland100/reference) · [East and north S correlations at STAM](teaching/assets/method_stam_s_peak.png)
+- [Channel-by-channel measurements for all 3,973 two-component S observations](examples/download/iceland100/solutions/s_horizontal_components.csv)
 - [Report walkthrough](teaching/SOLUTIONS.txt)
 - [Inputs, settings and output formats](docs/INPUTS_OUTPUTS.md)
 
-Extract the instructor’s `Iceland100.zip` alongside `DDCorr.jl`. For your own SAC files, use one directory per event. A completed run includes its HTML report, `correlations.csv`, `dt.cc`, `catalog.txt`, `stations.txt` and `event_id_map.csv`.
+Extract the instructor’s `Iceland100.zip` alongside `DDCorr.jl`. If you have an older copy, place [Friday’s Iceland settings](examples/download/iceland100/DDCorr.toml) beside the extracted `sac` folder before running. To read the completed report straight from a GitHub download, double-click `examples/download/iceland100/reference/report.html`. For your own SAC files, use one directory per event. A completed run includes its HTML report, `correlations.csv`, `dt.cc`, `catalog.txt`, `stations.txt` and `event_id_map.csv`.
 
 ## Saturday · DDSync and GraphSplit
 

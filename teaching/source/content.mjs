@@ -80,7 +80,7 @@ export const slides = [
           },
           {
             "time": "16:00–18:00",
-            "topic": "Open clinic for your own SAC files",
+            "topic": "Open hour for your own SAC files",
             "range": "73–85"
           }
         ]
@@ -511,7 +511,8 @@ export const slides = [
     "notes": "In Start Here, the header command for this exact file is julia --project=. bin/sac_info.jl ../Iceland100/sac/S1_009992/Z7.DYSA..HHZ.sac. The SAC reference instant coincides with the catalogue origin in this archive (O = 0). The S prediction can be stored in the header of a vertical trace; DDCorr normally measures S on the horizontal components. Source of the catalogue: Ágústsdóttir et al. (2019), Data Set S1. The SAC generator added straight-line predictions at 6.0 and 3.5 km/s. The figure shows the original raw samples.",
     "lead": "This vertical recording belongs to event S1_009992 at station Z7.DYSA.",
     "body": [
-      "The numeric SAC fields A and T0 contain the two times marked on the trace. Their labels P_pred and S_pred indicate predicted arrivals. DDCorr centres the P window on A here."
+      "The numeric SAC fields A and T0 contain the two times marked on the trace. Their labels P_pred and S_pred indicate predicted arrivals. DDCorr centres the P window on A here.",
+      "To produce: julia --project=. bin/sac_info.jl ../Iceland100/sac/S1_009992/Z7.DYSA..HHZ.sac"
     ],
     "image": "lab_iceland_sac_markers.png",
     "sources": [
@@ -1309,7 +1310,7 @@ export const slides = [
   {
     "section": "16:00   /   Open clinic for your own SAC files",
     "kind": "break",
-    "title": "Open clinic for your own SAC files",
+    "title": "Open hour for your own SAC files",
     "lead": "16:00–18:00  ·  Bring a sequence you want to correlate. We can look together at the waveforms, their timing information and a first DDCorr run.",
     "notes": "Allow the whole two hours for open work. Keep this slide visible while participants choose their data and questions. The following slides can be projected individually as the corresponding issues arise. Anyone using Iceland100 can choose another station, phase or pair. If participants bring sensitive data, use the supplied field records for examples on the projector.",
     "body": [

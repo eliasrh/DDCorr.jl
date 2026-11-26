@@ -91,6 +91,8 @@ DDCorr prints the path to a new `results/correlate_…` directory. It contains i
 
 **After lunch, keep the terminal in DDCorr.jl.** The supplied `Iceland100/sac` contains the real event cuts. Each of its 100 folders holds the available three-component records at eleven Z7 stations. The starting origins and magnitudes come from Data Set S1 of Ágústsdóttir et al. The example SAC files use predicted P and S times to centre the waveform windows. [Catalogue paper and supplement](https://doi.org/10.1029/2018JB016010) · [Z7 network](https://doi.org/10.7914/SN/Z7_2010)
 
+Open **Iceland100 → DDCorr.toml**. Under `[output]`, Friday’s settings include `coefficient_lag = "fitted"`. If you have an earlier Iceland100 ZIP, copy **DDCorr.toml** from **DDCorr.jl → examples → download → iceland100** into the extracted **Iceland100** folder beside **sac** and replace the old settings file. You can reuse all the recordings. [Friday’s Iceland settings](../examples/download/iceland100/DDCorr.toml)
+
 Run the same program with **Iceland100/DDCorr.toml**. The path in this command selects the Iceland settings file. The `sac_dir = "sac"` line in that file points to `Iceland100/sac`.
 
 ```sh
@@ -99,7 +101,7 @@ julia --project=. --threads=2 bin/ddcorr.jl ../Iceland100/DDCorr.toml
 
 **Open the Iceland report.** When DDCorr finishes it prints an “Open in your browser” line. In Finder or File Explorer, open **Workshop → Iceland100 → results**, choose the `correlate_` folder whose date and time match the printed path, and double-click **report.html**. Windows may display the file as **report** with a browser icon. The Iceland report opens with **100 events**, **2,412 P observations** and **4,625 S observations**.
 
-If you cannot finish the run on your computer, double-click **Workshop → Iceland100 → reference → report.html**. It contains the same Iceland figures and measurement tables. Open the HTML in its extracted folder so its figure links work.
+If you want to open the completed Friday report, double-click **DDCorr.jl → examples → download → iceland100 → reference → report.html** in the extracted GitHub download. The current instructor handout also includes it under **Iceland100 → reference**. Keep the report in its folder so its figures open. The fitted-weight report has 61 station–phase measurements in `near_identity.csv`.
 
 **At 14:05, leave the Iceland report open and return to slide 25**, “The Iceland run uses its own settings and SAC directory.” The instructor will walk through the figures with the class.
 

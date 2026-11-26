@@ -1,0 +1,14 @@
+cc_symmetry = "symmetric"
+coefficient_lag = "fitted"
+dense = false
+diagonal = "NA: self-correlations were not computed"
+dt_and_lag_symmetry = "antisymmetric"
+dt_definition = "travel_time(i) - travel_time(j), seconds"
+edge_count = 7037
+event_count = 100
+group_count = 22
+lag_definition = "residual after centring each waveform on its own pick; positive lag means shift j left to align with i, seconds"
+missing_value = "NA"
+positive_semidefinite_guaranteed = false
+scope = "accepted station-phase observations only"
+weight = "cc_squared"

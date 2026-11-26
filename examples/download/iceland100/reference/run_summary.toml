@@ -1,0 +1,14 @@
+polarity = "positive"
+accepted_P = 2412
+events = 100
+julia_version = "1.12.3"
+coefficient_lag = "fitted"
+threads = 2
+event_pairs = 1914
+accepted_S = 4625
+sac_files = 3300
+id_convention = "1..N for valid selected event directories in lexical order; isolated events retained"
+weight = "cc_squared"
+dt_convention = "(arrival_i-origin_i)-(arrival_j-origin_j); lag positive when B later relative to its pick"
+correlation_elapsed_s = 10.832874059677124
+catalog_has_magnitude_column = true
