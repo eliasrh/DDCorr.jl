@@ -53,21 +53,16 @@ def correlate(x, y):
     windows = np.lib.stride_tricks.sliding_window_view(y, n)
     b = windows - windows.mean(axis=1, keepdims=True)
     denom = np.linalg.norm(a) * np.linalg.norm(b, axis=1)
-    direct = (b @ a) / denom
-    nf = 2 ** int(np.ceil(np.log2(n + len(y) - 1)))
-    spectrum = np.fft.rfft(a[::-1], nf) * np.fft.rfft(y, nf)
-    fft = np.fft.irfft(spectrum, nf)[n-1:len(y)] / denom
-    return direct, fft
+    return (b @ a) / denom
 
-d0,f0=correlate(x,y)
-d1,f1=correlate(y,x)
-r=(d0+d1[::-1])/2
-r_fft=(f0+f1[::-1])/2
+r=(correlate(x,y)+correlate(y,x)[::-1])/2
+computed=read("kver_fft.csv")
+r_fft=computed["coefficient"]
 assert np.max(abs(r-r_fft))<1e-12
-lag=20*np.arange(-pad,pad+1)
+lag=1000*computed["lag_s"]
 fig,a=plt.subplots(figsize=(10.5,3.7),layout="constrained")
-a.plot(lag,r_fft,color=teal,linewidth=2.4,label="FFT calculation")
-a.scatter(lag,r,edgecolor=ink,facecolor="white",linewidth=1.15,s=30,zorder=4,label="Direct calculation at each lag")
+a.plot(lag,r_fft,color=teal,linewidth=2.4,label="DDCorr output (FFT)")
+a.scatter(lag,r,edgecolor=ink,facecolor="white",linewidth=1.15,s=30,zorder=4,label="Direct sample products at each lag")
 panel(a);a.set_ylim(-.75,1.05);a.set_title("KVER P  ·  events 1 and 2")
 a.legend(loc="upper left",ncol=1,fontsize=13)
 save(fig,"method_direct_fft.png")

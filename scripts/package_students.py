@@ -16,7 +16,7 @@ import zipfile
 def course_files(root):
     files = [root / name for name in (
         ".gitignore", "README.md", "Project.toml", "Manifest.toml", "DDCorr.toml",
-        "requirements-download.txt", "docs/START_HERE.md", "docs/START_HERE.html", "docs/INPUTS_OUTPUTS.md",
+        "requirements-download.txt", "docs/START_HERE.md", "docs/START_HERE.html", "docs/INPUTS_OUTPUTS.md", "docs/INPUTS_OUTPUTS.html",
         "teaching/DDCorr_minicourse.pptx", "teaching/SOLUTIONS.txt",
     )]
     for pattern in ("bin/*.jl", "src/*.jl", "src/*.toml", "scripts/*.py", "test/*.jl",

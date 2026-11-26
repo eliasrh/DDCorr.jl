@@ -215,7 +215,7 @@ function inventory(cfg,out)
             endswith(lowercase(path),".sac") || continue
             try
                 h=read_header(path)
-                all(isfinite,h.floats[[8,36,37,39]]) || error("Missing event metadata: require O (origin offset), EVLA, EVLO and EVDP. Set input.depth_unit in advanced settings for source units. SAC download alone does not supply picks/origin.")
+                all(isfinite,h.floats[[8,36,37,39]]) || error("Missing event metadata: require O (origin offset), EVLA, EVLO and EVDP. Set input.depth_unit in the run TOML for source units. SAC download alone does not supply picks/origin.")
                 cfg["input"]["depth_unit"]=="m" && (h.floats[39]/=1000)
                 all(isfinite,h.floats[[32,33,34]]) || error("Missing station metadata: require STLA, STLO, STEL (metres).")
                 -90<=h.floats[32]<=90 && -180<=h.floats[33]<=180 || error("Invalid station coordinates")

@@ -2,6 +2,10 @@
 
 DDCorr compares P or S waveforms from pairs of earthquakes recorded at the same station. It uses their measured lag, phase-marker times and origin times to write differential travel times for relocation.
 
+**Using your own recordings?** The [DDCorr manual and complete TOML reference](docs/INPUTS_OUTPUTS.md) covers installation, preparing SAC files, choosing phase markers, every run setting, interpreting results and exporting differential times.
+
+**Preparing a workshop laptop?** Follow the [Windows, macOS or Linux setup and installation check](docs/START_HERE.md#before-class). The check installs the Julia packages, runs a small dataset with known travel times and gives you a report to open.
+
 **[Start here for the Friday lab](docs/START_HERE.md)**. In a downloaded copy, double-click `docs/START_HERE.html` to read the same guide in your browser. Run DDCorr on the synthetic SAC files, then on the supplied recordings of 100 Icelandic earthquakes. At 14:05 the class reads the real Iceland report together, follows individual P and S measurements into the output tables, and reviews how DDCorr processed those waveforms. From 16:00 to 18:00, participants can run their own SAC files or explore other Iceland station and event pairs.
 
 - [Editable workshop PowerPoint](teaching/DDCorr_minicourse.pptx)

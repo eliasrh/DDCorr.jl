@@ -20,7 +20,20 @@ assert all((run/r['figure']).exists() for r in rows)
 assert len(list((run/'matrices').glob('*.png')))==8
 assert len(list((run/'matrices').glob('*_cc.csv')))==8
 assert not list(run.rglob('*.pdf')) and not list(run.rglob('*.svg'))
-assert '.pdf' not in (run/'report.html').read_text()
+report=(run/'report.html').read_text()
+assert '.pdf' not in report
+# This test fixture uses the acceptance cutoff as its near-identity threshold.
+# Each flagged example must show every accepted station/phase for that pair.
+audit=list(csv.DictReader((run/'correlations.csv').open()))
+for example in rows:
+    pair=example['event_i'],example['event_j']
+    figure=Path(example['figure']).stem
+    expected={(r['station'],r['phase']) for r in audit if (r['event_i'],r['event_j'])==pair}
+    summary=f"<summary>{figure} · events {pair[0]} and {pair[1]} · near-identity flag</summary>"
+    assert summary in report,figure
+    table=report.split(summary,1)[1].split('</table>',1)[0]
+    assert set(re.findall(r'<tr><td>([^<]+)</td><td>([PS])</td>',table))==expected,figure
+
 for line in (run/'dt.cc').read_text().splitlines():
     if line and not line.startswith('#'):assert re.fullmatch(r'-?\d+\.\d{4}',line.split()[1]),line
 print('Course interface verified: 16 requested figures, 8 PNG matrices, dense CSVs, four-decimal dt, named complete run.')
