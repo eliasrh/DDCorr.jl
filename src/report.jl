@@ -151,7 +151,7 @@ function make_report(out,events,groups,rows,cfg)
         csvrow(io,"event_i","event_j","original_event_i","original_event_j","station","phase","cc_signed","selection","figure")
         for (ex,name) in zip(examples,names)
             r=ex.row
-            csvrow(io,r.i,r.j,ex.a.event.name,ex.b.event.name,r.station,r.phase,r.cc,isempty(plot["event_pairs"]) ? "deterministic weak/middle/strong per group, then evenly spaced group order" : "explicit requested event pair",name*".png")
+            csvrow(io,r.i,r.j,ex.a.event.name,ex.b.event.name,r.station,r.phase,r.cc,isempty(plot["event_pairs"]) ? "weak/middle/strong sampled peaks per group, then evenly spaced group order" : "explicit requested event pair",name*".png")
         end
         for pair in plot["event_pairs"]
             i,j=sort(Int.(pair))
@@ -216,6 +216,17 @@ function make_report(out,events,groups,rows,cfg)
                 flagged=abs(r.cc)>=threshold
                 label=flagged ? " · near-identity flag" : ""
                 print(io,"<details><summary>$(escapehtml(name)) · events $(r.i) and $(r.j)$label</summary>")
+                if hasproperty(example,:components) && !isempty(example.components)
+                    print(io,"<table><caption>S correlation on each shared horizontal</caption><thead><tr><th>Channel</th><th>Own best grid lag (s)</th><th>Own peak r</th><th>r at joint grid lag</th>")
+                    fitted && print(io,"<th>r at joint fitted lag</th>")
+                    print(io,"</tr></thead><tbody>")
+                    for c in example.components
+                        @printf(io,"<tr><td>%s</td><td>%.4f</td><td>%.6f</td><td>%.6f</td>",escapehtml(c.channel),c.best_lag,c.best_cc,c.at_grid)
+                        fitted && @printf(io,"<td>%.6f</td>",c.at_output)
+                        print(io,"</tr>")
+                    end
+                    print(io,"</tbody></table><p>Read across a channel to see its preferred lag and its correlation at the common lag. DDCorr applies the S threshold to the mean at the joint grid peak. Each channel contributes equally. Its individual peak lag and coefficient are shown for review.</p>")
+                end
                 if flagged
                     squared=cfg["output"]["weight"]=="cc_squared"
                     weight_description=squared ? "r²" : "|r|"

@@ -70,23 +70,20 @@ save(fig,"method_direct_fft.png")
 v=read("stam_s.csv")
 lag=1000*v["lag_s"];mean=v["mean"];k=np.argmax(mean)
 assert np.allclose(mean,(v["HHE"]+v["HHN"])/2,atol=1e-12)
-x=lag[k-1:k+2];y=mean[k-1:k+2]
-fit=np.polyfit(x,y,2)
-vertex=-fit[1]/(2*fit[0])
-assert abs(vertex+3.85968)<.001
+assert lag[k]==0
 fig,(a,b)=plt.subplots(1,2,figsize=(12.3,4.7),layout="constrained",gridspec_kw={"width_ratios":[1.3,1]})
 a.plot(lag,v["HHE"],color=teal,lw=1.5,label="E–E")
 a.plot(lag,v["HHN"],color=copper,lw=1.5,label="N–N")
 a.plot(lag,mean,color=ink,lw=2.7,label="Mean")
-a.axvspan(-20,20,color="#DCEBE0",zorder=0)
+a.axvline(lag[k],color=grey,ls=":",lw=1,zorder=0)
 panel(a);a.set_title("S waves at STAM  ·  events 28 and 45")
 a.legend(loc="lower center",bbox_to_anchor=(.5,-.37),ncol=3,fontsize=13)
-xp=np.linspace(-20.7,20.7,160)
-b.plot(xp,np.polyval(fit,xp),color=teal,lw=2.5)
-b.scatter(x,y,color=ink,s=53,zorder=4)
-b.axvline(vertex,color=copper,ls="--",lw=1.6)
-b.annotate("Fitted lag\n−3.9 ms",xy=(vertex,np.polyval(fit,vertex)),xytext=(-21,.76),ha='left',va='center',fontsize=13,color=copper,arrowprops=dict(arrowstyle="->",color=copper))
-b.set(xlabel="Lag (ms)",ylabel="Mean correlation coefficient",xlim=(-25,25),ylim=(.20,.85),xticks=[-20,0,20],title="Detail of the mean peak")
-b.scatter([0],[mean[k]],color=ink,s=56,zorder=4)
-b.annotate("r = 0.700",xy=(0,mean[k]),xytext=(5,.75),fontsize=13,ha='left',color=ink,arrowprops=dict(arrowstyle="-",color=ink))
+b.axhline(.70,color=grey,ls="--",lw=1.3)
+b.text(-.34,.698,"Cutoff 0.70",ha="left",va="top",fontsize=12,color=grey)
+for pos,(value,color) in enumerate([(v["HHE"][k],teal),(v["HHN"][k],copper),(mean[k],ink)]):
+    b.scatter(pos,value,s=75,color=color,marker="D" if pos==2 else "o",zorder=3)
+    b.annotate(f"{value:.6f}",xy=(pos,value),xytext=(0,11),textcoords="offset points",
+               ha="center",fontsize=13,color=color)
+b.set(xlim=(-.42,2.48),ylim=(.66,.742),yticks=[.66,.68,.70,.72,.74],ylabel="Correlation coefficient",
+      xticks=[0,1,2],xticklabels=["East","North","Mean"],title="At the winning grid lag (0 ms)")
 save(fig,"method_stam_s_peak.png")

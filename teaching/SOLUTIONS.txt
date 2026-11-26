@@ -32,7 +32,7 @@ dashed lines at 0.70 are the configured limits for this Iceland run. Most
 peaks fall below them. A pair without enough shared components has no
 correlation curve to contribute.
 
-Upper right — Accepted coefficients. This panel includes only rows retained
+Upper right — Accepted coefficients. This panel uses fitted coefficients for the rows retained
 in correlations.csv, in bins of 0.025. The horizontal scale is signed r.
 A concentration near the threshold can be investigated by viewing some
 of those actual waveforms. The upper-left and upper-right graphs have
@@ -84,9 +84,9 @@ The “Correlation audit” link under “Files and conventions” opens
 correlations.csv. For events 93 and 97 at Z7.DYSA, phase P, the values are:
 
     lag_B_later_s    +0.0586 s   Shift relative to the input phase markers.
-    cc_signed         0.70003   Signed peak correlation coefficient.
+    cc_signed         0.704588  Waveform correlation at the fitted lag.
     dt_s             +0.2972 s   Estimated P travel time for 93 minus 97.
-    weight            0.490046  Squared coefficient in this configuration.
+    weight            0.496445  Squared coefficient in this configuration.
 
 The P markers are 3.9916 and 3.6358 s after the two event origins. Their
 difference is +0.3558 s. Subtracting the fitted lag of +0.0586 s gives
@@ -94,7 +94,7 @@ a differential travel time of +0.2972 s for event 93 minus event 97.
 The dt.cc block for this pair reads:
 
     # 93 97 0.0
-    Z7.DYSA       0.2972 0.490046 P
+    Z7.DYSA       0.2972 0.496445 P
 
 A pair measured at several stations or phases has several observation lines
 under the same header. Catalogue IDs 93 and 97 match the IDs in catalog.txt,
@@ -117,22 +117,26 @@ minimum signal-to-noise ratio and distance between the input epicentres.
 example_selection.csv records the station, phase, original folders, integer
 IDs and filename for each plot.
 
-Why does FLUR S have a weight of 0.817394 for the same arrival?
+The FLUR S weight for 85/86
 
-In the block beginning “# 85 86 0.0”, read “Z7.FLUR 0.4612 0.817394 S” as station, differential travel time (s), weight and phase. At 50 Hz, DDCorr tests lags 20 ms apart. The FLUR S markers in the two SAC files are 231.35 ms apart on the UTC clock. The best trial is −240 ms, 8.65 ms from exact alignment. Its signed coefficient is 0.904098, which gives the exported weight 0.817394 when squared. DDCorr fits a lag of −232.55 ms for timing and keeps the sampled coefficient for the weight.
+The row Z7.FLUR 0.4612 0.995830 S gives station, travel-time difference in seconds, squared weight and phase. At FLUR the nearest grid lag is −240 ms, where r = 0.904098. At the fitted lag of −232.55 ms, the waveforms give r = 0.997913 and weight = 0.995830. The Friday run uses the fitted coefficient for the near-identity flag as well. The coefficient audit records both lags and coefficients.
 
-The last column below remeasures the coefficient at the fitted lag using the same recordings, filters, window lengths and components. It is a diagnostic calculation. The other two columns are the original run values.
-
-Station/phase    Saved r    dt.cc weight    r at fitted lag
-DYSA P           0.924044     0.853858          0.999845
-FLUR S           0.904098     0.817394          0.997913
-KATT S           0.954744     0.911537          0.999954
-KVER S           0.960115     0.921820          0.999986
-NOHR S           0.994675     0.989378          0.999812
-RODG S           0.992355     0.984768          0.999525
-STAM S           0.996669     0.993349          0.999811
+Station/phase    Sampled r    Fitted r     Weight in dt.cc
+DYSA P           0.924044     0.999845     0.999690
+FLUR S           0.904098     0.997913     0.995830
+KATT S           0.954744     0.999954     0.999908
+KVER S           0.960115     0.999986     0.999972
+NOHR S           0.994675     0.999812     0.999624
+RODG S           0.992355     0.999525     0.999050
+STAM S           0.996669     0.999811     0.999623
 
 At identical UTC times each of the seven correlations is 1.000000 to six decimal places. The two cuts share exactly 9,455 raw samples per channel on all 33 channels. These seven rows time the same recorded arrivals twice. Their differential travel times of 0.4591 to 0.4612 s recover the 0.4600 s separation of the two catalogue origins.
+
+When the east and north components disagree
+
+At STAM for events 28/45, east has r = 0.673144 and north has r = 0.726868 at the same zero-lag sample. Their mean of 0.700006 passes the 0.70 S cutoff. At the fitted lag of −3.86 ms the mean is 0.694417, giving a weight of 0.482215. The report shows each channel’s coefficients and preferred lag for selected S examples. To choose this one, use [plots] event_pairs = [[28,45]], example_stations = ["Z7.STAM"] and example_phases = ["S"].
+
+Of the 3,973 accepted S observations using two horizontals, 736 have one component below 0.70 at the common sampled lag. The two channels choose the same grid point in 3,598 cases. In the remaining 375, the individual winners differ by one 20 ms sample. The maximum tolerated spread in the input pick-based differences is 1 ms. The code leaves independent waveform peak separation and coefficient differences to the reader to assess.
 
 Station matrices and missing measurements
 
@@ -143,7 +147,7 @@ coefficient is mirrored across the diagonal. Use the smaller ID first
 when looking up a row in correlations.csv. Reversing the pair order
 reverses the sign of the lag and differential time.
 
-For DYSA P, row 93, column 97 has coefficient 0.70003 in the left
+For DYSA P, row 93, column 97 has coefficient 0.704588 in the left
 matrix. The middle matrix gives +0.2972 s in that cell and −0.2972 s
 in the reflected cell. The right matrix instead gives +0.0586 s, the
 shift on the two marker-centred axes. Each time panel has its own colour
@@ -196,8 +200,8 @@ panels each have their own raw reference.
 Near-identical recordings
 
 The “Near-identical arrival flags” link near the top of the report opens
-near_identity.csv. Of the 22 flagged observations, the row for events
-44 and 45 at Z7.RODG, phase S, has r = 0.99982. Under “Accepted pair
+near_identity.csv. Of the 61 flagged observations, the row for events
+44 and 45 at Z7.RODG, phase S, has fitted r = 0.999980. Under “Accepted pair
 examples”, example_09_Z7.RODG_S shows the marker-centred alignment.
 The slide adds a comparison on a common UTC clock, made directly from
 the two original east-component SAC recordings. All 9,495 overlapping

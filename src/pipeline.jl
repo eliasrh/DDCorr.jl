@@ -184,8 +184,10 @@ function process_group(station,phase,entries,cfg,plan=group_plan(station,phase,e
     if cfg["plots"]["enabled"] && (cfg["plots"]["examples"] || cfg["plots"]["filters"]) && !isempty(rows) && (isempty(cfg["plots"]["example_stations"]) || station in cfg["plots"]["example_stations"]) && phase in cfg["plots"]["example_phases"]
         requested=Set(Tuple(sort(Int.(pair))) for pair in cfg["plots"]["event_pairs"])
         selected=if isempty(requested)
-            ranked=sort(rows;by=x->(abs(x.cc),x.i,x.j))
-            ranked[unique([1,cld(length(ranked),2),length(ranked)])]
+            # Use the sampled score that admitted each observation. Changing the
+            # export weight then leaves the weak/middle/strong examples comparable.
+            ranked=sortperm(eachindex(rows);by=i->(abs(fitted_output ? checks[i].sampled_cc : rows[i].cc),rows[i].i,rows[i].j))
+            rows[ranked[unique([1,cld(length(ranked),2),length(ranked)])]]
         else
             filter(r->(r.i,r.j) in requested,rows)
         end
@@ -195,12 +197,25 @@ function process_group(station,phase,entries,cfg,plan=group_plan(station,phase,e
         for row in selected
             keys=split(row.components,';');A=prepared[row.i];B=prepared[row.j]
             w=CorrelationWorkspace(A[keys[1]].nfft,A[keys[1]].nlag);curve=zeros(length(w.curve))
-            for k in keys;curve .+= correlation!(w,A[k],B[k]);end
+            component_curves=[copy(correlation!(w,A[k],B[k])) for k in keys]
+            for c in component_curves;curve .+= c;end
             curve ./= length(keys)
+            summaries=if phase=="S"
+                grid_lag=measure(curve,pc,quality).sampled_lag
+                grid_index=round(Int,grid_lag*pc["sample_rate_hz"])+A[keys[1]].nlag+1
+                map(keys,component_curves) do k,c
+                    individual=measure(c,pc,quality)
+                    at_grid=c[grid_index]
+                    at_output=fitted_output && row.lag!=grid_lag ? fitted_correlation!(w.ab,A,B,(k,),parents,row.lag) : at_grid
+                    (channel=A[k].header.channel,best_lag=individual.sampled_lag,best_cc=individual.cc,at_grid=at_grid,at_output=at_output)
+                end
+            else
+                NamedTuple[]
+            end
             score_lag=get(fallback_lags,(row.i,row.j),row.lag)
             a,b=A[keys[1]],B[keys[1]]
             shifted=fitted_output && quality["subsample"] ? sample_shifted!(zeros(b.ncore),parents[b.header.path],row.lag) : nothing
-            push!(examples,(row=row,a=a,b=b,curve=curve,score_lag=score_lag,shifted=shifted))
+            push!(examples,(row=row,a=a,b=b,curve=curve,score_lag=score_lag,shifted=shifted,components=summaries))
         end
     end
     return (station=station,phase=phase,rows=rows,checks=checks,counts=counts,hist=hist,issues=issues,

@@ -356,7 +356,7 @@ export const slides = [
     "section": "11:05   /   Waveform cross-correlation",
     "title": "The peak gives the lag and the coefficient",
     "lead": "At Z7.KVER, the highest coefficient is 0.800 at the +20 ms sample. Fitting the peak between samples gives a lag of +20.2 ms.",
-    "notes": "The plotted curve is the symmetric correlation of the two KVER P windows over ±0.5 s. The discrete peak is 0.7998529. DDCorr reports the sampled coefficient and refines the lag by fitting a parabola through the peak and its two neighbours. The full correlation row stores both results.",
+    "notes": "The grid peak for KVER P is r = 0.799853 at +20 ms. The three-point parabola gives +20.24 ms. DDCorr shifts the filtered waveform windows to that lag and measures r = 0.800246 for the output. The curve on this slide shows the sampled lag search.",
     "image": "relative_kver_correlation.png",
     "body": [
       "A positive lag means event 2’s P waveform arrives later than event 1’s on the marker-centred time axes."
@@ -442,11 +442,11 @@ export const slides = [
     "title": "The KVER P measurement in dt.cc",
     "lead": "At KVER, the P markers fall 2.7461 s and 2.7294 s after the two origins. Subtract the measured +0.0202 s lag from their +0.0167 s difference.",
     "notes": "The printed precision of the accepted row is four decimals for differential time and six for its weight. The input origins differed by 54.98 s in absolute UTC. The P travel times are compared after subtracting those origins. The calculation is (2.7461−2.7294)−0.0202=−0.0035 s. An output pair header may have more station or phase rows below it, sharing the same two IDs.",
-    "command": "# 1 2 0.0\nZ7.KVER  -0.0035  0.639765  P",
+    "command": "# 1 2 0.0\nZ7.KVER  -0.0035  0.640393  P",
     "codeLabel": "ICELAND100  /  dt.cc",
     "body": [
       "The P travel time to KVER is 0.0035 s shorter for event 1. The header gives the event IDs in subtraction order.",
-      "The station row gives the station, differential time in seconds, weight and phase. This run uses r² as the weight."
+      "DDCorr measures r = 0.800246 at the fitted lag. Its square gives the weight 0.640393 in the third column."
     ]
   },
   {
@@ -468,16 +468,16 @@ export const slides = [
     "section": "12:00   /   Guided DDCorr lab",
     "title": "Open Start Here and follow the DDCorr lab",
     "kind": "handoff",
-    "notes": "Keep this slide on screen throughout the guided lab. The synthetic run introduces the command and the event-folder layout. The figures will all be taught with the real Iceland recordings. The Iceland reference report provides a local fallback.",
-    "lead": "Open docs/START_HERE.html in the extracted code folder, or follow the GitHub link below. Each DDCorr run takes its settings from a plain-text TOML file.",
+    "notes": "Open the guide from the link or from the DDCorr.jl/docs folder. Run the synthetic example, then the Iceland100 command. Leave the real-data report open and return to slide 25.",
+    "lead": "Open docs/START_HERE.html inside the DDCorr.jl folder you extracted. The guide and the Iceland100 reference report in this Friday package use the same settings.",
     "body": [
       "Generate the small synthetic example and run DDCorr once.",
       "Run the supplied Iceland100 data and open its report.html.",
       "At 14:05, return to slide 25 with the Iceland report open."
     ],
     "link": {
-      "text": "Open the Start Here lab on GitHub",
-      "url": "https://github.com/eliasrh/DDCorr.jl/blob/main/docs/START_HERE.md"
+      "text": "Open the Start Here lab in this package",
+      "url": "../docs/START_HERE.html"
     }
   },
   {
@@ -553,7 +553,7 @@ export const slides = [
       [
         "Lag and coefficient limits",
         "±0.50 s and r ≥ 0.70",
-        "Search this lag interval and require the peak to reach the threshold."
+        "For S, test the highest mean across the shared horizontal channels."
       ]
     ]
   },
@@ -566,28 +566,28 @@ export const slides = [
     "body": [
       "Blue is P and orange is S. Both acceptance thresholds are 0.70, so the dashed lines coincide. Most measured peaks fall below that value in this run."
     ],
-    "notes": "Each step covers a bin of width 0.05 in signed r. The vertical scale is the number of candidate event pairs summed over stations within each phase. A station–phase candidate that lacks shared usable components produces no coefficient and cannot appear. Moving the threshold would alter the retained fraction. This figure alone cannot identify genuine arrivals."
+    "notes": "The blue and orange curves count peak values on the sampled lag grid, including rejected comparisons. The right-hand panel of the report summarises fitted coefficients from accepted observations."
   },
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "title": "The coefficients retained in the measurement file",
+    "title": "Correlation at the fitted lag for accepted measurements",
     "image": "report_accepted_peaks.png",
-    "lead": "The upper-right panel of the same figure counts only rows written to correlations.csv. The horizontal axis is the signed coefficient for each accepted peak.",
+    "lead": "The upper-right histogram counts the coefficients in correlations.csv. For each accepted observation, DDCorr shifts the filtered windows to the fitted lag and measures r again.",
     "body": [
-      "The blue P and orange S bars start at 0.70. A tall bin near the cutoff contains many marginal matches. Opening a waveform example shows which part of the phase aligned."
+      "Eight of 7,037 observations have fitted r below 0.70. They passed the 0.70 threshold on the sampled curve. The fitted coefficient determines their weight."
     ],
-    "notes": "P and S histograms overlay, with partially transparent colours. The bin width is 0.025 rather than the 0.05 used in the all-measured plot. Compare ranges and shapes; the different bin widths and vertical scales make bar heights across the two panels unsuitable for a direct rejection count. Group decisions provides the exact count."
+    "notes": "Four P and four S rows fall below 0.70 after remeasurement. Each contributes once to the histogram. The blue and orange bars use bins 0.025 wide. Compare individual rows in coefficient_audit.csv to see both lags and coefficients."
   },
   {
     "kind": "figure",
     "title": "A higher P threshold removes links at every station",
     "image": "iceland_p_threshold.png",
-    "lead": "Each dot counts the accepted P measurements at one Iceland station. Raising the minimum coefficient from 0.70 to 0.90 reduces the total from 2,412 to 233.",
+    "lead": "Each dot counts the accepted P measurements at one Iceland station. Raising the minimum sampled coefficient from 0.70 to 0.90 reduces the total from 2,412 to 233.",
     "body": [
       "At 0.70, 94 earthquakes have a P link to another event. At 0.90, only 49 do. The higher threshold costs station coverage as well as observations."
     ],
-    "notes": "These counts are obtained by applying a stricter P coefficient cutoff to the accepted Iceland rows. Other acceptance settings and the S observations are held fixed. A high threshold alone does not establish the accuracy of a time shift.",
+    "notes": "For a different acceptance threshold, filter the accepted P observations on sampled_r in coefficient_audit.csv. Holding every other rule fixed gives 2,412 at 0.70 and 233 at 0.90.",
     "section": "14:05   /   Reading the Iceland report"
   },
   {
@@ -656,7 +656,7 @@ export const slides = [
     "section": "14:05   /   Reading the Iceland report",
     "title": "Aligning the two DYSA P waveforms",
     "kind": "figure",
-    "notes": "The two folders are S1_009992 and S1_009996. The shared component is Z7.DYSA..HHZ. Use the expanded example_01_Z7.DYSA_P in the report, or open the PNG of that name directly. The automatic gallery includes accepted examples from different parts of the coefficient distribution.",
+    "notes": "The two folders are S1_009992 and S1_009996. The shared component is Z7.DYSA..HHZ. Use the expanded example_01_Z7.DYSA_P in the report, or open the PNG of that name directly. The automatic gallery includes accepted examples from the weak, middle and strong sampled peaks that passed acceptance.",
     "lead": "The first figure under “Accepted pair examples” shows events 93 and 97 at station Z7.DYSA.",
     "body": [
       "The orange P pulse arrives later than the blue one on the marker-centred axes. Moving it 0.0586 s earlier aligns the strongest positive peak. The later oscillations agree less closely."
@@ -667,10 +667,10 @@ export const slides = [
     "section": "14:05   /   Reading the Iceland report",
     "title": "Measuring the DYSA P lag from the peak",
     "kind": "figure",
-    "notes": "The bottom panel comes from the same Z7.DYSA P figure. The program retains the coefficient measured at the highest sampled value and uses the parabola to refine its lag. The title rounds the coefficient to 0.7. A positive lag means event 97 lies later on its P-marker-centred axis.",
+    "notes": "The lower panel comes from example_01_Z7.DYSA_P. The vertical line marks the fitted lag and the diamond the coefficient written to correlations.csv. A positive lag shifts event 97 earlier in the alignment plot.",
     "lead": "Each point on the curve gives the correlation coefficient for a possible shift between the two traces.",
     "body": [
-      "The highest sampled coefficient is 0.70003 at +0.060 s. DDCorr fits a parabola through that sample and its two neighbours. The red line marks the fitted lag, +0.0586 s."
+      "The highest sample is r = 0.70003 at +0.060 s. The three-point fit gives +0.0586 s. The diamond marks r = 0.70459, measured by aligning the filtered waveforms at that lag."
     ],
     "image": "lab_iceland_report_lag.png"
   },
@@ -688,8 +688,8 @@ export const slides = [
       ],
       [
         "cc_signed",
-        "0.70003",
-        "Highest sampled correlation coefficient."
+        "0.704588",
+        "Correlation measured on the waveforms at the fitted lag."
       ],
       [
         "lag_B_later_s",
@@ -703,7 +703,7 @@ export const slides = [
       ],
       [
         "weight",
-        "0.490046",
+        "0.496445",
         "r², the dimensionless similarity weight written to dt.cc."
       ]
     ],
@@ -721,7 +721,7 @@ export const slides = [
       "The header names events 93 and 97. The observation gives station, differential travel time in seconds, weight and phase.",
       "event_id_map.csv links 93 to S1_009992 and 97 to S1_009996, the folders containing the original recordings."
     ],
-    "command": "# 93 97 0.0\nZ7.DYSA       0.2972 0.490046 P",
+    "command": "# 93 97 0.0\nZ7.DYSA       0.2972 0.496445 P",
     "codeLabel": "dt.cc"
   },
   {
@@ -731,27 +731,27 @@ export const slides = [
     "image": "report_s_alignment.png",
     "lead": "The S markers in the two files are 342.09 ms apart on the UTC clock. At STAM, shifting the orange trace by 341.6 ms aligns the pulses.",
     "body": [
-      "DDCorr tested lags every 20 ms. Its highest sampled coefficient was 0.996669 at −340 ms, averaged over the two horizontals. The plot shows the east component.",
-      "DDCorr refined the lag to −341.6 ms for timing. It kept the sampled coefficient for the weight in dt.cc. Squaring 0.996669 gives 0.993349."
+      "The plot shows the east component. DDCorr averages east–east and north–north correlation at the same lag.",
+      "At the fitted lag of −341.6 ms their mean is 0.999811. Squaring this value gives the STAM S weight of 0.999623."
     ],
-    "notes": "Open example_11_Z7.STAM_S in the Iceland report. Both S markers are theoretical. The largest sampled coefficient is at −340 ms. A parabola through that point and its two neighbours gives the plotted lag of −341.6 ms. The station/phase flag uses the sampled coefficient. NOHR, RODG and STAM meet the 0.99 cutoff on r. For this export that cutoff corresponds to 0.9801 in the weight column. The dt.cc row reads Z7.STAM 0.4595 0.993349 S. The first number is the differential travel time in seconds."
+    "notes": "Open example_11_Z7.STAM_S. The horizontal-component table gives each channel’s preferred grid lag and its contribution at the shared lag. In this pair both peak at −340 ms on the grid. The separate seven-row table lists all accepted stations and phases for this pair. All seven reach |r| ≥ 0.99 at the fitted lag."
   },
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "title": "Why the same S wave gets a weight of 0.8174 at FLUR",
+    "title": "At FLUR the fitted lag raises the S weight to 0.995830",
     "image": "iceland_85_86_flur_lag.png",
-    "lead": "The S markers are 231.35 ms apart. The same pulse lines up at −231.35 ms. The nearest trial is −240 ms, where r = 0.904098. Squaring that coefficient gives the weight 0.817394 in dt.cc.",
+    "lead": "The S markers are 231.35 ms apart on the UTC clock. The nearest tested lag is −240 ms, where r = 0.904098. The parabola places the peak at −232.55 ms.",
     "body": [
-      "At DDCorr’s fitted lag of −232.55 ms, remeasuring r gives 0.9979. Comparing both cuts at identical UTC times gives r = 1.000000 for every one of the seven accepted station/phase rows. Each matches a recorded arrival to itself."
+      "DDCorr shifts the filtered waveforms to −232.55 ms and measures r = 0.997913. Its square is the 0.995830 in dt.cc. All seven measurements for 85/86 now exceed 0.99 in |r|."
     ],
-    "notes": "FLUR uses the north component for this S observation. The raw traces on the left share the same scale and UTC axis. They are separated vertically so that both are visible. On the right, each dot is a lag sampled by DDCorr. The continuous line was calculated by shifting the second window on the filtered recording, applying the same normalized, symmetric correlation at each new lag. The diamond marks the coefficient remeasured at the fitted lag and does not enter dt.cc. The full row is Z7.FLUR 0.4612 0.817394 S. At the fitted lags the seven coefficients range from 0.997913 to 0.999986. Comparing the original cuts at identical UTC times gives 1.000000 to six decimal places for all seven. The 0.4591–0.4612 s differential times recover the 0.4600 s separation of catalogue origins because the matched energy falls at the same absolute time."
+    "notes": "FLUR uses the north component for this S observation. At identical UTC times, all seven waveforms match the same recorded arrivals. The old sampled-weight run gave 0.817394 at FLUR. Today’s fitted-weight run writes Z7.FLUR 0.4612 0.995830 S. Use coefficient_audit.csv to read both coefficients."
   },
   {
     "section": "14:05   /   Reading the Iceland report",
     "title": "The station matrix shows which events are linked",
     "kind": "figure",
-    "notes": "The image is the signed-coefficient panel of matrices/group_0001_Z7.DYSA_P.png. The two other panels display the signed differential time and lag. To find a measurement in correlations.csv, use the smaller ID first. The sparse matrix file named by matrices/index.csv lists those same accepted pairs for one station and phase.",
+    "notes": "The left panel is the DYSA P matrix from this fitted-weight run. At row 93, column 97 the measured coefficient is 0.704588. The grey cells mark pairs without accepted P observations at this station.",
     "lead": "Under “Station/phase matrices (PNG)”, open Z7.DYSA P. Each axis gives the integer event ID.",
     "body": [
       "The coloured cells show the pairs with an accepted P observation. Grey areas show gaps in coverage. To look up an exact pair, use correlations.csv with the smaller ID first."
@@ -862,8 +862,8 @@ export const slides = [
     "section": "14:05   /   Reading the Iceland report",
     "title": "Checking a second near-identity flag on the UTC clock",
     "kind": "figure",
-    "notes": "The report links to near_identity.csv near the top. Its reference run has 22 flagged station-phase rows across six pairs. For this row select event_i=44, event_j=45, station=Z7.RODG, phase=S. Under “Accepted pair examples”, example_09_Z7.RODG_S expands the DDCorr alignment relative to phase markers. The slide’s UTC comparison is a separate plot made from the source SAC records. The raw cuts start six samples apart at 100 Hz. Both catalogue IDs stay in the export. Independent onsets and observations at other stations are needed to decide whether the catalogue itself contains a duplicate. As for events 85 and 86, a near-identity flag refers to one station/phase measurement. Look at the full set of matches and independent onsets before changing the event catalogue.",
-    "lead": "In the Iceland report, “Near-identical arrival flags” opens a table of 22 observations. The Z7.RODG S row for events 44 and 45 has r = 0.99982.",
+    "notes": "Open near_identity.csv or example_09_Z7.RODG_S. The two SAC cuts share 9,495 identical raw samples on the east component. Comparing the arrivals on a common UTC axis distinguishes a repeated measurement of an arrival from similar waveforms recorded at different times.",
+    "lead": "The Iceland run flags 61 station–phase observations across ten pairs. At RODG, events 44 and 45 have fitted S correlation r = 0.999980.",
     "body": [
       "The waveform example is example_09_Z7.RODG_S. The plot here places the two original east-component cuts on one UTC clock. Their 9,495 overlapping samples are identical."
     ],
@@ -1103,13 +1103,13 @@ export const slides = [
   },
   {
     "kind": "figure",
-    "title": "Two horizontal recordings yield one S measurement",
+    "title": "The S threshold applies to the mean of the horizontals",
     "image": "method_stam_s_peak.png",
-    "lead": "At STAM each event has an east and a north recording. DDCorr correlates east with east and north with north, then averages their coefficients at each lag.",
+    "lead": "For STAM events 28 and 45, DDCorr correlates east with east and north with north. It averages the two coefficients at each trial lag.",
     "body": [
-      "For events 28 and 45, the mean reaches 0.700 at the zero-lag sample. A parabola fitted through that sample and its neighbours places the peak at −3.9 ms. The output reports the sampled coefficient and the interpolated lag."
+      "At the winning grid lag of 0 ms, east gives 0.673144 and north gives 0.726868. Their mean is 0.700006. The pair passes the 0.70 threshold even though east alone is below it."
     ],
-    "notes": "These are baseline Z7.STAM S data for events 28 and 45. At zero lag the E and N coefficients are 0.67314 and 0.72687. The reported mean of 0.700006 meets the minimum signed coefficient 0.70. Only after computing this mean does DDCorr choose a peak. The next sample on either side is 20 ms away. With the default quadratic fit, the estimated position of the crest is about 3.86 ms before zero. The station-phase row in correlations.csv lists two contributing components, lag_B_later_s = −0.0039 s, dt_s = +0.0307 s and cc_signed = 0.700006. The report's waveform panel shows the first common component. The correlation curve and row use both.",
+    "notes": "Each horizontal passed the signal-to-noise test in both event cuts. Both individual curves peak at zero on the grid in this example. The right panel shows each coefficient at the common grid peak. The dashed line is the 0.70 threshold. The value written to correlations.csv is measured directly on the filtered waveforms at that fitted lag. Slide 67 shows its value.",
     "sources": [
       "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L139-L169"
     ],
@@ -1117,55 +1117,50 @@ export const slides = [
   },
   {
     "kind": "table",
-    "title": "When only one horizontal component is available",
-    "lead": "DDCorr compares components recorded by both earthquakes. At KATT, events 1 and 5 share one usable east component for S.",
+    "title": "How many horizontal components does S require?",
+    "lead": "The Friday setting [S] min_components = 1 allows one shared horizontal. A component is usable when both events have the matching channel, suitable orientation, a valid window and enough signal above noise.",
     "body": [
-      "correlations.csv gives the channel names and ncomponents for each measurement. Requiring two components would remove the single-component observations, even when their waveforms agree."
+      "Set min_components = 2 to require two usable horizontals. The 0.70 correlation threshold still applies once, to their mean at a common lag."
     ],
-    "notes": "Across the Iceland baseline, 3,973 of the 4,625 S observations have two contributing horizontal components and 652 have one. The station-phase logic intersects the components available for the two events after preparation and the signal-to-noise check. There must be at least min_components common components and consistent marker times. The KATT example has one common HHE component and a signed coefficient of 0.71515. A single usable horizontal at one event and a different sole horizontal at its partner cannot form a common component. The default S min_components = 1 permits one, while 2 requires a usable common pair. This choice affects coverage across both stations and events.",
+    "notes": "SNR is checked independently in each event and channel before the two events are paired. In Iceland100, 3,973 accepted S observations have two shared horizontals and 652 have one. A sole east channel in one event and a sole north channel in the other cannot form a matching component.",
     "sources": [
       "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/pipeline.jl#L101-L151"
     ],
     "rows": [
       [
-        "S measurement",
-        "Common components",
-        "Output coefficient"
+        "Iceland S measurement",
+        "Shared channels",
+        "Sampled peak of the mean"
       ],
       [
-        "KATT · events 1 and 5",
-        "E with E",
-        "0.715"
+        "KATT, events 1 and 5",
+        "East only",
+        "0.715153"
       ],
       [
-        "STAM · events 28 and 45",
-        "E with E and N with N",
-        "0.700"
+        "STAM, events 28 and 45",
+        "East and north",
+        "0.700006"
       ]
     ],
     "section": "15:10   /   How DDCorr measures a lag"
   },
   {
     "kind": "table",
-    "title": "Fitting the lag between two 20 ms samples",
-    "lead": "For STAM events 28 and 45, the highest sampled coefficient occurs at zero lag. Its two neighbours put the fitted peak 3.9 ms earlier.",
+    "title": "The fitted lag and weight for STAM events 28 and 45",
+    "lead": "The sampled mean peaks at zero. Fitting its peak sample and its two neighbours places the lag 3.86 ms earlier.",
     "body": [
-      "The search still covers ±0.50 s. Refinement changes the position assigned to the chosen peak. The output coefficient, the squared-coefficient weight and the acceptance checks use the sampled peak."
+      "The sampled mean passes the acceptance test. At the fitted lag the waveforms give a slightly lower mean. DDCorr keeps the timing and writes its fitted weight, 0.694417² = 0.482215."
     ],
-    "notes": "The unfitted values follow directly from the same DDCorr curve and unchanged SAC markers. Event 28 minus 45 has a marker-related time difference of approximately +0.026803 s. With zero sampled lag, the exported dt is +0.0268 s. Subtracting a fitted lag of −0.0038597 s gives +0.0307 s. This demonstrates what subsample = true does. It cannot move the solution to another cycle outside the neighbourhood of the maximum or extend the allowed search. Numerical interpolation also does not supply an uncertainty estimate.",
+    "notes": "The parabola estimates the position of the peak. DDCorr then measures Pearson correlation directly on the shifted, filtered waveforms. Interpolation can raise or lower the measured coefficient. The Friday run uses the fitted coefficient for its weight and near-identity flag.",
     "sources": [
       "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L139-L169"
     ],
     "rows": [
       [
-        "Same STAM S observation",
-        "Sampled maximum",
-        "With peak refinement"
-      ],
-      [
-        "Signed coefficient",
-        "0.700006",
-        "0.700006"
+        "STAM S, events 28/45",
+        "Best grid lag",
+        "Fitted lag"
       ],
       [
         "Lag",
@@ -1173,7 +1168,12 @@ export const slides = [
         "−0.0039 s"
       ],
       [
-        "Travel-time difference",
+        "Mean waveform correlation",
+        "0.700006",
+        "0.694417"
+      ],
+      [
+        "Differential travel time",
         "+0.0268 s",
         "+0.0307 s"
       ]
@@ -1182,34 +1182,30 @@ export const slides = [
   },
   {
     "kind": "table",
-    "title": "Which station and phase measurements enter dt.cc?",
-    "lead": "After the waveforms pass the signal-to-noise test, DDCorr evaluates the peak of the correlation curve.",
+    "title": "Which disagreements can reject an S measurement?",
+    "lead": "Both horizontal components contribute to one sampled correlation curve. DDCorr also checks that their input picks give consistent event-to-event travel-time differences.",
     "rows": [
       [
-        "Outcome in group_summary.csv",
-        "What happened in this run"
+        "Pair decision",
+        "Friday settings"
       ],
       [
-        "boundary",
-        "The largest coefficient was at the end of the lag search."
-      ],
-      [
-        "low_cc",
-        "The largest coefficient was below 0.70."
+        "low_cc or boundary",
+        "The mean peak falls below 0.70 or reaches the edge of the lag search."
       ],
       [
         "ambiguous_peak",
-        "Another peak was too close in height to the largest one."
+        "A separate peak on the mean S curve is less than 0.08 below the winner."
       ],
       [
-        "accepted",
-        "The measurement passed all three checks."
+        "component_pick_mismatch",
+        "The pick-based travel-time differences from east and north differ by more than 0.001 s."
       ]
     ],
     "body": [
-      "DDCorr writes one dt.cc row for an accepted station and phase measurement. The same event pair can pass at another station even if this measurement fails."
+      "The individual peak lags have no separate cutoff. At DYSA for events 1/2, east peaks at −100 ms and north at −80 ms. DDCorr accepts their joint lag of −89.7 ms."
     ],
-    "notes": "These outcomes are tested in the order shown. In the Iceland baseline, P requires a 0.10 difference between distinct peaks and S requires 0.08. The second peak must be a different local maximum outside the 0.04 s exclusion around the first. The default seeks positive correlations. If a comparison has insufficient common components, it can be excluded before a curve exists. The optional rejected_pairs.csv lists the reason for an individual tested pair if write_rejected_pairs is enabled.",
+    "notes": "The 1 ms limit is quality.component_pick_tolerance_s. For each horizontal compute (pick_i − origin_i) − (pick_j − origin_j). Reject if the largest and smallest of these values differ by more than the tolerance. This test concerns the input picks. There is no independent rejection threshold on the difference between the two correlation coefficients or their preferred waveform lags. The mean curve has a 0.04 s exclusion around its winning peak for the competing-peak test. Of 3,973 accepted two-horizontal S observations, the individual grid peaks agree for 3,598 and differ by one 20 ms sample for 375. Open an S example in the report to compare channels.",
     "sources": [
       "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L139-L169"
     ],
@@ -1378,6 +1374,10 @@ export const slides = [
       [
         "One horizontal available",
         "With [S] min_components = 1, that common component can supply S by itself."
+      ],
+      [
+        "Two horizontals required",
+        "[S] min_components = 2. Both shared channels must pass the individual signal-to-noise check. Their mean curve supplies the S measurement."
       ]
     ]
   },

@@ -9,11 +9,14 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 root,out=map(Path,sys.argv[1:3])
-with (root/'correlations.csv').open() as f:rows=[r for r in csv.DictReader(f) if r['phase']=='P']
+audit=root/'coefficient_audit.csv'
+with (audit if audit.exists() else root/'correlations.csv').open() as f:
+ rows=[r for r in csv.DictReader(f) if r['phase']=='P']
+score='sampled_r' if audit.exists() else 'cc_signed'
 colors=['#42817C','#B65634']
 groups=[]; ids=[]
 for cutoff in [0.70,0.90]:
- kept=[r for r in rows if float(r['cc_signed'])>=cutoff]
+ kept=[r for r in rows if float(r[score])>=cutoff]
  groups.append(Counter(r['station'].split('.')[-1] for r in kept))
  ids.append(len({int(r[k]) for r in kept for k in ['event_i','event_j']}))
 names=sorted(groups[0],key=groups[0].get)

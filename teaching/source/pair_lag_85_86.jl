@@ -72,7 +72,7 @@ function main(root, output)
     col = Dict(name=>i for (i,name) in enumerate(vec(header)))
     rows = filter(row->row[col["event_i"]]=="85" && row[col["event_j"]]=="86", collect(eachrow(data)))
     @assert length(rows)==7
-    println("station phase sampled_lag_ms fitted_lag_ms shared_UTC_lag_ms saved_r weight fitted_r shared_UTC_r")
+    println("station phase sampled_lag_ms fitted_lag_ms shared_UTC_lag_ms sampled_r saved_r weight fitted_r shared_UTC_r")
     for row in rows
         station, phase = row[col["station"]], row[col["phase"]]
         pc = config["phase"][phase]
@@ -84,12 +84,13 @@ function main(root, output)
         same_utc = mean(c.same_utc for c in channels)
         @assert maximum(abs(c.same_utc-same_utc) for c in channels)<1e-7
         @assert isapprox(at(best_lag),measure.cc;atol=1e-11)
-        @assert isapprox(measure.cc,parse(Float64,row[col["cc_signed"]]);atol=1e-11)
-        @assert isapprox(measure.cc^2,parse(Float64,row[col["weight"]]);atol=1e-11)
+        saved_r=config["output"]["coefficient_lag"]=="fitted" ? at(measure.lag) : measure.cc
+        @assert isapprox(saved_r,parse(Float64,row[col["cc_signed"]]);atol=1e-11)
+        @assert isapprox(saved_r^2,parse(Float64,row[col["weight"]]);atol=1e-11)
         @assert abs(measure.lag-parse(Float64,row[col["lag_B_later_s"]]))<=0.0000501
         @assert at(same_utc)>0.99999999
-        @printf("%s %s %.3f %.3f %.3f %.7f %.6f %.7f %.10f\n",station,phase,
-                (1000 * best_lag),(1000 * measure.lag),(1000 * same_utc),measure.cc,measure.cc^2,at(measure.lag),at(same_utc))
+        @printf("%s %s %.3f %.3f %.3f %.7f %.7f %.6f %.7f %.10f\n",station,phase,
+                (1000 * best_lag),(1000 * measure.lag),(1000 * same_utc),measure.cc,saved_r,saved_r^2,at(measure.lag),at(same_utc))
         if station=="Z7.FLUR" && phase=="S"
             make_figure(only(channels),best_lag,measure.lag,pc["sample_rate_hz"],output)
         end
