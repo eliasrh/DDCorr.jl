@@ -16,8 +16,8 @@ anchors = [
 body = foldl(anchors; init=body) do html, (title, id)
     replace(html, "<h2>$title</h2>" => "<h2 id=\"$id\">$title</h2>")
 end
-# This link works from the two extracted sibling folders, independently of GitHub.
-link = "<p class=\"report\"><a href=\"../../Iceland100/reference/report.html\">Open the supplied Iceland report in your browser</a></p>"
+# Point to the report shipped with this code even if the waveform archive is older.
+link = "<p class=\"report\"><a href=\"../examples/download/iceland100/reference/report.html\">Open the completed Friday report in your browser</a></p>"
 body = replace(body, "<h2 id=\"reading-the-report\">" => link * "<h2 id=\"reading-the-report\">")
 navigation = join(("<a href=\"#$id\">$title</a>" for (title, id) in anchors), " · ")
 function page(title, navigation, body)

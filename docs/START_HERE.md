@@ -44,7 +44,7 @@ Look for **DDCorr installation check passed**. Open the `report.html` path print
 
 **If the check stops:** If `Project.toml` or `scripts/check_install.py` cannot be found, open the *inner extracted folder* containing both. If `julia` or Python cannot be found, finish its installation and open a new terminal. If you see `julia>`, type `exit()` to return to the ordinary terminal before pasting commands. If a download failed, reconnect to the internet and repeat the same check. For help, send the operating system, the command you ran and the first error shown above the final “Installation check stopped” message.
 
-**The Iceland recordings for Friday.** The instructor supplies `Iceland100.zip` separately. Extract it beside the code folder. If you received the combined Friday package, extracting that one ZIP gives you both folders. The Iceland run needs Julia and the extracted data. The included `Iceland100/reference/report.html` can also be opened straight from your file manager.
+**The Iceland recordings for Friday.** The instructor supplies `Iceland100.zip` separately. Extract it beside the code folder. If you received the combined Friday package, extracting that one ZIP gives you both folders. To view the completed report before running Julia, open **examples → download → iceland100 → reference → report.html** inside the code folder.
 
 ```text
 Workshop/
@@ -101,7 +101,7 @@ julia --project=. --threads=2 bin/ddcorr.jl ../Iceland100/DDCorr.toml
 
 **Open the Iceland report.** When DDCorr finishes it prints an “Open in your browser” line. In Finder or File Explorer, open **Workshop → Iceland100 → results**, choose the `correlate_` folder whose date and time match the printed path, and double-click **report.html**. Windows may display the file as **report** with a browser icon. The Iceland report opens with **100 events**, **2,412 P observations** and **4,625 S observations**.
 
-If you want to open the completed Friday report, double-click **DDCorr.jl → examples → download → iceland100 → reference → report.html** in the extracted GitHub download. The current instructor handout also includes it under **Iceland100 → reference**. Keep the report in its folder so its figures open. The fitted-weight report has 61 station–phase measurements in `near_identity.csv`.
+If you want to open the completed Friday report, double-click **examples → download → iceland100 → reference → report.html** inside the extracted code folder. Keep the report in its folder so its figures open. The fitted-weight report has 61 station–phase measurements in `near_identity.csv`.
 
 **At 14:05, leave the Iceland report open and return to slide 25**, “The Iceland run uses its own settings and SAC directory.” The instructor will walk through the figures with the class.
 
