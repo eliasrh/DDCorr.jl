@@ -43,3 +43,13 @@ The classroom plot walkthrough uses only the 100-event Iceland field report and 
     python teaching/source/clinic_windows.py ../Iceland100 teaching/assets/clinic_cut_requirements.png
 
 For the panels in the report walkthrough, open ../Iceland100/reference/report.html. Summary and closure panels come from the figures linked under Quality and connectivity and Cycle consistency. The two P and S matrix examples come from the station/phase section. The field spectra and filter-response measurements appear in the Filter audit. The source filenames and the event, station and phase identifiers for waveform examples are given on the slides or in their notes.
+
+The UTC comparison for events 85/86 checks equal samples across all 33 channels and reads signed coefficients from the reference CSV:
+
+    python teaching/source/pair_85_86.py ../Iceland100 teaching/assets/iceland_pair_85_86.png
+
+For the marker-relative grid figure, run export_trace.jl on Z7.KVER..HHZ.sac in folders S1_009900 and S1_009901, writing to work/grid/event1 and work/grid/event2 respectively. Then run:
+
+    python teaching/source/pair_sample_grid.py work/grid/event1 work/grid/event2 teaching/assets/kver_pair_sample_grid.png
+
+method_examples.jl exports kver_fft.csv directly from DDCorr.correlation!. measurement_figures.py checks the direct normalized sums against all 51 values before drawing the FFT comparison.

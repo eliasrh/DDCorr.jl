@@ -1,7 +1,6 @@
-# DDCorr automatically reads this file at startup. Edit the advanced setting
-# here and rerun DDCorr. No import or second configuration file is required.
-# DDCorr.toml contains the settings used most often and takes precedence for
-# the public options it specifies. Each run saves its full effective_config.toml.
+# DDCorr reads these package defaults first. Set any individual option in
+# your run TOML to override it. Use [P] and [S] for the phase settings below.
+# The run saves the resolved settings in effective_config.toml.
 
 [input]
 depth_unit = "km" # SAC EVDP source units: km or m; export is always km, original files untouched

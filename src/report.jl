@@ -164,7 +164,7 @@ function make_report(out,events,groups,rows,cfg)
     end
     open(joinpath(out,"report.html"),"w") do io
         print(io,"""<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DDCorr diagnostics</title>
-        <style>body{font:17px/1.6 system-ui;color:#203045;background:#f2f5f8;max-width:1250px;margin:32px auto;padding:20px}h1{font-size:36px}h2{margin-top:40px}img{width:100%;background:white;border-radius:10px}a{color:#087592}.cards{display:flex;gap:16px;flex-wrap:wrap}.card{background:white;border-radius:12px;padding:20px;flex:1}.n{font-size:32px;font-weight:700}code{background:#e2e8ee;padding:3px}details{background:white;padding:16px;margin:12px 0;border-radius:8px}</style>
+        <style>body{font:17px/1.6 system-ui;color:#203045;background:#f2f5f8;max-width:1250px;margin:32px auto;padding:20px}h1{font-size:36px}h2{margin-top:40px}img{width:100%;background:white;border-radius:10px}a{color:#087592}.cards{display:flex;gap:16px;flex-wrap:wrap}.card{background:white;border-radius:12px;padding:20px;flex:1}.n{font-size:32px;font-weight:700}code{background:#e2e8ee;padding:3px}details{background:white;padding:16px;margin:12px 0;border-radius:8px}table{border-collapse:collapse;margin:.6em 0 1em;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:.25em .75em;border-bottom:1px solid #cad5dc}th{background:#e9eff2}caption{text-align:left;font-weight:bold}</style>
         <h1>DDCorr waveform correlations</h1><p>SAC headers → phase windows → signed correlations → DDSync and GraphSplit inputs.</p>
         <div class="cards"><div class="card"><div class="n">$(length(events))</div>events</div><div class="card"><div class="n">$(count(r->r.phase=="P",rows))</div>P observations</div><div class="card"><div class="n">$(count(r->r.phase=="S",rows))</div>S observations</div><div class="card"><div class="n">$(count(==(0),deg))</div>isolated events</div></div>
         <p>Polarity: <b>$(escapehtml(cfg["quality"]["polarity"]))</b>. Largest graph components: $(join(sizes[1:min(8,end)],", ")). Connectedness does not guarantee relocation geometry or verify that a detection is an earthquake.</p>
@@ -188,12 +188,35 @@ function make_report(out,events,groups,rows,cfg)
             print(io,"""<h2>Cycle consistency</h2><img src="triangle_closure.png" alt="Triangle closure"><p><a href="triangle_closure_summary.csv">Closure table</a>. Broad tails reveal mutually inconsistent relative times. Coherent noise and event-specific biases can still close triangles, so closure is not independent accuracy.</p>""")
         end
         if plot["filters"]
-            print(io,"""<h2>Filter audit</h2><img src="filter_audit.png" alt="Filter response and spectra"><p><a href="filter_tone_audit.csv">Measured tone gains</a>. Filters cannot restore frequencies already absent from an input SAC file.</p>""")
+            print(io,"""<h2>Filter audit</h2><img src="filter_audit.png" alt="Filter response and spectra"><p><a href="filter_tone_audit.csv">Measured tone gains</a>. For each phase the lower panel uses the first event and first shared component of the last eligible example in station order. The panel title identifies the station and event. To choose a trace, restrict the example list to one accepted pair, station and phase in [plots]. The filter and the gallery share those selectors.</p>""")
         end
         if plot["examples"]
             print(io,"""<h2>Accepted pair examples</h2><p>Automatic selection takes weak, middle and strong accepted coefficients in each station/phase, then evenly samples the ordered list if it exceeds max_examples. Explicit event_pairs uses output IDs and the same accepted observations. <a href="example_selection.csv">Exact selection ledger</a>. Examples do not validate every edge.</p>""")
-            for name in names
-                print(io,"<details><summary>$(escapehtml(name))</summary><img loading=\"lazy\" src=\"$name.png\" alt=\"Aligned waveforms and correlation\"></details>")
+            threshold=cfg["output"]["near_identity_cc"]
+            # Collect other stations and phases only for pairs flagged in this gallery.
+            comparisons=Dict((ex.row.i,ex.row.j)=>eltype(rows)[] for ex in examples if abs(ex.row.cc)>=threshold)
+            if !isempty(comparisons)
+                for row in rows
+                    group=get(comparisons,(row.i,row.j),nothing)
+                    isnothing(group) || push!(group,row)
+                end
+            end
+            for (name,example) in zip(names,examples)
+                r=example.row
+                flagged=abs(r.cc)>=threshold
+                label=flagged ? " · near-identity flag" : ""
+                print(io,"<details><summary>$(escapehtml(name)) · events $(r.i) and $(r.j)$label</summary>")
+                if flagged
+                    weight_description=cfg["output"]["weight"]=="cc_squared" ? "r²" : "|r|"
+                    print(io,"""<p>The <a href="near_identity.csv">near-identity flag</a> applies to one station and phase. The table lists every accepted observation for this pair from <a href="correlations.csv">correlations.csv</a>. It shows the signed coefficient r. In this run the weight in <a href="dt.cc">dt.cc</a> is $weight_description. To investigate a possible duplicate, put both original recordings and their P and S markers on a shared UTC clock and look for distinct arrivals at several stations.</p>""")
+                    print(io,"<table><caption>All accepted measurements for events $(r.i) and $(r.j)</caption><thead><tr><th>Station</th><th>Phase</th><th>Signed r</th><th>dt (i − j), s</th><th>|r| ≥ $threshold</th></tr></thead><tbody>")
+                    for obs in comparisons[(r.i,r.j)]
+                        @printf(io,"<tr><td>%s</td><td>%s</td><td>%.4f</td><td>%.*f</td><td>%s</td></tr>",
+                                escapehtml(obs.station),escapehtml(obs.phase),obs.cc,cfg["output"]["dt_decimals"],obs.dt,abs(obs.cc)>=threshold ? "Yes" : "No")
+                    end
+                    print(io,"</tbody></table>")
+                end
+                print(io,"<img loading=\"lazy\" src=\"$name.png\" alt=\"Aligned waveforms and correlation\"></details>")
             end
         end
         print(io,"""<h2>Files and conventions</h2><ul><li><a href="dt.cc">dt.cc</a>: travel time i minus j; weight mode $(escapehtml(cfg["output"]["weight"])).</li><li><a href="correlations.csv">Correlation audit</a>: signed r, lag, peak gap, SNR and components.</li><li><a href="catalog.txt">Catalogue</a> · <a href="stations.txt">Stations</a> · <a href="event_id_map.csv">ID map</a>.</li><li><a href="effective_config.toml">Effective settings</a> · <a href="run_summary.toml">Run summary</a> · <a href="group_summary.csv">Group decisions</a>.</li></ul><p>Parabolic lag interpolation improves grid resolution; it is not an uncertainty estimate. Correlation weights are not inverse timing variances. Review sparse support, competing peaks, near-identical traces and inconsistent cycles before interpreting relocated structures.</p></html>""")

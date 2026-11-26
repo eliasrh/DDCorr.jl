@@ -1,5 +1,6 @@
 "Merge known TOML keys recursively, rejecting misspellings and table/value conflicts."
 function merge_checked!(dest, overrides, prefix="")
+    overrides isa AbstractDict || error("Expected a TOML table for $(rstrip(prefix, '.'))")
     for (key,value) in overrides
         haskey(dest,key) || error("Unknown configuration key $(prefix)$(key)")
         if dest[key] isa AbstractDict
@@ -39,19 +40,37 @@ function load_config(path)
         pop!(s_phase,"min_components",nothing)
         merge_checked!(cfg,overrides)
     end
-    public=pop!(cfg,"interface")
-    merge_checked!(public,user)
-    cfg["input"]["sac_root"]=normpath(joinpath(dirname(path),public["input"]["sac_dir"]))
-    cfg["output"]["root"]=normpath(joinpath(dirname(path),public["output"]["directory"]))
+    # Assemble one schema before applying the run file. The interface defaults
+    # retain their historical precedence over a legacy advanced.file.
+    common=pop!(cfg,"interface")
+    for group in ("input","output")
+        merge!(cfg[group],common[group])
+    end
+    for group in ("plots","matrices")
+        cfg[group]=common[group]
+    end
+    short_phase=Dict(ph=>pop!(user,ph,Dict{String,Any}()) for ph in ("P","S"))
+    for ph in ("P","S")
+        merge!(cfg["phase"][ph],common[ph])
+    end
+    merge_checked!(cfg,user)
+    for ph in ("P","S")
+        short=short_phase[ph]
+        short isa AbstractDict || error("$ph must be a TOML table")
+        nested=get(get(user,"phase",Dict()),ph,Dict())
+        duplicates=intersect(keys(short),keys(nested))
+        isempty(duplicates) || error("Set $(join(sort!(collect(duplicates)), ", ")) once under [$ph] or [phase.$ph]")
+        merge_checked!(cfg["phase"][ph],short,"$ph.")
+    end
+    cfg["input"]["sac_root"]=normpath(joinpath(dirname(path),pop!(cfg["input"],"sac_dir")))
+    cfg["output"]["root"]=normpath(joinpath(dirname(path),pop!(cfg["output"],"directory")))
     cfg["runtime"]["cache_dir"]=normpath(joinpath(dirname(path),cfg["runtime"]["cache_dir"]))
     for ph in ("P","S")
-        merge!(cfg["phase"][ph],public[ph])
-        cfg["phase"][ph]["pick_header"]=lowercase(public["input"][lowercase(ph)*"_pick_header"])
+        cfg["phase"][ph]["pick_header"]=lowercase(pop!(cfg["input"],lowercase(ph)*"_pick_header"))
     end
     cfg["preprocess"]["noise_pick_header"]=="auto" &&
         (cfg["preprocess"]["noise_pick_header"]=cfg["phase"]["P"]["pick_header"])
     cfg["preprocess"]["origin_tolerance_s"]=cfg["input"]["origin_tolerance_s"]
-    cfg["plots"]=public["plots"];cfg["matrices"]=public["matrices"]
     cfg["configuration_source"]=path
     validate_config(cfg)
     cfg
@@ -109,7 +128,7 @@ function validate_config(cfg)
         pc["max_lag_s"]*fs>=cfg["quality"]["boundary_guard_samples"]+1 || error("$ph lag search too short for boundary guard")
         0<pc["min_cc"]<=1 && 0<=pc["min_peak_gap"]<1 || error("Invalid $ph correlation threshold")
         1<=pc["filter_order"]<=8 || error("filter_order must be 1..8")
-        pc["filter_padding_s"]>=3/lo || error("$ph padding must cover at least three low-frequency periods; adjust advanced phase.$ph.filter_padding_s")
+        pc["filter_padding_s"]>=3/lo || error("$ph padding must cover at least three low-frequency periods; set filter_padding_s under [$ph] in the run TOML")
         pc["min_components"]>=1 && pc["min_snr"]>=0 || error("Invalid $ph components/SNR")
         pc["sidelobe_exclusion_s"]>=0 || error("Negative sidelobe exclusion")
         haskey(PICK_FIELDS,lowercase(pc["pick_header"])) || error("Unknown $ph SAC pick header")

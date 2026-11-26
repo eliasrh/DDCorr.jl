@@ -58,4 +58,6 @@ dense = false # optional CSV matrices; missing means unmeasured/rejected, not ze
 max_dense_events = 500 # upper limit on events when writing square CSV matrices
 max_dense_cells = 2000000 # maximum total entries in the three square CSVs (coefficient, dt, lag) across all groups
 
-# Change advanced settings directly in src/advanced.toml. DDCorr loads them automatically.
+# To change another option for this run, put it under its section here.
+# For example, add filter_order = 6 under the existing [P] heading.
+# Omitted settings inherit the defaults. See docs/INPUTS_OUTPUTS.md for every key.

@@ -469,7 +469,7 @@ export const slides = [
     "title": "Open Start Here and follow the DDCorr lab",
     "kind": "handoff",
     "notes": "Keep this slide on screen throughout the guided lab. The synthetic run introduces the command and the event-folder layout. The figures will all be taught with the real Iceland recordings. The Iceland reference report provides a local fallback.",
-    "lead": "In the extracted DDCorr.jl folder, open docs and double-click START_HERE.html. You can also follow the guide on GitHub.",
+    "lead": "Open docs/START_HERE.html in the extracted code folder, or follow the GitHub link below. Each DDCorr run takes its settings from a plain-text TOML file.",
     "body": [
       "Generate the small synthetic example and run DDCorr once.",
       "Run the supplied Iceland100 data and open its report.html.",
@@ -482,31 +482,15 @@ export const slides = [
   },
   {
     "section": "14:05   /   Reading the Iceland report",
-    "title": "The Iceland run uses its own settings and SAC directory",
-    "kind": "table",
-    "notes": "Both lab runs use bin/ddcorr.jl from the DDCorr.jl directory. Only the settings path changes. The --project=. option loads the project here; --threads=2 makes two Julia threads available. Paths in a TOML file are relative to that file’s directory.",
-    "lead": "The command takes the path to a TOML settings file. Each settings file names its own SAC directory and output directory.",
-    "rows": [
-      [
-        "",
-        "Synthetic example",
-        "Bárðarbunga example"
-      ],
-      [
-        "Settings used",
-        "DDCorr.jl/DDCorr.toml",
-        "Iceland100/DDCorr.toml"
-      ],
-      [
-        "Waveform folders",
-        "DDCorr.jl/examples/synthetic/sac",
-        "Iceland100/sac"
-      ],
-      [
-        "New results appear under",
-        "DDCorr.jl/results",
-        "Iceland100/results"
-      ]
+    "title": "How the run TOML controls DDCorr",
+    "kind": "code",
+    "notes": "Project.toml lists Julia dependencies. The TOML named after the DDCorr command selects the SAC inputs, outputs and scientific settings. Paths are relative to that run file. The distributed synthetic run reads examples/synthetic/sac and writes under results in the code folder. The Iceland file reads its neighbouring sac directory and writes to Iceland100/results. The order-6 snippet illustrates an optional override. The published Iceland reference used order 4 for both phases. Keep the package defaults in src/advanced.toml and specify changes per run. A [P] filter_order entry overrides the installed default for P. [S] controls S independently. Section names and inheritance in DDSync and GraphSplit are program-specific.",
+    "lead": "The filename after bin/ddcorr.jl selects the run settings. A heading such as [P] applies to the lines beneath it. The Iceland run reads ../Iceland100/DDCorr.toml.",
+    "codeLabel": "Example changes in a run TOML",
+    "command": "[input]\nsac_dir = \"sac\"\n\n[P]\nfilter_order = 6",
+    "body": [
+      "Add filter_order to the existing [P] section. This changes P from order 4 to 6. S keeps its default. Open effective_config.toml in the results folder to see what DDCorr used.",
+      "DDSync and GraphSplit also read plain-text run settings. The Saturday examples use sync.toml and DD.toml."
     ]
   },
   {
@@ -620,11 +604,11 @@ export const slides = [
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "title": "The number of distinct partners for each earthquake",
+    "title": "How many other earthquakes did each one match?",
     "image": "report_degree.png",
-    "lead": "The event graph joins two earthquakes when at least one station and phase measured their differential time. The horizontal axis counts the distinct partners of each event.",
+    "lead": "Two earthquakes count as partners when DDCorr accepts a match at any station. The horizontal axis counts partners per earthquake. The vertical axis counts earthquakes.",
     "body": [
-      "Several stations measuring the same pair add one partner. The four events at degree zero are isolated. The other 96 belong to one connected component."
+      "The bars add up to 100 earthquakes. Four have zero partners. The other 96 form one connected group. Event 13, in the far-right bar, matched 81 others."
     ],
     "notes": "Degree is an event property. The vertical axis counts events within each degree bin. The report header lists connected-component sizes 96, 1, 1, 1, 1. A component contains events linked by a path of accepted pairs; some events in a component may have no direct link to each other. event_connectivity.csv identifies each event and its degree. High degree alone says nothing about the number or azimuths of stations measuring those links."
   },
@@ -641,36 +625,36 @@ export const slides = [
   },
   {
     "section": "14:05   /   Reading the Iceland report",
-    "title": "When an S observation exists but P is missing",
+    "title": "Why is there an S measurement at DYSA but no P?",
     "kind": "table",
     "notes": "In this run, Z7.DYSA, events 1/2, S has dt_s = 0.0048 s and lag_B_later_s = −0.0897 s. The P input passed the header/window test, then fell below the minimum filtered RMS signal-to-noise ratio. The loss of a P observation affects that phase at that station. If a group has no accepted pairs after thresholding, group_summary.csv records its aggregate rejection reasons.",
-    "lead": "At Z7.DYSA, Iceland events 1 and 2 supplied an S measurement. The vertical record for event 2 had too little P signal above the background.",
+    "lead": "“Ready” means the SAC header gives an arrival time and the trace covers the signal and noise windows. DDCorr then checks whether the filtered signal stands out from the background.",
     "rows": [
       [
-        "Stage",
-        "Where the result is recorded",
-        "Z7.DYSA example"
+        "File",
+        "What it tells you",
+        "Events 1 and 2 at DYSA"
       ],
       [
-        "Read times and windows",
         "phase_readiness.csv",
-        "The P marker and its window were available."
+        "Is there a marker and enough recording around it?",
+        "Event 2’s vertical trace covers its predicted P and the pre-P noise window."
       ],
       [
-        "Prepare the waveform",
         "preprocessing_issues.csv",
-        "Event 2, HHZ: below the minimum filtered signal-to-noise ratio."
+        "Why did DDCorr skip a particular trace?",
+        "Event 2’s P signal was 1.43 times the background. The cutoff was 1.50."
       ],
       [
-        "Export the pair",
         "correlations.csv",
-        "The S observation uses the two horizontal components."
+        "Which pairs matched, and by how much?",
+        "Both S components matched. Event 1’s S travel time was 4.8 ms longer."
       ]
     ]
   },
   {
     "section": "14:05   /   Reading the Iceland report",
-    "title": "A P-wave example at Z7.DYSA",
+    "title": "Aligning the two DYSA P waveforms",
     "kind": "figure",
     "notes": "The two folders are S1_009992 and S1_009996. The shared component is Z7.DYSA..HHZ. Use the expanded example_01_Z7.DYSA_P in the report, or open the PNG of that name directly. The automatic gallery includes accepted examples from different parts of the coefficient distribution.",
     "lead": "The first figure under “Accepted pair examples” shows events 93 and 97 at station Z7.DYSA.",
@@ -681,7 +665,7 @@ export const slides = [
   },
   {
     "section": "14:05   /   Reading the Iceland report",
-    "title": "The bottom panel gives the lag for this P pair",
+    "title": "Measuring the DYSA P lag from the peak",
     "kind": "figure",
     "notes": "The bottom panel comes from the same Z7.DYSA P figure. The program retains the coefficient measured at the highest sampled value and uses the parabola to refine its lag. The title rounds the coefficient to 0.7. A positive lag means event 97 lies later on its P-marker-centred axis.",
     "lead": "Each point on the curve gives the correlation coefficient for a possible shift between the two traces.",
@@ -692,7 +676,7 @@ export const slides = [
   },
   {
     "section": "14:05   /   Reading the Iceland report",
-    "title": "The measurement behind the figure",
+    "title": "Reading the DYSA P measurement in correlations.csv",
     "kind": "table",
     "notes": "The column called lag_B_later_s uses B for the second event, j. The measured correction acts on waveform positions relative to each event’s own marker. The differential travel time also accounts for the two marker-minus-origin times. The CSV stores more decimal places for the coefficient and its weight. One observation qualifies across the whole network for this particular pair.",
     "lead": "The “Correlation audit” link opens correlations.csv. The Z7.DYSA P row for events 93 and 97 contains these values.",
@@ -743,24 +727,25 @@ export const slides = [
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "title": "The two horizontal records behind an S example",
+    "title": "Why events 85 and 86 look nearly identical at STAM",
     "image": "report_s_alignment.png",
-    "lead": "For STAM events 85 and 86, the orange S pulse appears earlier on its marker-centred axis. The fitted lag is −0.3416 s, so the displayed trace is shifted later.",
+    "lead": "At STAM, the S waves for events 85 and 86 have r = 0.9967. DDCorr flags this station and phase because r exceeds 0.99.",
     "body": [
-      "The figure shows the first shared horizontal component, HHE. The matching decision uses both HHE and HHN. Their component names and count appear in correlations.csv."
+      "The plot shows the east component. DDCorr averaged both horizontal correlation curves. Shifting event 86 to the right by 0.3416 s aligns the pulses.",
+      "Three of seven observations reach 0.99. The other four have r between 0.904 and 0.960. In dt.cc the STAM weight is r² = 0.9933."
     ],
-    "notes": "This is the actual Z7.STAM S gallery file example_11_Z7.STAM_S, with the first two panels shown. The row names original folders S1_009984 and S1_009985. A close overlay on the displayed component gives evidence about that component; the final correlation score and lag curve describe the average of the usable common components."
+    "notes": "Event 85 is S1_009984 and event 86 is S1_009985. Under Accepted pair examples, open example_11_Z7.STAM_S. The orange record is aligned to the blue record by shifting it later because the measured lag on the two marker-centred axes is −0.3416 s. The reported coefficient is the sampled peak of the mean HHE/HHN curve. In correlations.csv, accepted signed coefficients are DYSA P 0.9240, FLUR S 0.9041, KATT S 0.9547, KVER S 0.9601, NOHR S 0.9947, RODG S 0.9924 and STAM S 0.9967. The last three meet the 0.99 threshold. The third field on an observation line in dt.cc is the configured weight, here r squared. STAM S therefore has weight 0.993349. Compare coefficients in correlations.csv."
   },
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "title": "The peak of a two-component S correlation",
-    "image": "report_s_curve.png",
-    "lead": "The lower panel of that STAM figure is the mean of the two horizontal correlation coefficients at every tested lag. Its highest sampled value is 0.997.",
+    "title": "Do the two event cuts contain the same arrival?",
+    "image": "iceland_pair_85_86.png",
+    "lead": "Both cuts contain exactly the same 9,455 overlapping raw samples on each of 33 channels. At STAM the predicted S times differ by 0.3421 s on the UTC clock. The dashed lines show where each comparison window was centred.",
     "body": [
-      "The horizontal dashed line is the 0.70 acceptance threshold. The vertical dashed line marks the fitted lag. Here the selected peak is much higher than its strongest separate competitor."
+      "The origins are 0.4600 s apart. All seven travel-time differences are 0.4591–0.4612 s, placing the matched features within 1.2 ms on the clock. Look for a second P and S onset at several stations before merging the catalogue entries."
     ],
-    "notes": "The reported peak gap is about 0.850. It is a difference in coefficient, not a distance along the time axis. A similarly tall second peak provides an alternative alignment even when the largest coefficient is high. The footer gives the frequency band, minimum SNR among contributing records, input epicentral separation in km, and which component was drawn. [plots] examples = true enables the gallery."
+    "notes": "Left: STAM east, S window. Right: DYSA vertical, P window. Each pair of traces is vertically separated for display and has a common amplitude scale within that panel. The two source cuts are about 95 s long at 100 Hz. Their beginnings differ by 46 samples, leaving 9,455 equal raw values on every shared channel (11 stations, 3 components). Overlap is expected for cuts from the same continuous stream, including when two real events are close together. The header markers are predicted P_pred and S_pred, rather than an independent set of manual picks. The STAM predicted S offset of +0.3421 s contrasts with the fitted marker-relative lag of −0.3416 s; the resulting matched feature times differ by about 0.0005 s on UTC. To obtain arrival_j − arrival_i on UTC, subtract dt(i,j) from origin_j − origin_i. All seven accepted rows align shared energy within 1.2 ms. Different pick-centred windows, sample-grid offsets and the discrete lag grid allow r below one even when original samples coincide. Inspect the onsets, particle motion and moveout on multiple components and stations. Repeated detection of one pulse and a second nearby event hidden in the overlapping record remain possibilities. No phase misassociation or duplicate catalogue entry has been established by this check. See pair_85_86.py and the Iceland100 SAC files."
   },
   {
     "section": "14:05   /   Reading the Iceland report",
@@ -865,19 +850,19 @@ export const slides = [
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "figure",
-    "title": "How the filters changed two recorded spectra",
+    "title": "Which recordings appear in the filter spectra?",
     "image": "report_field_spectra.png",
-    "lead": "These lower panels show short field recordings at TOHR. P uses event S1_009943 and S uses S1_009910. Grey is the recorded spectrum and colour shows the filtered spectrum.",
+    "lead": "Grey shows the raw spectrum and colour shows the filtered spectrum. These are TOHR events S1_009943 for P and S1_009910 for S. DDCorr uses the first event in the last eligible example for each phase.",
     "body": [
-      "Power spectral density describes power per unit frequency. In each panel, 0 dB is the maximum of that trace’s raw spectrum. Above 14 Hz the filtered power falls progressively below the raw power."
+      "To choose a trace, set one accepted event_pairs entry, one example_stations entry and one example_phases entry under [plots]. The filter spectra and waveform gallery share these settings."
     ],
-    "notes": "A 10 dB reduction is a tenfold drop in power density; 20 dB is a hundredfold drop. Both curves in a panel share the same raw reference, so their vertical separation measures attenuation at each frequency. The two panels use different events and are independently referenced. Their absolute signal energies cannot be compared. DDCorr uses a tapered, overlapping-window Welch estimate from a window around each marker; the coloured spectrum is after filtering at the original SAC sampling rate. [plots] filters = true enables both filter rows."
+    "notes": "Selection is deterministic. Groups are ordered by station and phase. With automatic selection, the last eligible example in the last eligible group for a phase is used, before max_examples limits the gallery. With explicit pairs the same rule applies to the eligible requested list. DDCorr takes event i and the first shared component for the spectrum. The current interface has no independent arbitrary trace selector for this figure. To see STAM event 85 alone in the S spectrum, specify event_pairs = [[85,86]], example_stations = [\"Z7.STAM\"], example_phases = [\"S\"]. If a phase has no eligible example, its waveform panel is empty. Spectra are power per unit frequency with both curves referred to the raw spectrum’s maximum. Filter_tone_audit.csv contains the separate calibration-tone check."
   },
   {
     "section": "14:05   /   Reading the Iceland report",
-    "title": "Near-identical records in the Iceland report",
+    "title": "Checking a second near-identity flag on the UTC clock",
     "kind": "figure",
-    "notes": "The report links to near_identity.csv near the top. Its reference run has 22 flagged station-phase rows across six pairs. For this row select event_i=44, event_j=45, station=Z7.RODG, phase=S. Under “Accepted pair examples”, example_09_Z7.RODG_S expands the DDCorr alignment relative to phase markers. The slide’s UTC comparison is a separate plot made from the source SAC records. The raw cuts start six samples apart at 100 Hz. Both catalogue IDs stay in the export. Independent onsets and observations at other stations are needed to decide whether the catalogue itself contains a duplicate.",
+    "notes": "The report links to near_identity.csv near the top. Its reference run has 22 flagged station-phase rows across six pairs. For this row select event_i=44, event_j=45, station=Z7.RODG, phase=S. Under “Accepted pair examples”, example_09_Z7.RODG_S expands the DDCorr alignment relative to phase markers. The slide’s UTC comparison is a separate plot made from the source SAC records. The raw cuts start six samples apart at 100 Hz. Both catalogue IDs stay in the export. Independent onsets and observations at other stations are needed to decide whether the catalogue itself contains a duplicate. As for events 85 and 86, a near-identity flag refers to one station/phase measurement. Look at the full set of matches and independent onsets before changing the event catalogue.",
     "lead": "In the Iceland report, “Near-identical arrival flags” opens a table of 22 observations. The Z7.RODG S row for events 44 and 45 has r = 0.99982.",
     "body": [
       "The waveform example is example_09_Z7.RODG_S. The plot here places the two original east-component cuts on one UTC clock. Their 9,495 overlapping samples are identical."
@@ -887,28 +872,28 @@ export const slides = [
   {
     "section": "14:05   /   Reading the Iceland report",
     "kind": "table",
-    "title": "Choosing which figures appear in report.html",
-    "lead": "These switches in the run TOML control the report sections. Iceland100 enables all four groups below.",
+    "title": "Selecting report figures in your run TOML",
+    "lead": "In the run TOML, [plots] controls the report. [matrices] controls the per-station exports. For the override rules and a P-filter example, see slide 25.",
     "rows": [
       [
-        "TOML section and key",
-        "Figures it controls"
+        "Setting in the run TOML",
+        "What appears in the report"
       ],
       [
-        "[plots] summary",
-        "Six panels on coefficients, lags, station coverage, event links and pair outcomes."
+        "[plots] summary, closure, filters",
+        "Counts and histograms, timing around event triangles, and the filter audit."
       ],
       [
-        "[plots] closure and filters",
-        "Triangle-consistency histograms and the filter response and waveform spectra."
+        "[plots] examples, max_examples",
+        "Waveform overlays and lag curves. max_examples caps the automatic gallery."
       ],
       [
-        "[plots] examples",
-        "Waveform overlays and their lag curves. max_examples limits the automatic gallery."
+        "[plots] event_pairs, example_stations, example_phases",
+        "Select one accepted pair, station and phase to see that waveform example and its first event in the filter spectrum."
       ],
       [
-        "[matrices] enabled and plots",
-        "Per-station, per-phase plots of coefficient, differential time and lag."
+        "[matrices] enabled, plots",
+        "Per-station coefficient, differential-time and lag heatmaps."
       ]
     ],
     "notes": "The parent [plots] enabled switch requests report generation. The Iceland configuration enables each of the sections shown. [matrices] dense controls optional dense CSV exports separately. Empty event_pairs uses automatic selection from the weak, middle and strong accepted examples of each station and phase. Set explicit pairs and limit stations/phases if a specific illustration is needed. example_selection.csv records the actual IDs and filenames."
@@ -1034,16 +1019,16 @@ export const slides = [
   },
   {
     "kind": "figure",
-    "title": "The P window on the common 50 Hz grid",
-    "lead": "Each dot marks a sample on the same small part of the recorded KVER P wave. The instrument recorded every 10 ms. DDCorr uses 20 ms spacing in this run.",
+    "title": "How two P waves get matching sample times",
+    "lead": "At KVER, each instrument sample is 10 ms from the next. The predicted P time can fall between samples, so event 1 and event 2 have dots at different offsets from their own P markers.",
     "body": [
-      "A phase marker can lie between samples. DDCorr uses the two neighbouring amplitudes to estimate a value at each required time relative to that marker. Both events can then be compared at the same time offsets."
+      "DDCorr filters and resamples each trace, then interpolates its amplitude at the chosen offsets. On the right both traces have a value at 560, 580 and 600 ms after P. Their waveforms can now be compared sample by sample."
     ],
-    "notes": "Both panels show the same SAC file and physical time interval. The left uses the bandpassed native samples and the right uses the actual DDCorr 50 Hz resampling output. Resampling gives a uniform interval in seconds. Interpolation onto the marker-relative comparison grid is a separate calculation. It permits equal-length windows to begin at a chosen time relative to each event’s phase, even when the SAC start times have different offsets. It does not improve the sampling bandwidth. DDCorr disallows an analysis rate above the native rate.",
+    "notes": "Real KVER HHZ recordings for catalogue events 1 and 2. The left panel shows bandpassed native 100 Hz samples. Each row uses its own P marker as time zero. Vertical guides on both panels are 20 ms apart. The right panel first uses DDCorr.filtered_trace (including the anti-aliasing resampler) and then linearly interpolates onto the same marker-relative 50 Hz grid, as in DDCorr.prepare. The vertical separation of the two rows and their independent display scales make sample timing visible. See pair_sample_grid.py. The following slide uses the full phase-window duration and the room needed for lag search.",
     "sources": [
       "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L31-L46"
     ],
-    "image": "method_resampling.png",
+    "image": "kver_pair_sample_grid.png",
     "section": "15:10   /   How DDCorr measures a lag"
   },
   {
@@ -1076,13 +1061,13 @@ export const slides = [
   },
   {
     "kind": "figure",
-    "title": "The FFT gives the same correlation coefficients",
+    "title": "How DDCorr computes correlation at every lag",
     "image": "method_direct_fft.png",
-    "lead": "The circles show the correlation coefficient calculated directly at each shift. The line uses the fast Fourier transform (FFT) to evaluate the same sums of sample products.",
+    "lead": "For each trial shift, the direct calculation multiplies corresponding centred samples, sums the products and normalizes by the two window amplitudes. Each open circle is one such coefficient.",
     "body": [
-      "For KVER P the two calculations coincide at all 51 lags. DDCorr pads the arrays with zeros to keep the end of the record from wrapping round to the beginning. The lag spacing is still 20 ms."
+      "DDCorr uses a fast Fourier transform (FFT) to compute those sums at all shifts, then normalizes each window and averages both event orders. The line is the actual DDCorr output for KVER P. It passes through all 51 circles."
     ],
-    "notes": "Figure calculated from the two DDCorr-prepared KVER arrays for events 1 and 2. Both implementations use the same window-specific means and norms and average the two event orders. The fixed window has 126 samples and the extended search window has 176. Their full linear convolution needs 126 + 176 − 1 = 301 output samples. The code uses a 512-sample FFT, computes the convolution using a reversed fixed window and takes the 51 valid overlaps. Padding prevents periodic wraparound in this calculation. The physical taper multiplied real samples at the ends of the cut. Transforms prepared for an event can be reused when that event is compared with other earthquakes.",
+    "notes": "For KVER events 1 and 2 the lag grid covers −0.5 to +0.5 s at 20 ms spacing. The direct reference uses Pearson-normalized fixed and sliding windows at each lag, then averages the two directions after reversing the second lag axis. DDCorr.correlation! uses a zero-padded FFT convolution of each reversed fixed core with the partner’s extended signal for the numerators, cached sliding norms for the denominators and a mean over the two directions. The independent direct calculation agrees with all 51 Julia coefficients to better than 1e−12. The FFT is a computational shortcut; the graph compares the same defined statistic. Slide 63 explains padding and slide 64 illustrates the two event orders.",
     "sources": [
       "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/signal.jl#L65-L75"
     ],
@@ -1090,7 +1075,7 @@ export const slides = [
   },
   {
     "kind": "figure",
-    "title": "Where the FFT needs zeros",
+    "title": "Zero padding prevents wraparound in the FFT",
     "lead": "The KVER P window has 126 resampled amplitudes. Its comparison record has 176 so the window can shift by 25 samples either way.",
     "body": [
       "The FFT treats its input as periodic. DDCorr appends zeros to keep the end of each array from wrapping into its beginning. An array of 512 can contain all 301 samples of this convolution. Padding leaves the 20 ms analysis-grid spacing unchanged."
@@ -1162,7 +1147,7 @@ export const slides = [
   },
   {
     "kind": "table",
-    "title": "What sub-sample refinement changes in the output",
+    "title": "Fitting the lag between two 20 ms samples",
     "lead": "For STAM events 28 and 45, the highest sampled coefficient occurs at zero lag. Its two neighbours put the fitted peak 3.9 ms earlier.",
     "body": [
       "The search still covers ±0.50 s. Refinement changes the position assigned to the chosen peak. The output coefficient, the squared-coefficient weight and the acceptance checks use the sampled peak."
@@ -1232,7 +1217,7 @@ export const slides = [
   },
   {
     "kind": "figure",
-    "title": "A maximum at the end of the search",
+    "title": "A peak at the edge of the lag search",
     "image": "method_boundary.png",
     "lead": "The P waves from events 29 and 41 at DYSA produce a peak near −0.50 s.",
     "body": [
@@ -1260,39 +1245,39 @@ export const slides = [
   },
   {
     "kind": "table",
-    "title": "Effect of the P band on the differential-time measurements",
-    "lead": "Two completed runs used the same 100 earthquakes. The P band changed from 2–14 to 4–8 Hz. Every S setting stayed the same.",
+    "title": "A narrower P band also creates ambiguous peaks",
+    "lead": "Changing only the P band from 2–14 to 4–8 Hz raised the accepted count. More nearly periodic waveforms can also match one cycle early or late.",
     "rows": [
       [
-        "Measurements in the 100-event run",
-        "2–14 Hz P",
-        "4–8 Hz P"
+        "P measurements across the Iceland catalogue",
+        "2–14 Hz",
+        "4–8 Hz"
       ],
       [
-        "Accepted P observations",
+        "Accepted measurements",
         "2,412",
         "4,626"
       ],
       [
-        "P observations accepted in both",
+        "Accepted in both runs",
         "1,945",
         "1,945"
       ],
       [
-        "P observations unique to this run",
+        "Accepted only in this run",
         "467",
         "2,681"
       ],
       [
-        "Accepted S observations",
-        "4,625",
-        "4,625"
+        "Rejected for two peaks too close in height",
+        "0",
+        "1,103"
       ]
     ],
     "body": [
-      "The narrower band admits additional pairs and loses others, including KVER 13/27. Comparing their curves shows which lags remain well resolved."
+      "For KVER events 13/27, the narrow band left two peaks 160 ms apart. DDCorr rejected that lag. Inspect the competing peaks and the timing at other stations when deciding which band to use."
     ],
-    "notes": "The observational unit is a station, phase and event pair. Shared rows were joined on all four identifiers. The median absolute difference in lag among the 1,945 shared P measurements is 2.3 ms. All 4,625 S rows retained exactly their original lags. The count of accepted pairs alone cannot establish timing accuracy. The KVER example explains why the shape of the peak matters.",
+    "notes": "Both runs used these 100 events and unchanged S settings. Each accepted 4,625 S observations. The P ambiguity counts are sums of ambiguous_peak in group_summary.csv; DDCorr tests the boundary and coefficient first. Across the 1,945 P observations present in both runs, the largest absolute change in exported dt was 19.1 ms. The 2,681 newly accepted P observations have no accepted 2–14 Hz counterpart for that comparison. More passing rows alone cannot establish more accurate times. The 160 ms separation is a measured separation between alternative peaks for KVER 13/27; that case was rejected rather than becoming a known erroneous accepted lag.",
     "sources": [
       "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/advanced.toml#L23-L68"
     ],
@@ -1305,7 +1290,7 @@ export const slides = [
     "body": [
       "The sparse export stores one row per accepted measurement. A dense matrix reserves a cell for every combination of event IDs. As the catalogue grows, the sparse file saves both storage space and memory."
     ],
-    "notes": "The matrix image and the numerical matrix export are separate outputs. For DYSA P, matrices/index.csv points to group_0001_edges.csv, whose columns include the two IDs, signed coefficient, differential time, lag and weight. The complete Iceland catalogue has 100 IDs, so a dense file for one quantity would require 100 × 100 cells for that station and phase. At 1,000 events it would require 1,000,000 cells. DDCorr groups observations by station and phase. It uses the header inventory to estimate the maximum number of event pairs and the memory required for full-trace filtering, retained windows and FFT workspaces before beginning that group. max_pairs_per_group and max_group_memory_mib in src/advanced.toml control these checks. The memory allowance is an estimate for the group and additional memory is needed for Julia, accepted measurements and plots. The relevant switches for the numerical output are [matrices] enabled, dense, max_dense_events and max_dense_cells. This lets students choose appropriate outputs for their own SAC archives.",
+    "notes": "The matrix image and the numerical matrix export are separate outputs. For DYSA P, matrices/index.csv points to group_0001_edges.csv, whose columns include the two IDs, signed coefficient, differential time, lag and weight. The complete Iceland catalogue has 100 IDs, so a dense file for one quantity would require 100 × 100 cells for that station and phase. At 1,000 events it would require 1,000,000 cells. DDCorr groups observations by station and phase. It uses the header inventory to estimate the maximum number of event pairs and the memory required for full-trace filtering, retained windows and FFT workspaces before beginning that group. max_pairs_per_group and max_group_memory_mib under [runtime] in the run TOML control these checks. The memory allowance is an estimate for the group and additional memory is needed for Julia, accepted measurements and plots. The relevant switches for the numerical output are [matrices] enabled, dense, max_dense_events and max_dense_cells. This lets students choose appropriate outputs for their own SAC archives.",
     "sources": [
       "https://github.com/eliasrh/DDCorr.jl/blob/633b6cfdcd9305b0421e88303f18aad29f6c9cb1/src/pipeline.jl#L49-L70"
     ],

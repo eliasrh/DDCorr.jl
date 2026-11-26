@@ -52,7 +52,7 @@ function group_plan(station,phase,entries,cfg)
     n_events=length(Set(e.id for (e,h) in entries))
     pairs=binomial(n_events,2)
     budget=cfg["runtime"]["max_pairs_per_group"]
-    budget>0 && pairs>budget && error("$station $phase has $n_events candidate events and $pairs possible pairs, above runtime.max_pairs_per_group=$budget. Select fewer events or increase the limit in src/advanced.toml.")
+    budget>0 && pairs>budget && error("$station $phase has $n_events candidate events and $pairs possible pairs, above runtime.max_pairs_per_group=$budget. Select fewer events or increase the limit under [runtime] in the run TOML.")
 
     pc=cfg["phase"][phase]
     fs=pc["sample_rate_hz"]
@@ -65,7 +65,7 @@ function group_plan(station,phase,entries,cfg)
     prepared_trace_bytes=8*(ncore+4nlag+1)+32*(nfft÷2+1)
     worker_bytes=16*(nfft÷2+1)+16*nfft+16*(2nlag+1)
     bytes=raw_trace_bytes+length(entries)*prepared_trace_bytes+workers*worker_bytes
-    bytes>cfg["runtime"]["max_group_memory_mib"]*2^20 && error("$station $phase needs an estimated $(round(bytes/2^20;digits=1)) MiB for waveform preparation and FFT work areas, above runtime.max_group_memory_mib. Select fewer events, shorten the windows, or increase the allowance in src/advanced.toml.")
+    bytes>cfg["runtime"]["max_group_memory_mib"]*2^20 && error("$station $phase needs an estimated $(round(bytes/2^20;digits=1)) MiB for waveform preparation and FFT work areas, above runtime.max_group_memory_mib. Select fewer events, shorten the windows, or increase the allowance under [runtime] in the run TOML.")
     (;pairs,workers,bytes)
 end
 

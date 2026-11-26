@@ -15,6 +15,19 @@
         write(joinpath(d,"advanced.toml"),"[phase.P]\nfilter_padding_s=20.0\n")
         write(path,"[P]\nband_hz=[0.4,2.0]\n[advanced]\nfile=\"advanced.toml\"\n")
         @test DDCorr.load_config(path)["phase"]["P"]["filter_padding_s"]==20.0
+        write(path,"[advanced]\nfile=\"advanced.toml\"\n[P]\nfilter_order=6\nfilter_padding_s=10.0\n[phase.S]\nfilter_order=2\n[runtime]\nmax_events=12\n[output]\nnear_identity_cc=0.98\n")
+        overridden=DDCorr.load_config(path)
+        @test overridden["phase"]["P"]["filter_order"]==6
+        @test overridden["phase"]["P"]["filter_padding_s"]==10.0
+        @test overridden["phase"]["S"]["filter_order"]==2
+        @test overridden["runtime"]["max_events"]==12
+        @test overridden["output"]["near_identity_cc"]==0.98
+        write(path,"[phase.P]\nfilter_order=5\n[P]\nfilter_order=6\n")
+        @test_throws ErrorException DDCorr.load_config(path)
+        write(path,"[P]\nfilter_order=6.5\n")
+        @test_throws ErrorException DDCorr.load_config(path)
+        write(path,"[P]\nfilter_order=6\n")
+        @test DDCorr.load_config(path)["phase"]["S"]["filter_order"]==4
     end
 end
 

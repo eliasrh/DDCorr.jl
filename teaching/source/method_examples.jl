@@ -53,6 +53,7 @@ function export_examples()
     println("KVER P SNR ", kver.i.snr, " and ", kver.j.snr)
     times = p["window_s"][1] .+ collect(-kver.i.nlag:kver.i.ncore+kver.i.nlag-1) ./ p["sample_rate_hz"]
     save_columns("kver_full_windows.csv", ["seconds_from_marker", "event_1", "event_2"], times, kver.i.ext, kver.j.ext)
+    save_columns("kver_fft.csv", ["lag_s","coefficient"], kver.lags, kver.coeff)
 
     order = compare_pair((86, 97), "Z7.DYSA", "HHZ", p)
     save_columns("order.csv", ["lag_s", "i_fixed", "j_fixed", "symmetric"], order.lags, order.fixed_i, order.fixed_j, order.coeff)

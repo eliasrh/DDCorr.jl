@@ -12,50 +12,62 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto}th,td{bo
 th{background:#e3eae3}li{padding-left:.15rem;margin:.35rem 0}.report{padding:1rem;border-left:4px solid #447d70;background:#e6eee4}
 @media print{body{font-size:11pt;max-width:none;padding:0}nav{display:none}pre{white-space:pre-wrap;overflow-wrap:anywhere}}
 </style></head><body><nav aria-label="Contents"><a href="#before-class">Before class</a> · <a href="#synthetic-data">Synthetic data</a> · <a href="#iceland-data">Iceland data</a> · <a href="#reading-the-report">Reading the report</a> · <a href="#your-own-sac-files">Your own SAC files</a> · <a href="#optional-archive-download">Optional archive download</a></nav><div class="markdown"><h1>Start here for the DDCorr lab</h1>
-<p>In this lab you will run DDCorr twice. The short synthetic run introduces the command. The second run uses 100 real earthquakes at Bárðarbunga. At 14:05 we will walk through the Iceland settings, figures and measurement files together. The open SAC clinic runs from 16:00 to 18:00.</p>
+<p>Before the workshop, run the laptop check below. It installs the Julia packages and makes a small report using generated SAC files. During Friday’s lab we will use the Iceland100 recordings, then follow the individual measurements through the report. For an independent project, use the <a href="INPUTS_OUTPUTS.html">DDCorr manual and complete TOML reference</a>.</p>
 <h2 id="before-class">Before class</h2>
-<p>You need <strong>one copy of the DDCorr code</strong> and <strong>one Iceland100 data folder</strong>. If you already downloaded the GitHub ZIP, you have the code. The instructor supplies <code>Iceland100.zip</code> separately.</p>
+<p><strong>Download and extract the code.</strong> On the <a href="https://github.com/eliasrh/DDCorr.jl">public DDCorr GitHub page</a>, choose <strong>Code → Download ZIP</strong>. On Windows choose <strong>Extract All</strong>, on macOS double-click the ZIP, and on Linux choose <strong>Extract Here</strong> in your file manager. Open the extracted folder that directly contains <strong>Project.toml</strong>, <strong>bin</strong> and <strong>scripts</strong>. You can put it anywhere you own, including a path with spaces. Keep it for the workshop. The instructor’s code ZIP works the same way.</p>
+<p><strong>Install Julia and Python for your system.</strong> The classroom environment uses Julia <strong>1.12.3</strong>. The installation check and the synthetic generator use ordinary Python 3 with its standard library. The optional EarthScope downloader later in this guide uses Python 3.12 with ObsPy. You can complete the laptop check without downloading any seismic data.</p>
+<h3>Windows</h3>
 <ol>
-<li><p>Create a folder called <code>Workshop</code> wherever you keep your course files.</p>
+<li><p>Install Julia using the Windows link on the <a href="https://julialang.org/install/">official Julia installation page</a>. It installs the Juliaup version manager. Install Python 3 from <a href="https://www.python.org/downloads/windows/">Python for Windows</a> if it is missing.</p>
 </li>
-<li><p>For the code, use <strong>Code → Download ZIP</strong> on the DDCorr GitHub page, or use the instructor’s <code>DDCorr_student_package.zip</code>. Both contain the files needed for the lab. GitHub requires access to the private repository.</p>
+<li><p>Open the extracted code folder in File Explorer. Click its address bar, type <code>powershell</code> and press Enter. A PowerShell prompt opens in that folder. Run <code>dir Project.toml</code> to confirm the location.</p>
 </li>
-<li><p>Extract the code ZIP. On Windows, right-click the ZIP and choose <strong>Extract All</strong>. On macOS, double-click it. Find the extracted folder that directly contains <code>Project.toml</code>, <code>bin</code> and <code>scripts</code>. Place that folder in <code>Workshop</code> and name it <code>DDCorr.jl</code>.</p>
-</li>
-<li><p>Extract <code>Iceland100.zip</code> the same way. Place the folder that directly contains <code>sac</code>, <code>reference</code> and <code>DDCorr.toml</code> in <code>Workshop</code> and name it <code>Iceland100</code>. Some ZIP tools add an extra outer folder. The two folders below must sit side by side.</p>
+<li><p>Run <code>py -3 --version</code>. It should print a Python 3 version. If your installer provides <code>python</code> instead, use <code>python --version</code> and substitute <code>python</code> for <code>py -3</code> below.</p>
 </li>
 </ol>
+<h3>macOS</h3>
+<ol>
+<li><p>If needed, install Julia with <a href="https://julialang.org/install/">Juliaup for macOS</a>. Look for the macOS/Linux command on that page and run it in Terminal. Install Python 3 from <a href="https://www.python.org/downloads/macos/">Python for macOS</a> if <code>python3 --version</code> is unavailable.</p>
+</li>
+<li><p>Open a fresh Terminal window. Type <code>cd</code> with a space, drag the extracted code folder from Finder into the window, and press Return. Run <code>ls Project.toml</code>, then <code>python3 --version</code>.</p>
+</li>
+</ol>
+<h3>Linux</h3>
+<ol>
+<li><p>If needed, install Julia using the Linux command on the <a href="https://julialang.org/install/">official Julia installation page</a>. Check <code>python3 --version</code>. If it is missing, install Python 3 using your distribution’s package manager &#40;on Ubuntu or Debian, the package is <code>python3</code>&#41;.</p>
+</li>
+<li><p>Open a fresh terminal in the extracted code folder using the file manager’s <strong>Open in Terminal</strong>, or use <code>cd &quot;/path/to/DDCorr.jl-main&quot;</code> with your own path. Run <code>ls Project.toml</code>.</p>
+</li>
+</ol>
+<h3>Select Julia and check the laptop</h3>
+<p>Run <code>julia --version</code> in that same terminal. If it already prints <code>julia version 1.12.3</code>, continue to the installation check. With Juliaup, the following selects the workshop version for this folder. Your normal Julia default still applies in other projects. <a href="https://github.com/JuliaLang/juliaup#overrides">Juliaup directory overrides</a></p>
+<pre><code class="language-sh">juliaup add 1.12.3
+juliaup override set 1.12.3
+julia --version</code></pre>
+<p>While you have internet access, run <strong>one</strong> of the commands below. The first Julia setup downloads and compiles packages, including the graphics library. Allow time for this initial setup. Later runs reuse the installed packages.</p>
+<table><tr><th align="right">Windows PowerShell</th><th align="right">macOS or Linux Terminal</th></tr><tr><td align="right"><code>py -3 scripts/check_install.py</code></td><td align="right"><code>python3 scripts/check_install.py</code></td></tr></table>
+<p>Look for <strong>DDCorr installation check passed</strong>. Open the <code>report.html</code> path printed on the next line. You should see six synthetic events and their figures. The check has also verified P and S time differences against known values and a nonempty <code>dt.cc</code>. It writes to <code>work/install-check</code> under the code folder and can be repeated. Being able to see this report is enough preparation for Friday.</p>
+<p><strong>If the check stops:</strong> If <code>Project.toml</code> or <code>scripts/check_install.py</code> cannot be found, open the <em>inner extracted folder</em> containing both. If <code>julia</code> or Python cannot be found, finish its installation and open a new terminal. If you see <code>julia&gt;</code>, type <code>exit&#40;&#41;</code> to return to the ordinary terminal before pasting commands. If a download failed, reconnect to the internet and repeat the same check. For help, send the operating system, the command you ran and the first error shown above the final “Installation check stopped” message.</p>
+<p><strong>The Iceland recordings for Friday.</strong> The instructor supplies <code>Iceland100.zip</code> separately. Extract it beside the code folder. If you received the combined Friday package, extracting that one ZIP gives you both folders. The Iceland run needs Julia and the extracted data. The included <code>Iceland100/reference/report.html</code> can also be opened straight from your file manager.</p>
 <pre><code class="language-text">Workshop/
-  DDCorr.jl/
+  DDCorr.jl/          &#40;or DDCorr.jl-main&#41;
     Project.toml
-    DDCorr.toml
     bin/
     scripts/
   Iceland100/
     DDCorr.toml
     sac/
     reference/</code></pre>
-<p>To read these directions in a browser from the extracted files, double-click <strong>DDCorr.jl → docs → START_HERE.html</strong>. Both the guide and the supplied Iceland report work offline.</p>
-<p>Install <strong>Julia 1.12.3</strong> for DDCorr. The short synthetic example also uses <strong>Python 3</strong>. Python 3.12 is the version used for the separate optional archive downloader. If you already have the Iceland files, the Iceland run only requires Julia. <a href="https://julialang.org/downloads/">Julia downloads</a> · <a href="https://www.python.org/downloads/">Python downloads</a></p>
-<p><strong>Open a terminal in the code folder.</strong> A terminal is the window where you paste the commands below.</p>
-<ul>
-<li><p><strong>Windows:</strong> In File Explorer, open the extracted <code>DDCorr.jl</code> folder so you can see <code>Project.toml</code>. Click the address bar, type <code>powershell</code> and press Enter.</p>
-</li>
-<li><p><strong>macOS:</strong> In Finder, open <code>Workshop</code>, select the <code>DDCorr.jl</code> folder and use <strong>Finder → Services → New Terminal at Folder</strong>. You can also open Terminal, type <code>cd</code> with a space, drag the folder from Finder into the window and press Return.</p>
-</li>
-<li><p><strong>Linux:</strong> In your file manager, open <code>DDCorr.jl</code> and use <strong>Open in Terminal</strong>. Alternatively, type <code>cd</code> and the folder path in your terminal, placing quotes around a path containing spaces.</p>
-</li>
-</ul>
-<p>Keep this terminal in <code>DDCorr.jl</code> for both runs. Paste one command at a time and press Enter. If you see a <code>julia&gt;</code> prompt, enter <code>exit&#40;&#41;</code> to return to your terminal first.</p>
-<p><strong>Install the Julia packages once.</strong> Run this command before class while connected to the internet. Julia downloads the packages, then compiles them. On the rehearsal Mac, the new package folder used about 1 GB and setup took about six minutes. Other computers may take longer, and the output may pause. Continue when your terminal prompt returns. Both classroom runs can then work offline.</p>
-<pre><code class="language-sh">julia --project&#61;. -e &quot;using Pkg; Pkg.instantiate&#40;&#41;; using DDCorr&quot;</code></pre>
-<p>If the terminal says it cannot find <code>julia</code>, finish the Julia installation and open a new terminal in <code>DDCorr.jl</code>. If setup is still in progress when class reaches the Iceland report, you can join immediately by opening <strong>Iceland100 → reference → report.html</strong> in your file manager.</p>
+<p>In an extracted copy, double-click <strong>docs → START_HERE.html</strong> to follow this guide offline. Keep the terminal in the code folder for the commands below.</p>
+<p><strong>Also attending Saturday?</strong> The full GitHub download includes DDSync, GraphSplit and ready-made differential times. To check both stages before class, run the two lines below from the same code folder. They use the included Iceland measurements and a separate run named <code>laptop-check</code>. If you received separate Friday and Saturday ZIPs, use the <a href="https://github.com/eliasrh/DDCorr.jl/blob/main/teaching/saturday/START_HERE.md">Saturday guide</a> in the Saturday folder.</p>
+<pre><code class="language-sh">julia --threads&#61;2 teaching/saturday/workshop.jl sync --run laptop-check
+julia --threads&#61;2 teaching/saturday/workshop.jl relocate --run laptop-check</code></pre>
 <h2 id="synthetic-data">Synthetic data</h2>
 <p><strong>Before lunch.</strong> Generate the example recordings. Use the command for your system. This step uses only Python’s standard library.</p>
 <table><tr><th align="right">macOS or Linux</th><th align="right">Windows PowerShell</th></tr><tr><td align="right"><code>python3 scripts/make_synthetic.py</code></td><td align="right"><code>py -3 scripts/make_synthetic.py</code></td></tr></table>
 <p>If Windows installed Python as <code>python</code> and cannot find <code>py</code>, use <code>python scripts/make_synthetic.py</code>. If Python is unavailable during class, continue with the Iceland run below.</p>
 <p>The generator writes one folder for each earthquake under <code>examples/synthetic/sac</code>. Inside a folder such as <code>44</code>, each SAC file contains one component at one station. For example, <code>XX.S01..HHZ.sac</code> contains the vertical component from station S01 in network XX.</p>
-<p>Run DDCorr with the repository&#39;s <code>DDCorr.toml</code>. This command works on both platforms.</p>
+<p>Run DDCorr with the repository&#39;s <code>DDCorr.toml</code>. This command works on all three operating systems.</p>
 <pre><code class="language-sh">julia --project&#61;. --threads&#61;2 bin/ddcorr.jl DDCorr.toml</code></pre>
 <p>DDCorr prints the path to a new <code>results/correlate_…</code> directory. It contains its own <code>report.html</code> and measurement files. You will use the same command with a different settings file for the real data.</p>
 <h2 id="iceland-data">Iceland data</h2>
@@ -78,18 +90,41 @@ th{background:#e3eae3}li{padding-left:.15rem;margin:.35rem 0}.report{padding:1re
 </li>
 </ol>
 <p>The DYSA P markers differ by &#43;0.3558 s relative to the respective event origins. After the &#43;0.0586 s lag correction, DDCorr writes &#43;0.2972 s for event 93 minus event 97.</p>
-<p>The <strong>Near-identical arrival flags</strong> link near the top of the Iceland report opens a table of flagged observations. The row for events 44 and 45 at Z7.RODG, S, corresponds to <code>example_09_Z7.RODG_S</code> under <strong>Accepted pair examples</strong>. The slides also show the two original cuts on a common UTC clock.</p>
+<p>The <strong>Near-identical arrival flags</strong> table lists individual station/phase measurements. Expand <strong>example<em>11</em>Z7.STAM_S</strong> for events 85 and 86. The table above the waveforms shows all seven accepted observations. Three S coefficients reach 0.99. Find the same three rows in <code>near_identity.csv</code> or all seven in <code>correlations.csv</code>. In this run <code>dt.cc</code> stores the coefficient <strong>squared</strong> as its weight. The slide walkthrough plots the STAM and DYSA recordings on a shared UTC clock to investigate their predicted phase markers. A flagged row is a reason to review the original arrivals across stations before treating two catalogue entries as the same earthquake.</p>
 <p>The <a href="../teaching/SOLUTIONS.txt">Iceland report walkthrough</a> explains each figure, including its axes, colours and units, and follows a missing P observation through the output tables.</p>
 <h2 id="your-own-sac-files">Your own SAC files</h2>
-<p><strong>Open clinic, 16:00–18:00.</strong> Bring your own event-cut SAC files and work through them with the instructor. You can use the supplied Iceland recordings for the same hands-on work, including trying a different band or selecting waveform examples. For a separate Iceland run, copy its TOML beside the original and run the copy. Its output will have a new timestamped directory.</p>
-<p>For your own archive, keep the same directory layout, with a single folder for each earthquake. For example, place <code>MyData</code> beside <code>DDCorr.jl</code> and put the files in <code>MyData/sac/&lt;original event ID&gt;/</code>. Copy <code>Iceland100/DDCorr.toml</code> to <code>MyData/DDCorr.toml</code>. Its relative SAC and results paths will then refer to <code>MyData</code>.</p>
-<p>To see the header of a recording, give the SAC viewer its path. This classroom example opens the exact file shown in the slides.</p>
-<pre><code class="language-sh">julia --project&#61;. bin/sac_info.jl ../Iceland100/sac/S1_009992/Z7.DYSA..HHZ.sac</code></pre>
-<p>For your archive, replace the path with one of your own files. Giving the viewer <code>../MyData/sac</code> opens the first SAC file it finds. Look at the <strong>Arrival fields</strong> table. In the Iceland file, field A contains the numerical P arrival time and has the text label P<em>pred. Field T0 holds the S time and has label S</em>pred. Other producers may place these times in different fields. Inspect representative headers and use the provider&#39;s phase convention when assigning P and S.</p>
-<p>In <code>MyData/DDCorr.toml</code>, set the existing <code>&#91;input&#93;</code> entries <code>p_pick_header</code> and <code>s_pick_header</code> to the numerical <strong>field names</strong> that hold your arrivals. For example, if P is in T8 and S in T9, use <code>p_pick_header &#61; &quot;t8&quot;</code> and <code>s_pick_header &#61; &quot;t9&quot;</code>. Set the P and S passbands and windows for your recordings. An inspection lists event metadata, component and phase-window availability before correlation.</p>
+<p><strong>Friday clinic, 16:00–18:00.</strong> The same procedure works with any event-cut SAC archive. You can bring your own files or explore a different Iceland pair. DDCorr reads the original waveforms in place. Each correlation run writes to a new timestamped directory.</p>
+<h3>Set up one event per folder</h3>
+<p>Create <code>MyData</code> beside the code directory. Copy the code folder’s <code>DDCorr.toml</code> to <code>MyData/DDCorr.toml</code>. In the copy’s existing <code>&#91;input&#93;</code> section, set <code>sac_dir &#61; &quot;sac&quot;</code>. Under <code>&#91;output&#93;</code> set <code>directory &#61; &quot;results&quot;</code>. Put each earthquake’s binary, evenly sampled records directly in its own folder. These names illustrate the layout.</p>
+<pre><code class="language-text">MyData/
+  DDCorr.toml
+  sac/
+    earthquake_A/XX.STA..HHZ.sac
+    earthquake_A/XX.STA..HHN.sac
+    earthquake_B/XX.STA..HHZ.sac
+    earthquake_B/XX.STA..HHN.sac</code></pre>
+<h3>Identify the phase times before choosing the settings</h3>
+<p>From the code directory, run the header viewer. Supplying a folder opens one example and prints its name. Supplying a file opens that exact recording.</p>
+<pre><code class="language-sh">julia --project&#61;. bin/sac_info.jl ../MyData/sac</code></pre>
+<p>Look at <strong>Arrival fields</strong>. The numerical SAC slot such as <strong>A</strong>, <strong>T0</strong> or <strong>T8</strong> holds a time. Its label, for example <code>Pm</code> or <code>P_pred</code>, tells you how the producer described that time. Check a few stations, events and components. Confirm with the data provider whether the times are manual, automatic or predicted. Set the slot names in the existing <code>&#91;input&#93;</code> section. For example, use <code>p_pick_header &#61; &quot;t8&quot;</code> and <code>s_pick_header &#61; &quot;t9&quot;</code> only if those are your P and S fields throughout the archive. A missing marker prevents that recording from supplying that phase. By default both phases also need a P reference for the background window.</p>
+<p>Check that the event origin, coordinates and station/channel identification are present. Confirm the event depth units and set <code>depth_unit &#61; &quot;m&quot;</code> or <code>&quot;km&quot;</code> in <code>&#91;input&#93;</code>. P uses vertical components and S uses available horizontals. Both events need a compatible shared channel at the same station. To require both horizontals, set <code>min_components &#61; 2</code> under <code>&#91;S&#93;</code>. The <a href="INPUTS_OUTPUTS.html">manual</a> lists the header fields, units and station coordinate checks.</p>
+<h3>Set the filter and windows for your recordings</h3>
+<p>Under <code>&#91;P&#93;</code> and <code>&#91;S&#93;</code>, choose the band in Hz, window before and after the phase marker, and maximum lag in seconds. Main-run values override the package defaults one key at a time. Put <code>filter_order &#61; 6</code> under the existing <code>&#91;P&#93;</code> if you want to change the P filter order for this run. Choose a comparison rate at or below the original rate, with its upper filter corner below 0.45 times both rates.</p>
+<p>The recording must reach back far enough for the background before P and extend beyond the comparison window by the allowed lag and filter padding. A narrow passband may make several successive waveform cycles look alike. In the report, inspect the separation between competing peaks as well as the winning coefficient.</p>
+<h3>Inspect, correlate and trace a missing result</h3>
 <pre><code class="language-sh">julia --project&#61;. bin/ddcorr.jl ../MyData/DDCorr.toml --inspect
 julia --project&#61;. --threads&#61;2 bin/ddcorr.jl ../MyData/DDCorr.toml</code></pre>
-<p>Open the printed correlation report in <code>MyData/results</code>. If the expected station or phase is absent, the <a href="INPUTS_OUTPUTS.md">inputs and outputs guide</a> describes the relevant tables.</p>
+<p>Open the <code>report.html</code> in the printed <strong>correlate_…</strong> directory. To trace a missing P or S, read <code>phase_readiness.csv</code> for marker, sampling and coverage checks, then <code>preprocessing_issues.csv</code> for individual recordings dropped before comparison. <code>correlations.csv</code> lists the accepted pairs with coefficients, components, lags and measured time differences. <code>group_summary.csv</code> gives pair decisions by station and phase. To audit a particular rejected pair on a new run, set <code>write_rejected_pairs &#61; true</code> under <code>&#91;output&#93;</code>. For a missing whole station, check <code>station_exclusions.csv</code>. Read <code>effective_config.toml</code> to see the actual settings.</p>
+<h3>Display a pair and keep the measurements</h3>
+<p>Choose an accepted pair from <code>correlations.csv</code>. In the <strong>existing</strong> <code>&#91;plots&#93;</code> section, set <code>event_pairs</code> using the integer IDs in <code>event_id_map.csv</code>, or set <code>original_event_pairs</code> using two folder labels. Use one form and leave the other list empty. For example, for the included Iceland data:</p>
+<pre><code class="language-toml">&#91;plots&#93;
+enabled &#61; true
+examples &#61; true
+filters &#61; true
+event_pairs &#61; &#91;&#91;85, 86&#93;&#93;
+example_stations &#61; &#91;&quot;Z7.STAM&quot;&#93;
+example_phases &#61; &#91;&quot;S&quot;&#93;</code></pre>
+<p>Rerun with your copied TOML. These settings select the station, phase and pair for the waveform example and restrict the filter spectrum to its first event and shared component. The selection table identifies the figures. For your own data substitute an accepted pair and station from your run. <code>&#91;matrices&#93; enabled &#61; true</code> exports the sparse measurements by station and phase; add <code>plots &#61; true</code> for heatmaps or <code>dense &#61; true</code> for square CSVs within the size limits. Keep <code>dt.cc</code> with <code>catalog.txt</code>, <code>stations.txt</code> and <code>event_id_map.csv</code> for relocation.</p>
 <h2 id="optional-archive-download">Optional archive download</h2>
 <p>For an example of how event SAC folders are made, the downloader requests five events at three stations from EarthScope and cuts the records around each origin. It puts the result in <code>work/iceland_small/sac</code>. This is separate from the two classroom runs, which use local data. Install the download dependencies and run the script with the same Python environment.</p>
 <p><strong>macOS or Linux</strong></p>
